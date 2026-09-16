@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -21,7 +22,7 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioRespuesta> crear(@RequestBody CrearUsuarioRequest request) {
+    public ResponseEntity<UsuarioRespuesta> crear(@Valid @RequestBody CrearUsuarioRequest request) {
         Usuario usuario = authService.crearUsuario(request.usuario(), request.password(), request.rol());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new UsuarioRespuesta(usuario.getId(), usuario.getUsuario(), usuario.getRol()));
