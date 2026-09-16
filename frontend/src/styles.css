@@ -1,1 +1,22 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap');
+
+:root {
+	color-scheme: dark;
+	font-family: Arial, sans-serif;
+	color: #f4eee1;
+	background: #090909;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	min-width: 320px;
+}
+
+button,
+input {
+	font: inherit;
+}
