@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<div class="login-container">
+  <h2>Iniciar sesión</h2>
+
+  <input
+    type="text"
+    placeholder="Usuario"
+    [(ngModel)]="usuario"
+  >
+
+  <input
+    type="password"
+    placeholder="Contraseña"
+    [(ngModel)]="password"
+  >
+
+  <button (click)="login()">
+    Iniciar sesión
+  </button>
+
+  <p *ngIf="error">
+    {{ error }}
+  </p>
+</div>
+
+</body>
+</html>
