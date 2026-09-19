@@ -8,6 +8,6 @@ public class testController     {
 
     @GetMapping("/api/test")
     public String test() {
-        return "Angular puede comunicarse con Spring Boot";
+        return "se conectaaaaa";
     }
 }
