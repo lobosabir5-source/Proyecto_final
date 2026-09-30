@@ -1,0 +1,24 @@
+<div class="modal-backdrop" (click)="cancelar.emit()">
+  <div class="modal modal--sm" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+    <header class="modal-header">
+      <h3 class="modal-title">{{ titulo() }}</h3>
+    </header>
+
+    <div class="modal-body">
+      <p class="dialog-message">{{ mensaje() }}</p>
+    </div>
+
+    <footer class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="cancelar.emit()">Cancelar</button>
+      <button
+        type="button"
+        class="btn"
+        [class.btn-danger]="peligro()"
+        [class.btn-primary]="!peligro()"
+        [disabled]="procesando()"
+        (click)="confirmar.emit()">
+        {{ procesando() ? 'Procesando...' : textoConfirmar() }}
+      </button>
+    </footer>
+  </div>
+</div>

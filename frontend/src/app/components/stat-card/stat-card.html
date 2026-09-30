@@ -1,0 +1,14 @@
+<article [class]="clase()">
+  <p class="stat-card__title">{{ titulo() }}</p>
+
+  <div class="stat-card__body">
+    <span class="stat-card__icon"><app-icon [nombre]="icono()" /></span>
+    <strong class="stat-card__value">{{ valor() }}</strong>
+  </div>
+
+  <div class="stat-card__bar"></div>
+
+  @if (detalle()) {
+    <p class="stat-card__detail">{{ detalle() }}</p>
+  }
+</article>

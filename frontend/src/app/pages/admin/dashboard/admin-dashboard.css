@@ -1,0 +1,44 @@
+@reference "tailwindcss";
+
+:host { @apply block; }
+
+.stats-grid { @apply mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4; }
+.dashboard-grid { @apply grid gap-4 lg:grid-cols-3; }
+.dashboard-grid__wide { @apply lg:col-span-2; }
+
+/* Planes */
+.goal { @apply mb-4 last:mb-0; }
+.goal__info { @apply mb-1 flex items-center justify-between text-sm; }
+.goal__name { @apply font-medium text-slate-700; }
+.goal__value { @apply font-semibold text-slate-800; }
+.goal__track { @apply h-2 overflow-hidden rounded-full bg-slate-100; }
+.goal__fill { @apply h-full rounded-full bg-cyan-500 transition-all duration-500; }
+.goal__meta { @apply mt-1 text-xs text-slate-400; }
+
+/* Gráfico circular */
+.donut-box { @apply flex flex-col items-center gap-4; }
+.donut {
+  @apply grid h-40 w-40 place-items-center rounded-full;
+  background: conic-gradient(#10b981 calc(var(--porcentaje, 0) * 1%), #e2e8f0 0);
+}
+.donut__center { @apply grid h-32 w-32 place-items-center rounded-full bg-white; }
+.donut__value { @apply block text-3xl font-light leading-none text-slate-700; }
+.donut__label { @apply block text-[11px] tracking-widest text-slate-400; }
+.legend { @apply flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm text-slate-600; }
+.legend__item { @apply flex items-center gap-2; }
+.dot { @apply h-2.5 w-2.5 rounded-full; }
+.dot--green { @apply bg-emerald-500; }
+.dot--gray { @apply bg-slate-300; }
+
+/* Usuarios */
+.people { @apply divide-y divide-slate-100; }
+.people__item { @apply flex items-center gap-3 px-4 py-3; }
+.people__avatar { @apply grid h-9 w-9 place-items-center rounded-full bg-slate-200 text-sm font-semibold text-slate-600; }
+.people__data { @apply flex-1; }
+.people__name { @apply text-sm font-medium text-slate-700; }
+.people__role { @apply text-xs text-slate-400; }
+
+/* Asistencias */
+.today { @apply py-6 text-center; }
+.today__value { @apply block text-6xl font-light leading-none text-cyan-600; }
+.today__label { @apply mt-2 text-sm text-slate-400; }

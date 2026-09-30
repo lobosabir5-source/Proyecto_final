@@ -1,0 +1,60 @@
+<div class="shell">
+
+  <aside class="sidebar" [class.sidebar--open]="menuAbierto()">
+    <div class="sidebar__brand">
+      <span class="sidebar__logo">G</span>
+      <div>
+        <p class="sidebar__name">Gold's Gym</p>
+        <p class="sidebar__tag">Administración</p>
+      </div>
+    </div>
+
+    <section class="sidebar__profile">
+      <span class="sidebar__avatar">{{ inicial() }}</span>
+      <div>
+        <p class="sidebar__user">{{ authService.user()?.usuario }}</p>
+        <p class="sidebar__role">{{ authService.user()?.rol }}</p>
+      </div>
+    </section>
+
+    <p class="sidebar__label">Navegación</p>
+    <nav class="sidebar__nav">
+      @for (item of menu; track item.ruta) {
+        <a class="nav-link"
+           [routerLink]="item.ruta"
+           routerLinkActive="nav-link--active"
+           (click)="cerrarEnMovil()">
+          <app-icon [nombre]="item.icono" />
+          <span>{{ item.etiqueta }}</span>
+        </a>
+      }
+    </nav>
+  </aside>
+
+  @if (menuAbierto()) {
+    <div class="shell__overlay" (click)="alternarMenu()"></div>
+  }
+
+  <div class="workspace" [class.workspace--shifted]="menuAbierto()">
+    <header class="topbar">
+      <button type="button" class="topbar__toggle" aria-label="Mostrar u ocultar menú" (click)="alternarMenu()">
+        <app-icon nombre="menu" />
+      </button>
+
+      <div class="topbar__actions">
+        <span class="topbar__user">
+          Sesión de <strong>{{ authService.user()?.usuario }}</strong>
+        </span>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="cerrarSesion()">
+          <app-icon nombre="logout" />
+          Salir
+        </button>
+      </div>
+    </header>
+
+    <main class="workspace__content">
+      <router-outlet />
+    </main>
+  </div>
+
+</div>

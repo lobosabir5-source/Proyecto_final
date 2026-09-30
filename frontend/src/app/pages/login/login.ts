@@ -32,7 +32,7 @@ export class Login {
 
     this.loading = true;
     this.authService.login({ usuario: this.usuario, password: this.password }).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: (respuesta) => this.router.navigate([respuesta.rol === 'ADMIN' ? '/admin' : '/dashboard']),
       error: (error: HttpErrorResponse) => {
         this.loading = false;
         this.error = error.status === 0

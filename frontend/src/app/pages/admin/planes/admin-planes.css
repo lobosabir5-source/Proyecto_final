@@ -1,0 +1,8 @@
+@reference "tailwindcss";
+
+:host { @apply block; }
+
+.plans-count { @apply text-xs text-slate-400; }
+.plan-name { @apply font-medium text-slate-800; }
+.plan-price { @apply whitespace-nowrap font-semibold text-slate-800; }
+.row-inactive { @apply opacity-60; }
