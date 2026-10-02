@@ -1,0 +1,3 @@
+@reference "tailwindcss";
+
+.dialog-message { @apply text-sm leading-relaxed text-slate-600; }

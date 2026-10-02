@@ -1,0 +1,7 @@
+@reference "tailwindcss";
+
+:host { @apply block; }
+
+.user-name { @apply font-medium text-slate-800; }
+.user-you { @apply ml-1 text-xs font-normal text-slate-400; }
+.pager { @apply flex gap-2; }

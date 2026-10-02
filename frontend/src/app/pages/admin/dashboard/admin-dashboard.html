@@ -1,0 +1,113 @@
+<section class="page">
+
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-subtitle">Bienvenido al panel de administración de Gold's Gym</p>
+    </div>
+    <button type="button" class="btn btn-secondary" [disabled]="cargando()" (click)="cargar()">
+      <app-icon nombre="refresh" />
+      Actualizar
+    </button>
+  </header>
+
+  @if (error()) {
+    <div class="alert alert-error" role="alert">{{ error() }}</div>
+  }
+
+  @if (cargando() && !resumen()) {
+    <p class="empty-state">Cargando información...</p>
+  }
+
+  @if (resumen(); as datos) {
+
+    <div class="stats-grid">
+      <app-stat-card titulo="Clientes activos" [valor]="datos.clientesActivos"
+                     icono="users" variante="cyan" detalle="Cuentas de cliente habilitadas" />
+      <app-stat-card titulo="Membresías activas" [valor]="datos.membresiasActivas"
+                     icono="check" variante="green" detalle="Vigentes el día de hoy" />
+      <app-stat-card titulo="Membresías pendientes" [valor]="datos.membresiasPendientes"
+                     icono="clock" variante="red" detalle="Por iniciar o por activar" />
+      <app-stat-card titulo="Ingresos del mes" [valor]="'Bs ' + (datos.ingresosDelMes | number:'1.2-2')"
+                     icono="dollar" variante="gray" detalle="Pagos registrados este mes" />
+    </div>
+
+    <div class="dashboard-grid">
+
+      <article class="panel dashboard-grid__wide">
+        <header class="panel-header">
+          <h2 class="panel-title"><app-icon nombre="tag" /> Planes de membresía</h2>
+          <a class="panel-link" routerLink="/admin/planes">Administrar planes</a>
+        </header>
+        <div class="panel-body">
+          @for (plan of planesActivos(); track plan.id) {
+            <div class="goal">
+              <div class="goal__info">
+                <span class="goal__name">{{ plan.nombre }}</span>
+                <span class="goal__value">Bs {{ plan.precio | number:'1.2-2' }}</span>
+              </div>
+              <div class="goal__track">
+                <div class="goal__fill" [style.width.%]="porcentajePrecio(plan)"></div>
+              </div>
+              <p class="goal__meta">Duración: {{ plan.duracionDias }} días</p>
+            </div>
+          } @empty {
+            <p class="empty-state">No hay planes activos.</p>
+          }
+        </div>
+      </article>
+
+      <article class="panel">
+        <header class="panel-header">
+          <h2 class="panel-title"><app-icon nombre="check" /> Estado de membresías</h2>
+        </header>
+        <div class="panel-body donut-box">
+          <div class="donut" [style.--porcentaje]="porcentajeActivas()">
+            <div class="donut__center">
+              <strong class="donut__value">{{ porcentajeActivas() }}%</strong>
+              <span class="donut__label">ACTIVAS</span>
+            </div>
+          </div>
+          <ul class="legend">
+            <li class="legend__item"><span class="dot dot--green"></span> Activas: {{ datos.membresiasActivas }}</li>
+            <li class="legend__item"><span class="dot dot--gray"></span> Pendientes: {{ datos.membresiasPendientes }}</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="panel dashboard-grid__wide">
+        <header class="panel-header">
+          <h2 class="panel-title"><app-icon nombre="users" /> Usuarios del sistema</h2>
+          <a class="panel-link" routerLink="/admin/usuarios">Ver todos</a>
+        </header>
+        <ul class="people">
+          @for (usuario of usuarios(); track usuario.id) {
+            <li class="people__item">
+              <span class="people__avatar">{{ inicial(usuario.usuario) }}</span>
+              <div class="people__data">
+                <p class="people__name">{{ usuario.usuario }}</p>
+                <p class="people__role">{{ etiquetaRol(usuario.rol) }}</p>
+              </div>
+              <span class="badge" [class.badge-success]="usuario.activo" [class.badge-muted]="!usuario.activo">
+                {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+              </span>
+            </li>
+          } @empty {
+            <li class="empty-state">No hay usuarios registrados.</li>
+          }
+        </ul>
+      </article>
+
+      <article class="panel">
+        <header class="panel-header">
+          <h2 class="panel-title"><app-icon nombre="calendar" /> Asistencias de hoy</h2>
+        </header>
+        <div class="panel-body today">
+          <strong class="today__value">{{ datos.asistenciasDeHoy }}</strong>
+          <p class="today__label">ingresos registrados hoy</p>
+        </div>
+      </article>
+
+    </div>
+  }
+</section>

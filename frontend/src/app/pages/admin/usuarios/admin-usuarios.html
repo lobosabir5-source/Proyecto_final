@@ -1,0 +1,162 @@
+<section class="page">
+
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Usuarios</h1>
+      <p class="page-subtitle">Cuentas de administradores, recepcionistas y clientes</p>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="abrirModal()">
+      <app-icon nombre="plus" />
+      Nuevo usuario
+    </button>
+  </header>
+
+  @if (exito()) {
+    <div class="alert alert-success" role="status">{{ exito() }}</div>
+  }
+  @if (error()) {
+    <div class="alert alert-error" role="alert">{{ error() }}</div>
+  }
+
+  <article class="panel">
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th class="cell-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (usuario of pagina()?.content ?? []; track usuario.id) {
+            <tr>
+              <td class="cell-muted">{{ usuario.id }}</td>
+              <td class="user-name">
+                {{ usuario.usuario }}
+                @if (esCuentaPropia(usuario)) {
+                  <span class="user-you">(tú)</span>
+                }
+              </td>
+              <td><span [class]="claseRol(usuario.rol)">{{ etiquetaRol(usuario.rol) }}</span></td>
+              <td>
+                <span class="badge" [class.badge-success]="usuario.activo" [class.badge-muted]="!usuario.activo">
+                  {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="cell-actions">
+                <div class="cell-actions-group">
+                  <button
+                    type="button"
+                    class="btn btn-sm"
+                    [class.btn-danger]="usuario.activo"
+                    [class.btn-success]="!usuario.activo"
+                    [disabled]="esCuentaPropia(usuario)"
+                    [title]="esCuentaPropia(usuario) ? 'No puedes desactivar tu propia cuenta' : ''"
+                    (click)="pedirCambioEstado(usuario)">
+                    <app-icon [nombre]="usuario.activo ? 'ban' : 'check'" />
+                    {{ usuario.activo ? 'Desactivar' : 'Activar' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="empty-state">
+                {{ cargando() ? 'Cargando usuarios...' : 'No hay usuarios para mostrar.' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (pagina(); as datos) {
+      <footer class="panel-footer">
+        <span>
+          Página {{ datos.number + 1 }} de {{ datos.totalPages || 1 }} · {{ datos.totalElements }} usuarios
+        </span>
+        <div class="pager">
+          <button type="button" class="btn btn-secondary btn-sm" [disabled]="datos.first || cargando()" (click)="paginaAnterior()">Anterior</button>
+          <button type="button" class="btn btn-secondary btn-sm" [disabled]="datos.last || cargando()" (click)="paginaSiguiente()">Siguiente</button>
+        </div>
+      </footer>
+    }
+  </article>
+
+</section>
+
+@if (modalAbierto()) {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <form #formUsuario="ngForm" (ngSubmit)="guardar()" novalidate>
+
+        <header class="modal-header">
+          <h2 class="modal-title">Nuevo usuario</h2>
+          <button type="button" class="modal-close" aria-label="Cerrar" (click)="cerrarModal()">
+            <app-icon nombre="close" />
+          </button>
+        </header>
+
+        <div class="modal-body">
+          @if (errorFormulario()) {
+            <div class="alert alert-error" role="alert">{{ errorFormulario() }}</div>
+          }
+
+          <div class="field">
+            <label class="field-label" for="usuario">Usuario</label>
+            <input id="usuario" name="usuario" type="text" class="field-input"
+                   [class.field-input--invalid]="camposError()['usuario']"
+                   [(ngModel)]="formulario.usuario" required maxlength="80" autocomplete="off" />
+            @if (camposError()['usuario']) {
+              <p class="field-error">{{ camposError()['usuario'] }}</p>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="password">Contraseña</label>
+            <input id="password" name="password" type="password" class="field-input"
+                   [class.field-input--invalid]="camposError()['password']"
+                   [(ngModel)]="formulario.password" required minlength="8" maxlength="100"
+                   autocomplete="new-password" />
+            <p class="field-hint">Mínimo 8 caracteres.</p>
+            @if (camposError()['password']) {
+              <p class="field-error">{{ camposError()['password'] }}</p>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="rol">Rol</label>
+            <select id="rol" name="rol" class="field-input" [(ngModel)]="formulario.rol" required>
+              @for (rol of rolesCreables; track rol) {
+                <option [value]="rol">{{ etiquetaRol(rol) }}</option>
+              }
+            </select>
+            <p class="field-hint">Los clientes se registran por su cuenta desde la página pública.</p>
+          </div>
+        </div>
+
+        <footer class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="formUsuario.invalid || guardando()">
+            {{ guardando() ? 'Guardando...' : 'Crear usuario' }}
+          </button>
+        </footer>
+
+      </form>
+    </div>
+  </div>
+}
+
+@if (usuarioPendiente(); as usuario) {
+  <app-confirm-dialog
+    [titulo]="usuario.activo ? 'Desactivar usuario' : 'Activar usuario'"
+    [mensaje]="mensajeCambio(usuario)"
+    [textoConfirmar]="usuario.activo ? 'Desactivar' : 'Activar'"
+    [peligro]="usuario.activo"
+    [procesando]="cambiando()"
+    (confirmar)="confirmarCambio()"
+    (cancelar)="cancelarCambio()" />
+}
