@@ -1,0 +1,66 @@
+<div class="p-10">
+  <header class="mb-8">
+    <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-2">
+      Recepción / Asistencias
+    </p>
+    <h1 class="text-4xl font-black tracking-tight">Entradas y Salidas</h1>
+  </header>
+
+  <!-- Entrada -->
+  <div class="bg-[#111] border border-yellow-500/20 p-6 mb-8">
+    <p class="text-[10px] tracking-[0.3em] text-yellow-400/80 uppercase mb-3">
+      Registrar entrada
+    </p>
+    <div class="flex gap-3">
+      <input [(ngModel)]="cedula"
+             placeholder="Cédula del cliente"
+             class="flex-1 bg-[#0a0a0a] border border-yellow-500/20 px-4 py-3
+                    focus:outline-none focus:border-yellow-400
+                    placeholder:text-neutral-600" />
+      <button (click)="entrar()"
+              class="bg-yellow-400 text-black px-8 py-3 text-xs font-bold
+                     tracking-[0.2em] uppercase hover:bg-yellow-300 transition">
+        buscar
+      </button>
+    </div>
+    <p class="text-xs text-neutral-500 mt-3">
+      Prueba con cédulas: 12345678, 87654321, 11223344
+    </p>
+  </div>
+
+  <!-- Lista -->
+  <div class="bg-[#111] border border-yellow-500/20 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-[10px] tracking-[0.3em] uppercase text-yellow-400/80
+                   border-b border-yellow-500/20">
+          <th class="text-left px-6 py-4">Cliente</th>
+          <th class="text-left px-6 py-4">Entrada</th>
+          <th class="text-left px-6 py-4">Salida</th>
+          <th class="text-right px-6 py-4">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (a of asistenciasHoy(); track a.idAsistencia) {
+          <tr class="border-b border-white/5 hover:bg-yellow-400/5 transition">
+            <td class="px-6 py-4 font-semibold">{{ nombreDe(a.idUsuario) }}</td>
+            <td class="px-6 py-4 text-neutral-400">{{ hora(a.fechaEntrada) }}</td>
+            <td class="px-6 py-4 text-neutral-400">{{ hora(a.fechaSalida) }}</td>
+            <td class="px-6 py-4 text-right">
+              @if (!a.fechaSalida) {
+                <button (click)="salir(a.idUsuario)"
+                        class="text-xs tracking-widest uppercase
+                               border border-yellow-400/60 text-yellow-300
+                               px-3 py-1.5 hover:bg-yellow-400 hover:text-black transition">
+                  salida
+                </button>
+              } @else {
+                <span class="text-xs text-neutral-600">—</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

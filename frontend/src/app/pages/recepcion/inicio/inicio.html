@@ -1,0 +1,67 @@
+<div class="p-10">
+
+  <!-- Encabezado -->
+  <header class="mb-10">
+    <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-3">
+      Gold's Gym / Panel
+    </p>
+    <h1 class="text-5xl font-black tracking-tight leading-none">
+      Bienvenido,<br>
+      <span class="text-yellow-400">Recepción</span>
+    </h1>
+    <p class="text-neutral-400 mt-3">Resumen operativo del día.</p>
+  </header>
+
+  <!-- KPIs -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+    @for (kpi of [
+      { label: 'Clientes totales', valor: totalClientes(), sufijo: '' },
+      { label: 'Activos',          valor: activos(),       sufijo: '' },
+      { label: 'En gimnasio',      valor: presentes(),     sufijo: '' },
+      { label: 'Ingresos mes',     valor: ingresosMes(),   sufijo: 'MXN' }
+    ]; track kpi.label) {
+      <div class="bg-[#111] border border-yellow-500/20 p-6 relative">
+        <div class="absolute top-0 right-0 w-6 h-6 border-t border-r border-yellow-400"></div>
+        <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-2">
+          {{ kpi.label }}
+        </p>
+        <p class="text-4xl font-black text-yellow-400">
+          {{ kpi.valor }}
+          @if (kpi.sufijo) {
+            <span class="text-xs text-neutral-500 font-normal ml-1">{{ kpi.sufijo }}</span>
+          }
+        </p>
+      </div>
+    }
+  </section>
+
+  <!-- Accesos rápidos -->
+  <section>
+    <h2 class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-4">
+      Accesos rápidos
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <a routerLink="/recepcion/asistencias"
+         class="group bg-[#111] border border-yellow-500/20 p-6 hover:border-yellow-400 transition">
+        <p class="text-2xl font-black mb-1 group-hover:text-yellow-400 transition">
+          Check-in / Check-out
+        </p>
+        <p class="text-sm text-neutral-500">Registrar entrada y salida de clientes</p>
+      </a>
+      <a routerLink="/recepcion/clientes"
+         class="group bg-[#111] border border-yellow-500/20 p-6 hover:border-yellow-400 transition">
+        <p class="text-2xl font-black mb-1 group-hover:text-yellow-400 transition">
+          Nuevo cliente
+        </p>
+        <p class="text-sm text-neutral-500">Registrar y editar miembros del gym</p>
+      </a>
+      <a routerLink="/recepcion/pagos"
+         class="group bg-[#111] border border-yellow-500/20 p-6 hover:border-yellow-400 transition">
+        <p class="text-2xl font-black mb-1 group-hover:text-yellow-400 transition">
+          Registrar pago
+        </p>
+        <p class="text-sm text-neutral-500">Cobros de suscripciones</p>
+      </a>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,9 @@
+<main class="dashboard-shell">
+  <section class="dashboard-panel">
+    <p class="eyebrow">GOLD'S GYM / PANEL</p>
+    <h1>Bienvenido, {{ authService.user()?.usuario }}</h1>
+    <p class="role">Rol: {{ authService.user()?.rol }}</p>
+    <p class="description">Tu sesión está protegida.</p>
+    <button type="button" (click)="authService.logout()">Cerrar sesión</button>
+  </section>
+</main>

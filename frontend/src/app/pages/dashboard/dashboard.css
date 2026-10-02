@@ -1,0 +1,55 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.dashboard-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background: #090909;
+}
+
+.dashboard-panel {
+  width: min(100%, 720px);
+  padding: clamp(2rem, 6vw, 5rem);
+  border: 1px solid #c8a34a;
+  background: #11100d;
+  box-shadow: 12px 12px 0 #c8a34a;
+}
+
+.eyebrow,
+.role {
+  color: #c8a34a;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+h1 {
+  max-width: 12ch;
+  margin: 1.5rem 0 1rem;
+  color: #f4eee1;
+  font-family: Georgia, serif;
+  font-size: clamp(2.4rem, 7vw, 5rem);
+  line-height: 0.95;
+}
+
+.description {
+  color: #aaa398;
+}
+
+button {
+  margin-top: 2rem;
+  border: 0;
+  padding: 0.9rem 1.3rem;
+  color: #0b0b0b;
+  background: #c8a34a;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #e4c86c;
+}

@@ -1,0 +1,63 @@
+<div class="p-10">
+  <header class="flex flex-wrap items-end justify-between mb-8 gap-4">
+    <div>
+      <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-2">
+        Recepción / Clientes
+      </p>
+      <h1 class="text-4xl font-black tracking-tight">Clientes</h1>
+    </div>
+
+    <div class="flex gap-3">
+      <input [(ngModel)]="busqueda"
+             placeholder="Buscar por nombre o cédula…"
+             class="bg-[#111] border border-yellow-500/20 px-4 py-2.5 text-sm
+                    focus:outline-none focus:border-yellow-400 w-72
+                    placeholder:text-neutral-600" />
+      <button class="bg-yellow-400 text-black px-5 py-2.5 text-xs font-bold
+                     tracking-[0.2em] uppercase hover:bg-yellow-300 transition">
+        + Nuevo
+      </button>
+    </div>
+  </header>
+
+  <!-- Tabla -->
+  <div class="bg-[#111] border border-yellow-500/20 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-[10px] tracking-[0.3em] uppercase text-yellow-400/80
+                   border-b border-yellow-500/20">
+          <th class="text-left px-6 py-4">Nombre</th>
+          <th class="text-left px-6 py-4">Cédula</th>
+          <th class="text-left px-6 py-4">Teléfono</th>
+          <th class="text-left px-6 py-4">Plan activo</th>
+          <th class="text-left px-6 py-4">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of lista(); track p.idPerfil) {
+          <tr class="border-b border-white/5 hover:bg-yellow-400/5 transition">
+            <td class="px-6 py-4 font-semibold">
+              {{ p.nombres }} {{ p.apellidos }}
+            </td>
+            <td class="px-6 py-4 text-neutral-400">{{ p.identificacion }}</td>
+            <td class="px-6 py-4 text-neutral-400">{{ p.telefono }}</td>
+            <td class="px-6 py-4 text-yellow-300">{{ planDe(p.idUsuario) }}</td>
+            <td class="px-6 py-4">
+              <span [class]="estadoDe(p.idUsuario) === 'Activo'
+                ? 'px-2 py-1 text-[10px] tracking-widest uppercase border border-yellow-400/60 text-yellow-300'
+                : 'px-2 py-1 text-[10px] tracking-widest uppercase border border-neutral-600 text-neutral-500'">
+                {{ estadoDe(p.idUsuario) }}
+              </span>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="px-6 py-10 text-center text-neutral-500">
+              No se encontraron clientes.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

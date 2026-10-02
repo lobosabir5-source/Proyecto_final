@@ -1,0 +1,67 @@
+<div class="p-10">
+  <header class="mb-8">
+    <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-2">
+      Finanzas / Pagos
+    </p>
+    <h1 class="text-4xl font-black tracking-tight">Pagos</h1>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+    <div class="bg-[#111] border border-yellow-500/20 p-6">
+      <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-2">
+        Total cobrado
+      </p>
+      <p class="text-4xl font-black text-yellow-400">
+        Bs{{ totalCobrado() }}
+        <span class="text-xs text-neutral-500 font-normal">Bs</span>
+      </p>
+    </div>
+    <div class="bg-[#111] border border-yellow-500/20 p-6">
+      <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-2">
+        Pendiente
+      </p>
+      <p class="text-4xl font-black text-neutral-300">
+        Bs{{ totalPendiente() }}
+        <span class="text-xs text-neutral-500 font-normal">Bs</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="bg-[#111] border border-yellow-500/20 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-[10px] tracking-[0.3em] uppercase text-yellow-400/80
+                   border-b border-yellow-500/20">
+          <th class="text-left px-6 py-4">#</th>
+          <th class="text-left px-6 py-4">Cliente</th>
+          <th class="text-left px-6 py-4">Método</th>
+          <th class="text-left px-6 py-4">Fecha</th>
+          <th class="text-right px-6 py-4">Monto</th>
+          <th class="text-right px-6 py-4">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of pagos(); track p.idPago) {
+          <tr class="border-b border-white/5 hover:bg-yellow-400/5 transition">
+            <td class="px-6 py-4 text-neutral-500">#{{ p.idPago }}</td>
+            <td class="px-6 py-4 font-semibold">
+              {{ nombreCliente(p.idSuscripcion) }}
+            </td>
+            <td class="px-6 py-4 text-neutral-400">{{ metodo(p.idMetodoPago) }}</td>
+            <td class="px-6 py-4 text-neutral-400">{{ fecha(p.fechaPago) }}</td>
+            <td class="px-6 py-4 text-right text-yellow-300 font-semibold">
+              Bs{{ p.monto }}
+            </td>
+            <td class="px-6 py-4 text-right">
+              <span [class]="p.estado === 1
+                ? 'px-2 py-1 text-[10px] tracking-widest uppercase border border-yellow-400/60 text-yellow-300'
+                : 'px-2 py-1 text-[10px] tracking-widest uppercase border border-neutral-600 text-neutral-500'">
+                {{ p.estado === 1 ? 'Pagado' : 'Pendiente' }}
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

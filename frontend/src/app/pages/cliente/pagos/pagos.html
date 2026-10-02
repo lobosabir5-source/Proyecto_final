@@ -1,0 +1,48 @@
+<div class="p-10">
+  <header class="mb-8">
+    <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-2">
+      Pagos / Historial
+    </p>
+    <h1 class="text-4xl font-black tracking-tight">Mis Pagos</h1>
+  </header>
+
+  <div class="bg-[#111] border border-yellow-500/20 p-6 mb-8 w-full md:w-80">
+    <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-2">Total pagado</p>
+    <p class="text-4xl font-black text-yellow-400">
+      Bs {{ total() }}
+      <span class="text-xs text-neutral-500 font-normal">BOB</span>
+    </p>
+  </div>
+
+  <div class="bg-[#111] border border-yellow-500/20 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-[10px] tracking-[0.3em] uppercase text-yellow-400/80
+                   border-b border-yellow-500/20">
+          <th class="text-left px-6 py-4">Fecha</th>
+          <th class="text-left px-6 py-4">Método</th>
+          <th class="text-right px-6 py-4">Monto</th>
+          <th class="text-right px-6 py-4">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of lista(); track p.idPago) {
+          <tr class="border-b border-white/5 hover:bg-yellow-400/5 transition">
+            <td class="px-6 py-4 font-semibold">{{ fecha(p.fechaPago) }}</td>
+            <td class="px-6 py-4 text-neutral-400">{{ srv.metodoPago(p.idMetodoPago) }}</td>
+            <td class="px-6 py-4 text-right text-yellow-300 font-semibold">
+              Bs {{ p.monto }}
+            </td>
+            <td class="px-6 py-4 text-right">
+              <span [class]="p.estado === 1
+                ? 'px-2 py-1 text-[10px] tracking-widest uppercase border border-yellow-400/60 text-yellow-300'
+                : 'px-2 py-1 text-[10px] tracking-widest uppercase border border-neutral-600 text-neutral-500'">
+                {{ p.estado === 1 ? 'Pagado' : 'Pendiente' }}
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

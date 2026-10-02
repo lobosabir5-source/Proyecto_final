@@ -1,0 +1,26 @@
+<div class="p-10">
+  <header class="mb-8">
+    <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-2">
+      Catálogo / Planes
+    </p>
+    <h1 class="text-4xl font-black tracking-tight">Planes</h1>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+    @for (plan of srv.planes(); track plan.idPlan) {
+      <div class="bg-[#111] border border-yellow-500/20 p-7 relative
+                  hover:border-yellow-400 transition">
+        <div class="absolute top-0 right-0 w-8 h-8 border-t border-r border-yellow-400"></div>
+        <p class="text-[10px] tracking-[0.3em] text-yellow-400/80 uppercase mb-3">
+          {{ plan.duracionDias }} días
+        </p>
+        <h3 class="text-2xl font-black mb-2">{{ plan.nombre }}</h3>
+        <p class="text-sm text-neutral-500 mb-6 min-h-[40px]">{{ plan.descripcion }}</p>
+        <p class="text-4xl font-black text-yellow-400">
+          Bs{{ plan.precio }}
+          <span class="text-xs text-neutral-500 font-normal">Bs</span>
+        </p>
+      </div>
+    }
+  </div>
+</div>
