@@ -73,6 +73,7 @@ public class Membresia {
         return plan;
     }
 
+    public Usuario getCreadaPor() { return creadaPor; }
     public LocalDate getFechaInicio() {
         return fechaInicio;
     }

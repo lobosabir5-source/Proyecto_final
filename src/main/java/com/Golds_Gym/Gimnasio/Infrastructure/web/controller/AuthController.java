@@ -3,6 +3,7 @@ package com.Golds_Gym.Gimnasio.Infrastructure.web.controller;
 import com.Golds_Gym.Gimnasio.application.dto.AuthResponse;
 import com.Golds_Gym.Gimnasio.application.dto.LoginRequest;
 import com.Golds_Gym.Gimnasio.application.dto.RegistroRequest;
+import com.Golds_Gym.Gimnasio.application.dto.RegistroRespuesta;
 import com.Golds_Gym.Gimnasio.application.service.AuthService;
 import com.Golds_Gym.Gimnasio.domain.model.Usuario;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> registrar(@Valid @RequestBody RegistroRequest request) {
+    public ResponseEntity<RegistroRespuesta> registrar(@Valid @RequestBody RegistroRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.registrarCliente(request));
     }
 

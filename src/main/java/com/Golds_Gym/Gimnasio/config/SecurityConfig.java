@@ -33,7 +33,7 @@ public class SecurityConfig {
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()// Cualquiera (sin sesión) puede LEER el catálogo público y las imágenes. Solo GET: nadie puede escribir..requestMatchers(HttpMethod.GET, "/api/public/**", "/uploads/**").permitAll()
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     .requestMatchers("/api/recepcion/**").hasAnyRole("ADMIN", "RECEPCIONISTA")
                     .requestMatchers("/api/cliente/**").hasAnyRole("ADMIN", "CLIENTE")

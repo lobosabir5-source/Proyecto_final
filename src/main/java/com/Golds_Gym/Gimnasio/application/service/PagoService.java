@@ -32,25 +32,10 @@ public class PagoService {
 
     @Transactional
     public PagoRespuesta registrar(RegistrarPagoRequest request, Usuario registradoPor) {
-        Membresia membresia = membresiaRepository.findByIdForUpdate(request.membresiaId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Membresía no encontrada"));
-        actualizarVencimiento(membresia);
-        if (membresia.getEstado() == EstadoMembresia.VENCIDA
-                || membresia.getEstado() == EstadoMembresia.CANCELADA) {
-            throw new IllegalArgumentException("No se pueden registrar pagos para una membresía vencida o cancelada");
-        }
+        return null;
+    }
 
-        BigDecimal pagado = pagoRepository.totalPorMembresia(membresia.getId());
-        BigDecimal saldo = membresia.getPrecioTotal().subtract(pagado);
-        if (request.monto().compareTo(saldo) > 0) {
-            throw new IllegalArgumentException("El monto supera el saldo pendiente");
-        }
-
-        Pago pago = pagoRepository.save(new Pago(membresia, registradoPor, request.monto(), request.metodo()));
-        if (pagado.add(request.monto()).compareTo(membresia.getPrecioTotal()) >= 0) {
-            membresia.setEstado(EstadoMembresia.ACTIVA);
-        }
-        return convertir(pago);
+    private void activarCuentaDeAutoRwgistro(Membresia membresia) {
     }
 
     @Transactional(readOnly = true)
@@ -66,6 +51,13 @@ public class PagoService {
     public Page<PagoRespuesta> listarDeUsuario(Long usuarioId, Pageable pageable) {
         return pagoRepository.findAllByMembresia_Cliente_Usuario_IdOrderByFechaPagoDesc(usuarioId, pageable)
                 .map(this::convertir);
+    }
+
+    private void activarCuentaDeAutoRegistro(Membresia membresia) {
+        Usuario cuenta = membresia.getCliente().getUsuario();
+        if (!cuenta.isActivo() && membresia.getCreadaPor().getId().equals(cuenta.getId())) {
+            cuenta.setActivo(true);
+        }
     }
 
     private void actualizarVencimiento(Membresia membresia) {

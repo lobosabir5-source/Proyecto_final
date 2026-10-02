@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import com.Golds_Gym.Gimnasio.application.service.CuentaInactivaException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
@@ -46,5 +48,15 @@ public class ApiExceptionHandler {
     }
 
     public record ApiError(Instant timestamp, int status, String message, Map<String, String> fields) {
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiError> handleArchivoGrande() {
+        return response(HttpStatus.BAD_REQUEST, "La imagen no puede superar 5 MB");
+    }
+
+    @ExceptionHandler(CuentaInactivaException.class)
+    public ResponseEntity<ApiError> handleCuentaInactiva(CuentaInactivaException exception) {
+        return response(HttpStatus.FORBIDDEN, exception.getMessage());
     }
 }

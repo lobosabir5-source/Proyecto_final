@@ -33,4 +33,6 @@ public interface MembresiaRepository extends JpaRepository<Membresia, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select membresia from Membresia membresia where membresia.id = :id")
     Optional<Membresia> findByIdForUpdate(@Param("id") Long id);
+
+    boolean existsByCliente_Usuario_IdAndCreadaPor_IdAndEstado(Long usuarioId, Long creadaPorId, EstadoMembresia estado);
 }

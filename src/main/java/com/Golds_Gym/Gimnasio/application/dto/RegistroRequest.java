@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import jakarta.validation.constraints.Positive;
 
 public class RegistroRequest {
 
@@ -30,6 +31,9 @@ public class RegistroRequest {
 	@NotNull(message = "La fecha de nacimiento es obligatoria")
 	@Past(message = "La fecha de nacimiento debe ser anterior a hoy")
 	private LocalDate fechaNacimiento;
+	@NotNull(message = "Elige un plan de membresía")
+	@Positive(message = "El plan no es válido")
+	private Long planId;
 
 	public RegistroRequest() {
 	}
@@ -46,4 +50,6 @@ public class RegistroRequest {
 	public void setTelefono(String telefono) { this.telefono = telefono == null ? null : telefono.trim(); }
 	public LocalDate getFechaNacimiento() { return fechaNacimiento; }
 	public void setFechaNacimiento(LocalDate fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
+	public Long getPlanId() { return planId; }
+	public void setPlanId(Long planId) { this.planId = planId; }
 }
