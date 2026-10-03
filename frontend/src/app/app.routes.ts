@@ -2,6 +2,12 @@ import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
+  // ---------- LANDING PAGE (pública) ----------
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () => import('./pages/home/home').then(m => m.Home)
+  },
   {
     path: 'login',
     loadComponent: () => import('./pages/login/login').then(m => m.Login)
@@ -39,6 +45,5 @@ export const routes: Routes = [
       { path: 'perfil',       loadComponent: () => import('./pages/cliente/perfil/perfil').then(m => m.PerfilComponent) },
     ]
   },
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: '' }
 ];
