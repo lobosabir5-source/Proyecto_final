@@ -1,17 +1,21 @@
 package com.Golds_Gym.Gimnasio.config;
 
-import com.Golds_Gym.Gimnasio.application.service.AuthService;
-import com.Golds_Gym.Gimnasio.domain.model.Plan;
-import com.Golds_Gym.Gimnasio.domain.model.Rol;
-import com.Golds_Gym.Gimnasio.domain.repository.PlanRepository;
-import com.Golds_Gym.Gimnasio.domain.repository.UsuarioRepository;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
+import com.Golds_Gym.Gimnasio.application.service.AuthService;
+import com.Golds_Gym.Gimnasio.domain.model.Cliente;
+import com.Golds_Gym.Gimnasio.domain.model.Plan;
+import com.Golds_Gym.Gimnasio.domain.model.Rol;
+import com.Golds_Gym.Gimnasio.domain.repository.ClienteRepository;
+import com.Golds_Gym.Gimnasio.domain.repository.PlanRepository;
+import com.Golds_Gym.Gimnasio.domain.repository.UsuarioRepository;
 
 @Configuration
 public class Dataseeder {
@@ -23,7 +27,28 @@ public class Dataseeder {
         return args -> {
             crearSiNoExiste(authService, usuarioRepository, "admin", "Admin1234", Rol.ADMIN);
             crearSiNoExiste(authService, usuarioRepository, "recepcionista", "Recep1234", Rol.RECEPCIONISTA);
-            crearSiNoExiste(authService, usuarioRepository, "cliente", "Cliente1234", Rol.CLIENTE);
+        };
+    }
+
+    @Bean
+    public CommandLineRunner sembrarCliente(AuthService authService,
+                                            UsuarioRepository usuarioRepository,
+                                            ClienteRepository clienteRepository) {
+        return args -> {
+            var usuario = usuarioRepository.findByUsuario("cliente")
+                    .orElseGet(() -> authService.crearCuentaCliente("cliente", "Cliente1234"));
+            // Si el usuario ya existía pero sin perfil de cliente (no cuenta en el dashboard), se completa
+            if (clienteRepository.findByUsuarioId(usuario.getId()).isPresent()) {
+                log.info("El cliente de prueba ya tiene perfil, no se crea de nuevo");
+                return;
+            }
+            clienteRepository.save(new Cliente(
+                    usuario,
+                    "Cliente de Prueba",
+                    "cliente@prueba.com",
+                    "70000000",
+                    LocalDate.of(2000, 1, 1)));
+            log.info("Cliente de prueba creado");
         };
     }
 

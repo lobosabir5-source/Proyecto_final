@@ -1,39 +1,58 @@
-import { Component, computed, inject } from '@angular/core';
-import { RecepcionService } from '../../../services/recepcion.service';
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { forkJoin } from 'rxjs';
+import { API_URL } from '../../../config/api.config';
+
+interface Pagina<T> { content: T[]; }
+interface MembresiaApi { id: number; saldo: number; }
+interface PagoApi {
+  id: number;
+  membresiaId: number;
+  cliente: string;
+  monto: number;
+  metodo: 'EFECTIVO' | 'TARJETA' | 'TRANSFERENCIA';
+  fechaPago: string;
+  registradoPor: string;
+}
 
 @Component({
   selector: 'app-pagos',
   standalone: true,
   templateUrl: './pagos.html'
 })
-export class PagosComponent {
-  private srv = inject(RecepcionService);
+export class PagosComponent implements OnInit {
+  private http = inject(HttpClient);
+
+  private lista = signal<PagoApi[]>([]);
+  private saldos = signal<number[]>([]);
 
   pagos = computed(() =>
-    [...this.srv.pagos()].sort((a, b) => b.fechaPago.localeCompare(a.fechaPago))
+    [...this.lista()].sort((a, b) => b.fechaPago.localeCompare(a.fechaPago))
   );
-
   totalCobrado = computed(() =>
-    this.srv.pagos().filter(p => p.estado === 1)
-      .reduce((a, p) => a + p.monto, 0)
+    this.lista().reduce((a, p) => a + Number(p.monto), 0)
   );
   totalPendiente = computed(() =>
-    this.srv.pagos().filter(p => p.estado === 0)
-      .reduce((a, p) => a + p.monto, 0)
+    this.saldos().reduce((a, s) => a + Number(s), 0)
   );
 
-  nombreCliente(idSuscripcion: number) {
-    const s = this.srv.suscripciones().find(x => x.idSuscripcion === idSuscripcion);
-    if (!s) return '—';
-    const p = this.srv.getPerfil(s.idUsuario);
-    return p ? `${p.nombres} ${p.apellidos}` : '—';
+  ngOnInit(): void {
+    this.http.get<Pagina<MembresiaApi>>(`${API_URL}/recepcion/membresias?size=1000`)
+      .subscribe(p => {
+        const membresias = p.content;
+        this.saldos.set(membresias.map(m => m.saldo));
+        if (!membresias.length) return;
+        forkJoin(membresias.map(m =>
+          this.http.get<PagoApi[]>(`${API_URL}/recepcion/pagos/membresia/${m.id}`)
+        )).subscribe(r => this.lista.set(r.flat()));
+      });
   }
 
-  metodo(id: number) {
-    return { 1: 'Efectivo', 2: 'Tarjeta', 3: 'Transferencia' }[id] ?? '—';
+  metodo(m: string) {
+    return { EFECTIVO: 'Efectivo', TARJETA: 'Tarjeta', TRANSFERENCIA: 'Transferencia' }[m] ?? '—';
   }
 
   fecha(iso: string) {
-    return new Date(iso).toLocaleDateString('es-MX');
+    return new Date(iso).toLocaleDateString('es-BO');
   }
 }

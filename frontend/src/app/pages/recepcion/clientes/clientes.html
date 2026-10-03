@@ -1,59 +1,58 @@
 <div class="p-10">
   <header class="flex flex-wrap items-end justify-between mb-8 gap-4">
     <div>
-      <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-2">
-        Recepción / Clientes
-      </p>
+      <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-2">Recepción / Clientes</p>
       <h1 class="text-4xl font-black tracking-tight">Clientes</h1>
     </div>
 
     <div class="flex gap-3">
-      <input [(ngModel)]="busqueda"
-             placeholder="Buscar por nombre o cédula…"
-             class="bg-[#111] border border-yellow-500/20 px-4 py-2.5 text-sm
-                    focus:outline-none focus:border-yellow-400 w-72
-                    placeholder:text-neutral-600" />
-      <button class="bg-yellow-400 text-black px-5 py-2.5 text-xs font-bold
-                     tracking-[0.2em] uppercase hover:bg-yellow-300 transition">
+      <input [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)"
+             placeholder="Buscar por nombre, usuario o correo…"
+             class="bg-[#111] border border-yellow-500/20 px-4 py-2.5 text-sm focus:outline-none
+                    focus:border-yellow-400 w-72 placeholder:text-neutral-600" />
+      <button (click)="abrirForm()"
+              class="bg-yellow-400 text-black px-5 py-2.5 text-xs font-bold tracking-[0.2em]
+                     uppercase hover:bg-yellow-300 transition">
         + Nuevo
       </button>
     </div>
   </header>
 
+  @if (errorLista()) {
+    <div class="mb-4 p-4 bg-red-950/40 border-l-4 border-red-500 text-red-300 text-sm">{{ errorLista() }}</div>
+  }
+
   <!-- Tabla -->
   <div class="bg-[#111] border border-yellow-500/20 overflow-hidden">
     <table class="w-full text-sm">
       <thead>
-        <tr class="text-[10px] tracking-[0.3em] uppercase text-yellow-400/80
-                   border-b border-yellow-500/20">
+        <tr class="text-[10px] tracking-[0.3em] uppercase text-yellow-400/80 border-b border-yellow-500/20">
           <th class="text-left px-6 py-4">Nombre</th>
-          <th class="text-left px-6 py-4">Cédula</th>
+          <th class="text-left px-6 py-4">Usuario</th>
+          <th class="text-left px-6 py-4">Correo</th>
           <th class="text-left px-6 py-4">Teléfono</th>
-          <th class="text-left px-6 py-4">Plan activo</th>
           <th class="text-left px-6 py-4">Estado</th>
         </tr>
       </thead>
       <tbody>
-        @for (p of lista(); track p.idPerfil) {
+        @for (c of lista(); track c.id) {
           <tr class="border-b border-white/5 hover:bg-yellow-400/5 transition">
-            <td class="px-6 py-4 font-semibold">
-              {{ p.nombres }} {{ p.apellidos }}
-            </td>
-            <td class="px-6 py-4 text-neutral-400">{{ p.identificacion }}</td>
-            <td class="px-6 py-4 text-neutral-400">{{ p.telefono }}</td>
-            <td class="px-6 py-4 text-yellow-300">{{ planDe(p.idUsuario) }}</td>
+            <td class="px-6 py-4 font-semibold">{{ c.nombre }}</td>
+            <td class="px-6 py-4 text-yellow-300">{{ c.usuario }}</td>
+            <td class="px-6 py-4 text-neutral-400">{{ c.correo }}</td>
+            <td class="px-6 py-4 text-neutral-400">{{ c.telefono }}</td>
             <td class="px-6 py-4">
-              <span [class]="estadoDe(p.idUsuario) === 'Activo'
+              <span [class]="c.activo
                 ? 'px-2 py-1 text-[10px] tracking-widest uppercase border border-yellow-400/60 text-yellow-300'
                 : 'px-2 py-1 text-[10px] tracking-widest uppercase border border-neutral-600 text-neutral-500'">
-                {{ estadoDe(p.idUsuario) }}
+                {{ c.activo ? 'Activo' : 'Inactivo' }}
               </span>
             </td>
           </tr>
         } @empty {
           <tr>
             <td colspan="5" class="px-6 py-10 text-center text-neutral-500">
-              No se encontraron clientes.
+              {{ cargando() ? 'Cargando…' : 'No se encontraron clientes.' }}
             </td>
           </tr>
         }
@@ -61,3 +60,101 @@
     </table>
   </div>
 </div>
+
+<!-- ============ MODAL: NUEVO CLIENTE ============ -->
+@if (mostrarForm()) {
+  <div class="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+    <div class="bg-[#111] border border-yellow-500/30 w-full max-w-xl p-8 max-h-[90vh] overflow-y-auto">
+
+      <div class="flex items-start justify-between mb-6">
+        <div>
+          <p class="text-[11px] tracking-[0.35em] text-yellow-400 uppercase mb-1">Recepción</p>
+          <h2 class="text-2xl font-black">Nuevo cliente</h2>
+        </div>
+        <button (click)="cerrarForm()" class="text-neutral-500 hover:text-yellow-400 text-xl leading-none">✕</button>
+      </div>
+
+      <form (ngSubmit)="guardar()" #f="ngForm" class="space-y-5">
+
+        <!-- Credenciales de acceso -->
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[11px] tracking-[0.2em] text-neutral-400 mb-2">USUARIO</label>
+            <input name="usuario" [(ngModel)]="form.usuario" required autocomplete="off"
+                   placeholder="Usuario para iniciar sesión"
+                   class="w-full bg-neutral-900 border border-neutral-800 focus:border-yellow-400 px-4 py-3 outline-none" />
+            @if (campos['usuario']) { <p class="text-red-400 text-xs mt-1">{{ campos['usuario'] }}</p> }
+          </div>
+          <div>
+            <label class="block text-[11px] tracking-[0.2em] text-neutral-400 mb-2">NOMBRE COMPLETO</label>
+            <input name="nombre" [(ngModel)]="form.nombre" required
+                   class="w-full bg-neutral-900 border border-neutral-800 focus:border-yellow-400 px-4 py-3 outline-none" />
+            @if (campos['nombre']) { <p class="text-red-400 text-xs mt-1">{{ campos['nombre'] }}</p> }
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[11px] tracking-[0.2em] text-neutral-400 mb-2">CONTRASEÑA</label>
+            <div class="relative">
+              <input name="password" [type]="mostrarPassword ? 'text' : 'password'"
+                     [(ngModel)]="form.password" required minlength="8" autocomplete="new-password"
+                     placeholder="Mínimo 8 caracteres"
+                     class="w-full bg-neutral-900 border border-neutral-800 focus:border-yellow-400 px-4 py-3 pr-16 outline-none" />
+              <button type="button" (click)="mostrarPassword = !mostrarPassword"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold tracking-wider text-neutral-500 hover:text-yellow-400">
+                {{ mostrarPassword ? 'OCULTAR' : 'VER' }}
+              </button>
+            </div>
+            @if (campos['password']) { <p class="text-red-400 text-xs mt-1">{{ campos['password'] }}</p> }
+          </div>
+          <div>
+            <label class="block text-[11px] tracking-[0.2em] text-neutral-400 mb-2">REPETIR CONTRASEÑA</label>
+            <input name="confirmar" [type]="mostrarPassword ? 'text' : 'password'"
+                   [(ngModel)]="form.confirmar" required autocomplete="new-password"
+                   class="w-full bg-neutral-900 border border-neutral-800 focus:border-yellow-400 px-4 py-3 outline-none" />
+            @if (campos['confirmar']) { <p class="text-red-400 text-xs mt-1">{{ campos['confirmar'] }}</p> }
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[11px] tracking-[0.2em] text-neutral-400 mb-2">CORREO</label>
+            <input name="correo" type="email" [(ngModel)]="form.correo" required
+                   class="w-full bg-neutral-900 border border-neutral-800 focus:border-yellow-400 px-4 py-3 outline-none" />
+            @if (campos['correo']) { <p class="text-red-400 text-xs mt-1">{{ campos['correo'] }}</p> }
+          </div>
+          <div>
+            <label class="block text-[11px] tracking-[0.2em] text-neutral-400 mb-2">TELÉFONO</label>
+            <input name="telefono" type="tel" [(ngModel)]="form.telefono" required placeholder="+591 70000000"
+                   class="w-full bg-neutral-900 border border-neutral-800 focus:border-yellow-400 px-4 py-3 outline-none" />
+            @if (campos['telefono']) { <p class="text-red-400 text-xs mt-1">{{ campos['telefono'] }}</p> }
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] tracking-[0.2em] text-neutral-400 mb-2">FECHA DE NACIMIENTO</label>
+          <input name="fechaNacimiento" type="date" [max]="hoy" [(ngModel)]="form.fechaNacimiento" required
+                 class="w-full bg-neutral-900 border border-neutral-800 focus:border-yellow-400 px-4 py-3 outline-none" />
+          @if (campos['fechaNacimiento']) { <p class="text-red-400 text-xs mt-1">{{ campos['fechaNacimiento'] }}</p> }
+        </div>
+
+        @if (error) {
+          <div class="p-4 bg-red-950/40 border-l-4 border-red-500 text-red-300 text-sm" role="alert">{{ error }}</div>
+        }
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" (click)="cerrarForm()"
+                  class="flex-1 border border-neutral-700 text-neutral-300 py-3 text-xs font-bold tracking-[0.2em] uppercase hover:border-yellow-400">
+            Cancelar
+          </button>
+          <button type="submit" [disabled]="guardando || f.invalid"
+                  class="flex-1 bg-yellow-400 text-black py-3 text-xs font-bold tracking-[0.2em] uppercase
+                         hover:bg-yellow-300 disabled:bg-neutral-800 disabled:text-neutral-600 disabled:cursor-not-allowed">
+            {{ guardando ? 'Guardando…' : 'Crear cliente' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

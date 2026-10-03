@@ -1,12 +1,23 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { ConfirmDialog } from '../../../components/confirm-dialog/confirm-dialog';
 import { Icon } from '../../../components/icon/icon';
-import { CrearUsuario, Pagina, UsuarioAdmin } from '../../../models/admin.models';
+import { Pagina, UsuarioAdmin } from '../../../models/admin.models';
 import { AuthService, Rol } from '../../../services/auth.service';
 import { UsuarioService } from '../../../services/usuario.service';
 import { leerErrorApi } from '../../../utils/api-error';
+
+interface FormularioUsuario {
+  usuario: string;
+  password: string;
+  rol: Rol;
+  nombre: string;
+  correo: string;
+  telefono: string;
+  fechaNacimiento: string;
+}
 
 @Component({
   selector: 'app-admin-usuarios',
@@ -20,20 +31,24 @@ export class AdminUsuarios implements OnInit {
 
   private readonly tamanoPagina = 10;
 
-  /** Los clientes se registran solos; el backend no permite crearlos desde aquí. */
-  readonly rolesCreables: Rol[] = ['ADMIN', 'RECEPCIONISTA'];
+  /** El administrador puede crear personal y clientes. */
+  readonly rolesCreables: Rol[] = ['ADMIN', 'RECEPCIONISTA', 'CLIENTE'];
+
+  /** Fecha máxima de nacimiento: hoy. */
+  readonly hoy = new Date().toISOString().split('T')[0];
 
   readonly pagina = signal<Pagina<UsuarioAdmin> | null>(null);
   readonly cargando = signal(false);
   readonly error = signal('');
   readonly exito = signal('');
 
-  // Modal de creación
+  // Modal crear / editar (si "editando" tiene valor, es edición)
   readonly modalAbierto = signal(false);
+  readonly editando = signal<UsuarioAdmin | null>(null);
   readonly guardando = signal(false);
   readonly errorFormulario = signal('');
   readonly camposError = signal<Record<string, string>>({});
-  formulario: CrearUsuario = this.formularioVacio();
+  formulario: FormularioUsuario = this.formularioVacio();
 
   // Confirmación de cambio de estado
   readonly usuarioPendiente = signal<UsuarioAdmin | null>(null);
@@ -73,9 +88,18 @@ export class AdminUsuarios implements OnInit {
     }
   }
 
-  // ---------- Crear ----------
+  // ---------- Crear / Editar ----------
   abrirModal(): void {
+    this.editando.set(null);
     this.formulario = this.formularioVacio();
+    this.errorFormulario.set('');
+    this.camposError.set({});
+    this.modalAbierto.set(true);
+  }
+
+  abrirEdicion(usuario: UsuarioAdmin): void {
+    this.editando.set(usuario);
+    this.formulario = { ...this.formularioVacio(), usuario: usuario.usuario, rol: usuario.rol };
     this.errorFormulario.set('');
     this.camposError.set({});
     this.modalAbierto.set(true);
@@ -90,11 +114,42 @@ export class AdminUsuarios implements OnInit {
     this.errorFormulario.set('');
     this.camposError.set({});
 
-    this.usuarioService.crear(this.formulario).subscribe({
+    const editando = this.editando();
+    const datos = this.formulario;
+    let peticion: Observable<unknown>;
+
+    if (editando) {
+      peticion = this.usuarioService.actualizar(editando.id, {
+        usuario: datos.usuario,
+        password: datos.password || null,
+        rol: datos.rol
+      });
+    } else if (datos.rol === 'CLIENTE') {
+      peticion = this.usuarioService.crearCliente({
+        usuario: datos.usuario,
+        password: datos.password,
+        nombre: datos.nombre,
+        correo: datos.correo,
+        telefono: datos.telefono,
+        fechaNacimiento: datos.fechaNacimiento
+      });
+    } else {
+      peticion = this.usuarioService.crear({
+        usuario: datos.usuario,
+        password: datos.password,
+        rol: datos.rol
+      });
+    }
+
+    peticion.subscribe({
       next: () => {
         this.guardando.set(false);
         this.modalAbierto.set(false);
-        this.mostrarExito(`Usuario "${this.formulario.usuario}" creado correctamente.`);
+        this.mostrarExito(
+          editando
+            ? `Usuario "${datos.usuario}" actualizado.`
+            : `Usuario "${datos.usuario}" creado correctamente.`
+        );
         this.cargar(this.pagina()?.number ?? 0);
       },
       error: (error: HttpErrorResponse) => {
@@ -106,9 +161,23 @@ export class AdminUsuarios implements OnInit {
     });
   }
 
+  esCliente(): boolean {
+    return !this.editando() && this.formulario.rol === 'CLIENTE';
+  }
+
+  /** Editando mi propia cuenta: no se puede cambiar rol ni nombre de usuario. */
+  editandoCuentaPropia(): boolean {
+    const usuario = this.editando();
+    return !!usuario && this.esCuentaPropia(usuario);
+  }
+
   // ---------- Activar / desactivar ----------
   esCuentaPropia(usuario: UsuarioAdmin): boolean {
     return usuario.usuario === this.authService.user()?.usuario;
+  }
+
+  esPersonal(usuario: UsuarioAdmin): boolean {
+    return usuario.rol !== 'CLIENTE';
   }
 
   pedirCambioEstado(usuario: UsuarioAdmin): void {
@@ -173,7 +242,10 @@ export class AdminUsuarios implements OnInit {
     setTimeout(() => this.exito.set(''), 4000);
   }
 
-  private formularioVacio(): CrearUsuario {
-    return { usuario: '', password: '', rol: 'RECEPCIONISTA' };
+  private formularioVacio(): FormularioUsuario {
+    return {
+      usuario: '', password: '', rol: 'RECEPCIONISTA',
+      nombre: '', correo: '', telefono: '', fechaNacimiento: ''
+    };
   }
 }

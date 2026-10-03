@@ -1,6 +1,13 @@
-import { Component, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { RecepcionService } from '../../../services/recepcion.service';
+import { forkJoin } from 'rxjs';
+import { API_URL } from '../../../config/api.config';
+
+interface Pagina<T> { content: T[]; }
+interface ClienteApi { id: number; activo: boolean; }
+interface AsistenciaApi { id: number; }
+interface MembresiaApi { id: number; pagado: number; }
 
 @Component({
   selector: 'app-inicio',
@@ -8,16 +15,29 @@ import { RecepcionService } from '../../../services/recepcion.service';
   imports: [RouterLink],
   templateUrl: './inicio.html'
 })
-export class InicioComponent {
-  private srv = inject(RecepcionService);
+export class InicioComponent implements OnInit {
+  private http = inject(HttpClient);
 
-  totalClientes = computed(() => this.srv.usuarios().length);
-  activos = computed(() => this.srv.usuarios().filter(u => u.estado === 1).length);
-  presentes = computed(() =>
-    this.srv.asistencias().filter(a => !a.fechaSalida).length
-  );
+  private clientes = signal<ClienteApi[]>([]);
+  private asistenciasHoy = signal<AsistenciaApi[]>([]);
+  private membresias = signal<MembresiaApi[]>([]);
+
+  totalClientes = computed(() => this.clientes().length);
+  activos = computed(() => this.clientes().filter(c => c.activo).length);
+  presentes = computed(() => this.asistenciasHoy().length);
   ingresosMes = computed(() =>
-    this.srv.pagos().filter(p => p.estado === 1)
-      .reduce((acc, p) => acc + p.monto, 0)
+    this.membresias().reduce((acc, m) => acc + Number(m.pagado ?? 0), 0)
   );
+
+  ngOnInit(): void {
+    forkJoin({
+      clientes: this.http.get<Pagina<ClienteApi>>(`${API_URL}/recepcion/clientes?size=1000`),
+      asistencias: this.http.get<Pagina<AsistenciaApi>>(`${API_URL}/recepcion/asistencias?size=1000`),
+      membresias: this.http.get<Pagina<MembresiaApi>>(`${API_URL}/recepcion/membresias?size=1000`)
+    }).subscribe(r => {
+      this.clientes.set(r.clientes.content);
+      this.asistenciasHoy.set(r.asistencias.content);
+      this.membresias.set(r.membresias.content);
+    });
+  }
 }

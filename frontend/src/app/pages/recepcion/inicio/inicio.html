@@ -17,8 +17,8 @@
     @for (kpi of [
       { label: 'Clientes totales', valor: totalClientes(), sufijo: '' },
       { label: 'Activos',          valor: activos(),       sufijo: '' },
-      { label: 'En gimnasio',      valor: presentes(),     sufijo: '' },
-      { label: 'Ingresos mes',     valor: ingresosMes(),   sufijo: 'MXN' }
+      { label: 'Asistencias hoy',      valor: presentes(),     sufijo: '' },
+      { label: 'Total cobrado',    valor: ingresosMes(),   sufijo: 'Bs' }
     ]; track kpi.label) {
       <div class="bg-[#111] border border-yellow-500/20 p-6 relative">
         <div class="absolute top-0 right-0 w-6 h-6 border-t border-r border-yellow-400"></div>

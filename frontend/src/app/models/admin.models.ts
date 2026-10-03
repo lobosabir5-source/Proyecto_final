@@ -22,6 +22,20 @@ export interface CrearUsuario {
   password: string;
   rol: Rol;
 }
+export interface ActualizarUsuario {
+  usuario: string;
+  password: string | null;
+  rol: Rol;
+}
+
+export interface CrearCliente {
+  usuario: string;
+  password: string;
+  nombre: string;
+  correo: string;
+  telefono: string;
+  fechaNacimiento: string;
+}
 
 export interface Plan {
   id: number;

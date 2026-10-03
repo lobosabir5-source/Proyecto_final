@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_URL } from '../config/api.config';
-import { CrearUsuario, Pagina, UsuarioAdmin } from '../models/admin.models';
+import { ActualizarUsuario, CrearCliente, CrearUsuario, Pagina, UsuarioAdmin } from '../models/admin.models';
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
@@ -16,6 +16,15 @@ export class UsuarioService {
 
   crear(datos: CrearUsuario): Observable<unknown> {
     return this.http.post(this.url, datos);
+  }
+
+  /** Los clientes se crean con sus datos personales (mismo endpoint que usa recepción). */
+  crearCliente(datos: CrearCliente): Observable<unknown> {
+    return this.http.post(`${API_URL}/recepcion/clientes`, datos);
+  }
+
+  actualizar(id: number, datos: ActualizarUsuario): Observable<UsuarioAdmin> {
+    return this.http.put<UsuarioAdmin>(`${this.url}/${id}`, datos);
   }
 
   cambiarEstado(id: number, activo: boolean): Observable<UsuarioAdmin> {

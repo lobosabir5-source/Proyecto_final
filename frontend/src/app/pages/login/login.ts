@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { rutaInicio } from '../../guards/auth.guard';
 
 @Component({
   selector: 'app-login',
@@ -39,19 +40,7 @@ export class Login {
         localStorage.setItem('rol', respuesta.rol);
 
         // Redirigimos según el rol
-        switch (respuesta.rol) {
-  case 'ADMIN':
-    this.router.navigate(['/recepcion/inicio']);
-    break;
-  case 'RECEPCIONISTA':
-    this.router.navigate(['/recepcion/inicio']);
-    break;
-  case 'CLIENTE':
-    this.router.navigate(['/cliente/inicio']);
-    break;
-  default:
-    this.router.navigate(['/login']);
-}
+        this.router.navigate([rutaInicio(respuesta.rol)]);
       },
       error: (error: HttpErrorResponse) => {
         this.loading = false;
