@@ -1,0 +1,40 @@
+@reference "tailwindcss";
+
+:host { @apply block; }
+
+.shell { @apply min-h-screen bg-slate-100 text-slate-700; }
+
+/* ---------- Sidebar ---------- */
+.sidebar { @apply fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col overflow-y-auto bg-slate-800 text-slate-300 transition-transform duration-200; }
+.sidebar--open { @apply translate-x-0; }
+
+.sidebar__brand { @apply flex items-center gap-3 bg-slate-900 px-5 py-4; }
+.sidebar__logo { @apply grid h-9 w-9 place-items-center rounded bg-yellow-400 font-black text-slate-900; }
+.sidebar__name { @apply font-semibold leading-none text-white; }
+.sidebar__tag { @apply mt-1 text-[10px] font-semibold uppercase tracking-widest text-yellow-400; }
+
+.sidebar__profile { @apply flex items-center gap-3 border-b border-slate-700 px-5 py-5; }
+.sidebar__avatar { @apply grid h-12 w-12 place-items-center rounded-full bg-slate-600 text-lg font-semibold text-white; }
+.sidebar__user { @apply text-sm font-medium text-white; }
+.sidebar__role { @apply text-xs text-slate-400; }
+
+.sidebar__label { @apply px-5 pb-2 pt-5 text-[11px] uppercase tracking-wider text-slate-500; }
+.sidebar__nav { @apply flex flex-col; }
+
+.nav-link { @apply flex items-center gap-3 border-l-4 border-transparent px-5 py-3 text-sm text-slate-300 transition-colors hover:bg-slate-700/60 hover:text-white; }
+.nav-link app-icon { @apply text-lg; }
+.nav-link--active { @apply border-cyan-400 bg-slate-900 text-white; }
+
+/* ---------- Contenido ---------- */
+.shell__overlay { @apply fixed inset-0 z-30 bg-black/40 lg:hidden; }
+
+.workspace { @apply min-h-screen transition-[padding] duration-200; }
+.workspace--shifted { @apply lg:pl-64; }
+.workspace__content { @apply p-4 sm:p-6; }
+
+/* ---------- Barra superior ---------- */
+.topbar { @apply sticky top-0 z-20 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4 shadow-sm; }
+.topbar__toggle { @apply grid h-9 w-9 cursor-pointer place-items-center rounded text-xl text-slate-500 hover:bg-slate-100; }
+.topbar__actions { @apply flex items-center gap-3; }
+.topbar__user { @apply hidden text-sm text-slate-500 sm:block; }
+.topbar__user strong { @apply font-semibold text-slate-700; }

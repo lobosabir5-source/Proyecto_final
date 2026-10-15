@@ -1,0 +1,51 @@
+<div class="p-10">
+  <header class="mb-8">
+    <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-2">
+      Mi cuenta / Suscripción
+    </p>
+    <h1 class="text-4xl font-black tracking-tight">Mi Suscripción</h1>
+  </header>
+
+  <div class="bg-[#111] border border-yellow-500/20 p-8 relative mb-6">
+    <div class="absolute top-0 right-0 w-10 h-10 border-t border-r border-yellow-400"></div>
+
+    <p class="text-[10px] tracking-[0.3em] text-yellow-400/80 uppercase mb-3">
+      Plan activo
+    </p>
+    <h2 class="text-3xl font-black mb-2">{{ srv.plan().nombre }}</h2>
+    <p class="text-neutral-400 mb-6">{{ srv.plan().descripcion }}</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div>
+        <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-1">Inicio</p>
+        <p class="text-lg font-bold">{{ fechaBonita(srv.suscripcion().fechaInicio) }}</p>
+      </div>
+      <div>
+        <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-1">Vence</p>
+        <p class="text-lg font-bold">{{ fechaBonita(srv.suscripcion().fechaFin) }}</p>
+      </div>
+      <div>
+        <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-1">Precio</p>
+        <p class="text-lg font-bold text-yellow-400">Bs {{ srv.plan().precio }}</p>
+      </div>
+      <div>
+        <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-1">Días restantes</p>
+        <p class="text-lg font-bold text-yellow-400">{{ diasRestantes() }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-[#111] border border-yellow-500/20 p-6">
+    <p class="text-[10px] tracking-[0.3em] text-yellow-400/80 uppercase mb-3">
+      ¿Quieres cambiar de plan?
+    </p>
+    <p class="text-neutral-400 text-sm mb-4">
+      Acércate a recepción o solicita una renovación anticipada para aprovechar promociones vigentes.
+    </p>
+    <a routerLink="/cliente/promociones"
+       class="inline-block bg-yellow-400 text-black px-6 py-2.5 text-xs font-bold
+              tracking-[0.2em] uppercase hover:bg-yellow-300 transition">
+      Ver promociones
+    </a>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+@reference "tailwindcss";
+
+:host { @apply block; }
+
+.stat-card { @apply rounded-md p-4 shadow-sm; }
+.stat-card--cyan { @apply bg-cyan-500 text-white; }
+.stat-card--green { @apply bg-emerald-500 text-white; }
+.stat-card--red { @apply bg-rose-400 text-white; }
+.stat-card--gray { @apply bg-slate-200 text-slate-700; }
+
+.stat-card__title { @apply text-sm font-medium opacity-90; }
+.stat-card__body { @apply mt-2 flex items-center justify-between gap-3; }
+.stat-card__icon { @apply text-4xl opacity-80; }
+.stat-card__value { @apply text-4xl font-light leading-none; }
+.stat-card__bar { @apply mt-4 h-0.5 w-full bg-current opacity-30; }
+.stat-card__detail { @apply mt-2 text-xs opacity-90; }

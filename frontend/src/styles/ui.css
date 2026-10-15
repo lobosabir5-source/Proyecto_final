@@ -1,0 +1,71 @@
+/* Clases reutilizables del panel de administración.
+   Los HTML solo usan estos nombres; aquí vive el detalle de Tailwind. */
+@layer components {
+
+  /* ---------- Página ---------- */
+  .page { @apply mx-auto max-w-7xl; }
+  .page-header { @apply mb-5 flex flex-wrap items-center justify-between gap-3; }
+  .page-title { @apply text-2xl font-light text-slate-800; }
+  .page-subtitle { @apply text-sm text-slate-500; }
+
+  /* ---------- Paneles ---------- */
+  .panel { @apply overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm; }
+  .panel-header { @apply flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3; }
+  .panel-title { @apply flex items-center gap-2 text-sm font-semibold text-slate-700; }
+  .panel-link { @apply text-xs font-medium text-cyan-600 hover:text-cyan-700 hover:underline; }
+  .panel-body { @apply p-4; }
+  .panel-footer { @apply flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-4 py-3 text-sm text-slate-500; }
+
+  /* ---------- Botones ---------- */
+  .btn { @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primary { @apply bg-cyan-500 text-white hover:bg-cyan-600; }
+  .btn-secondary { @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50; }
+  .btn-danger { @apply bg-rose-500 text-white hover:bg-rose-600; }
+  .btn-success { @apply bg-emerald-500 text-white hover:bg-emerald-600; }
+  .btn-sm { @apply px-2.5 py-1.5 text-xs; }
+
+  /* ---------- Formularios ---------- */
+  .field { @apply mb-4; }
+  .field-label { @apply mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500; }
+  .field-input { @apply w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20; }
+  .field-input--invalid { @apply border-rose-400; }
+  .field-error { @apply mt-1 text-xs text-rose-600; }
+  .field-hint { @apply mt-1 text-xs text-slate-400; }
+  .field-row { @apply grid gap-4 sm:grid-cols-2; }
+  .field-check { @apply flex cursor-pointer items-center gap-2 text-sm text-slate-600; }
+
+  /* ---------- Tablas ---------- */
+  .table-wrap { @apply overflow-x-auto; }
+  .table { @apply w-full text-left text-sm; }
+  .table th { @apply whitespace-nowrap border-b border-slate-200 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500; }
+  .table td { @apply border-b border-slate-100 px-4 py-3 align-middle text-slate-700; }
+  .table tbody tr:hover { @apply bg-slate-50; }
+  .cell-actions { @apply text-right; }
+  .cell-actions-group { @apply flex justify-end gap-2; }
+  .cell-muted { @apply text-slate-500; }
+  .cell-wrap { @apply max-w-xs text-slate-500; }
+
+  /* ---------- Etiquetas ---------- */
+  .badge { @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium; }
+  .badge-success { @apply bg-emerald-100 text-emerald-700; }
+  .badge-danger { @apply bg-rose-100 text-rose-700; }
+  .badge-info { @apply bg-cyan-100 text-cyan-700; }
+  .badge-warning { @apply bg-amber-100 text-amber-700; }
+  .badge-muted { @apply bg-slate-100 text-slate-500; }
+
+  /* ---------- Avisos ---------- */
+  .alert { @apply mb-4 rounded border-l-4 px-4 py-3 text-sm; }
+  .alert-error { @apply border-rose-500 bg-rose-50 text-rose-700; }
+  .alert-success { @apply border-emerald-500 bg-emerald-50 text-emerald-700; }
+  .empty-state { @apply py-8 text-center text-sm text-slate-400; }
+
+  /* ---------- Ventana modal ---------- */
+  .modal-backdrop { @apply fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4; }
+  .modal { @apply max-h-full w-full max-w-lg overflow-y-auto rounded-md bg-white shadow-xl; }
+  .modal--sm { @apply max-w-sm; }
+  .modal-header { @apply flex items-center justify-between border-b border-slate-200 px-5 py-4; }
+  .modal-title { @apply text-base font-semibold text-slate-800; }
+  .modal-close { @apply grid h-8 w-8 cursor-pointer place-items-center rounded text-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600; }
+  .modal-body { @apply px-5 py-4; }
+  .modal-footer { @apply flex justify-end gap-2 border-t border-slate-200 bg-slate-50 px-5 py-3; }
+}

@@ -1,0 +1,58 @@
+<div class="p-10">
+  <header class="mb-8">
+    <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-2">
+      Trámites / Permisos
+    </p>
+    <h1 class="text-4xl font-black tracking-tight">Permisos de Ausencia</h1>
+  </header>
+
+  <div class="bg-[#111] border border-yellow-500/20 p-6 mb-8">
+    <p class="text-[10px] tracking-[0.3em] text-yellow-400/80 uppercase mb-3">
+      Solicitar permiso
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+      <input [(ngModel)]="motivo" placeholder="Motivo"
+             class="md:col-span-3 bg-[#0a0a0a] border border-yellow-500/20 px-4 py-3
+                    focus:outline-none focus:border-yellow-400 placeholder:text-neutral-600" />
+
+      <input type="number" min="1" [(ngModel)]="dias" placeholder="Días"
+             class="bg-[#0a0a0a] border border-yellow-500/20 px-4 py-3
+                    focus:outline-none focus:border-yellow-400 placeholder:text-neutral-600" />
+    </div>
+
+    <button (click)="enviar()"
+            class="mt-4 bg-yellow-400 text-black px-6 py-2.5 text-xs font-bold
+                   tracking-[0.2em] uppercase hover:bg-yellow-300 transition">
+      Enviar solicitud
+    </button>
+  </div>
+
+  <div class="bg-[#111] border border-yellow-500/20 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-[10px] tracking-[0.3em] uppercase text-yellow-400/80
+                   border-b border-yellow-500/20">
+          <th class="text-left px-6 py-4">Fecha</th>
+          <th class="text-left px-6 py-4">Motivo</th>
+          <th class="text-right px-6 py-4">Días</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of lista(); track p.idPermiso) {
+          <tr class="border-b border-white/5 hover:bg-yellow-400/5 transition">
+            <td class="px-6 py-4 text-neutral-400">{{ fecha(p.solicitadoEn) }}</td>
+            <td class="px-6 py-4 font-semibold">{{ p.motivo }}</td>
+            <td class="px-6 py-4 text-right text-yellow-300">+{{ p.diasAgregados }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="3" class="px-6 py-10 text-center text-neutral-500">
+              No tienes permisos registrados.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

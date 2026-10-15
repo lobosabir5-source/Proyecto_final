@@ -1,0 +1,32 @@
+<div class="p-10">
+  <header class="mb-8">
+    <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-2">
+      Entrenamiento / Asistencias
+    </p>
+    <h1 class="text-4xl font-black tracking-tight">Mis Asistencias</h1>
+  </header>
+
+  <div class="bg-[#111] border border-yellow-500/20 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-[10px] tracking-[0.3em] uppercase text-yellow-400/80
+                   border-b border-yellow-500/20">
+          <th class="text-left px-6 py-4">Fecha</th>
+          <th class="text-left px-6 py-4">Entrada</th>
+          <th class="text-left px-6 py-4">Salida</th>
+          <th class="text-left px-6 py-4">Duración</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (a of lista(); track a.idAsistencia) {
+          <tr class="border-b border-white/5 hover:bg-yellow-400/5 transition">
+            <td class="px-6 py-4 font-semibold">{{ fecha(a.fechaEntrada) }}</td>
+            <td class="px-6 py-4 text-neutral-400">{{ hora(a.fechaEntrada) }}</td>
+            <td class="px-6 py-4 text-neutral-400">{{ hora(a.fechaSalida) }}</td>
+            <td class="px-6 py-4 text-yellow-300">{{ duracion(a) }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

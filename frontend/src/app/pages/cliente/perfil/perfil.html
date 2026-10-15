@@ -1,0 +1,44 @@
+<div class="p-10">
+  <header class="mb-8">
+    <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-2">
+      Mi cuenta / Perfil
+    </p>
+    <h1 class="text-4xl font-black tracking-tight">Mi Perfil</h1>
+  </header>
+
+  <div class="bg-[#111] border border-yellow-500/20 p-8 relative max-w-3xl">
+    <div class="absolute top-0 right-0 w-10 h-10 border-t border-r border-yellow-400"></div>
+
+    <div class="flex items-center gap-6 mb-8">
+      <div class="w-20 h-20 bg-yellow-400 flex items-center justify-center">
+        <span class="text-black font-black text-3xl">
+          {{ srv.cliente().nombres.charAt(0) }}{{ srv.cliente().apellidos.charAt(0) }}
+        </span>
+      </div>
+      <div>
+        <h2 class="text-2xl font-black">
+          {{ srv.cliente().nombres }} {{ srv.cliente().apellidos }}
+        </h2>
+        <p class="text-neutral-500 text-sm">Miembro desde {{ srv.cliente().miembroDesde }}</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      @for (item of [
+        { label: 'Identificación', valor: srv.cliente().identificacion },
+        { label: 'Correo',         valor: srv.cliente().email },
+        { label: 'Teléfono',       valor: srv.cliente().telefono },
+        { label: 'Peso',           valor: srv.cliente().pesoKg + ' kg' },
+        { label: 'Altura',         valor: srv.cliente().alturaCm + ' cm' },
+        { label: 'Días disponibles', valor: srv.cliente().diasDisponibles }
+      ]; track item.label) {
+        <div class="border-b border-white/5 pb-3">
+          <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-1">
+            {{ item.label }}
+          </p>
+          <p class="text-lg font-semibold">{{ item.valor }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>

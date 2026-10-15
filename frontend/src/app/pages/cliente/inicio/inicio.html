@@ -1,0 +1,66 @@
+<div class="p-10">
+  <header class="mb-10">
+    <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-3">
+      Gold's Gym / Mi panel
+    </p>
+    <h1 class="text-5xl font-black tracking-tight leading-none">
+      Hola,<br>
+      <span class="text-yellow-400">{{ nombre() }}</span>
+    </h1>
+    <p class="text-neutral-400 mt-3">Tu resumen de entrenamiento y cuenta.</p>
+  </header>
+
+  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+    <div class="bg-[#111] border border-yellow-500/20 p-6 relative">
+      <div class="absolute top-0 right-0 w-6 h-6 border-t border-r border-yellow-400"></div>
+      <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-2">Plan actual</p>
+      <p class="text-2xl font-black text-yellow-400">{{ srv.plan().nombre }}</p>
+    </div>
+    <div class="bg-[#111] border border-yellow-500/20 p-6 relative">
+      <div class="absolute top-0 right-0 w-6 h-6 border-t border-r border-yellow-400"></div>
+      <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-2">Días restantes</p>
+      <p class="text-4xl font-black text-yellow-400">{{ diasRestantes() }}</p>
+    </div>
+    <div class="bg-[#111] border border-yellow-500/20 p-6 relative">
+      <div class="absolute top-0 right-0 w-6 h-6 border-t border-r border-yellow-400"></div>
+      <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-2">Visitas este mes</p>
+      <p class="text-4xl font-black text-yellow-400">{{ visitasMes() }}</p>
+    </div>
+    <div class="bg-[#111] border border-yellow-500/20 p-6 relative">
+      <div class="absolute top-0 right-0 w-6 h-6 border-t border-r border-yellow-400"></div>
+      <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-2">Total pagado</p>
+      <p class="text-4xl font-black text-yellow-400">
+        Bs {{ totalPagado() }}
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-4">
+      Accesos rápidos
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <a routerLink="/cliente/rutinas"
+         class="group bg-[#111] border border-yellow-500/20 p-6 hover:border-yellow-400 transition">
+        <p class="text-2xl font-black mb-1 group-hover:text-yellow-400 transition">
+          Ver mi rutina
+        </p>
+        <p class="text-sm text-neutral-500">Ejercicios de la semana</p>
+      </a>
+      <a routerLink="/cliente/suscripcion"
+         class="group bg-[#111] border border-yellow-500/20 p-6 hover:border-yellow-400 transition">
+        <p class="text-2xl font-black mb-1 group-hover:text-yellow-400 transition">
+          Mi suscripción
+        </p>
+        <p class="text-sm text-neutral-500">Renovaciones y vencimiento</p>
+      </a>
+      <a routerLink="/cliente/promociones"
+         class="group bg-[#111] border border-yellow-500/20 p-6 hover:border-yellow-400 transition">
+        <p class="text-2xl font-black mb-1 group-hover:text-yellow-400 transition">
+          Promociones
+        </p>
+        <p class="text-sm text-neutral-500">Descuentos activos</p>
+      </a>
+    </div>
+  </section>
+</div>

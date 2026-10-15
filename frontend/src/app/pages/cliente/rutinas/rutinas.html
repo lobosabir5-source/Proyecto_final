@@ -1,0 +1,58 @@
+<div class="p-10">
+  <header class="mb-8">
+    <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-2">
+      Entrenamiento / Rutinas IA
+    </p>
+    <h1 class="text-4xl font-black tracking-tight mb-2">{{ srv.rutina().titulo }}</h1>
+    <p class="text-neutral-400">{{ srv.rutina().contexto }}</p>
+  </header>
+
+  <div class="bg-[#111] border border-yellow-500/20 p-6 mb-8">
+    <p class="text-[10px] tracking-[0.3em] text-yellow-400/80 uppercase mb-2">Resumen</p>
+    <p class="text-neutral-300">{{ srv.rutina().respuesta }}</p>
+    <p class="text-xs text-neutral-500 mt-3">
+      Duración: {{ srv.rutina().duracionSemana }} semanas · Creada: {{ srv.rutina().creadoEn }}
+    </p>
+  </div>
+
+  <!-- Tabs de días -->
+  <div class="flex flex-wrap gap-2 mb-6">
+    @for (d of dias(); track d) {
+      <button (click)="diaActivo.set(d)"
+              [class]="diaActivo() === d
+                ? 'px-5 py-2 text-xs tracking-[0.2em] uppercase bg-yellow-400 text-black font-bold'
+                : 'px-5 py-2 text-xs tracking-[0.2em] uppercase border border-yellow-500/30 text-yellow-300 hover:bg-yellow-400/10'">
+        Día {{ d }}
+      </button>
+    }
+  </div>
+
+  <!-- Tabla ejercicios -->
+  <div class="bg-[#111] border border-yellow-500/20 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-[10px] tracking-[0.3em] uppercase text-yellow-400/80
+                   border-b border-yellow-500/20">
+          <th class="text-left px-6 py-4">Músculo</th>
+          <th class="text-left px-6 py-4">Ejercicio</th>
+          <th class="text-center px-6 py-4">Series</th>
+          <th class="text-center px-6 py-4">Reps</th>
+          <th class="text-center px-6 py-4">Descanso</th>
+          <th class="text-left px-6 py-4">Notas</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (e of ejerciciosDia(); track e.idEjercicio) {
+          <tr class="border-b border-white/5 hover:bg-yellow-400/5 transition">
+            <td class="px-6 py-4 text-neutral-400">{{ e.grupoMuscular }}</td>
+            <td class="px-6 py-4 font-semibold">{{ e.nombreEjercicio }}</td>
+            <td class="px-6 py-4 text-center text-yellow-300">{{ e.series }}</td>
+            <td class="px-6 py-4 text-center text-yellow-300">{{ e.repeticiones }}</td>
+            <td class="px-6 py-4 text-center text-neutral-400">{{ e.descansoSeg }}s</td>
+            <td class="px-6 py-4 text-neutral-500 text-xs">{{ e.notas }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
