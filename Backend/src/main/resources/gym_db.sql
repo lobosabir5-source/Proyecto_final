@@ -27,48 +27,48 @@ CREATE TABLE roles_permisos (
   CONSTRAINT fk_rp_permisos FOREIGN KEY (idpermisos) REFERENCES permisos (idpermisos) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE TABLE Usuarios (
-  idUsuarios     INT NOT NULL AUTO_INCREMENT,
-  email          VARCHAR(150) NOT NULL,
-  password       VARCHAR(250) NOT NULL,
-  estado         TINYINT NOT NULL DEFAULT 1,
-  creado_en      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  actualizado_en VARCHAR(45) NULL,
-  idroles        INT NOT NULL,
-  PRIMARY KEY (idUsuarios),
-  UNIQUE KEY uq_usuarios_email (email),
-  KEY idx_usuarios_roles (idroles),
-  CONSTRAINT fk_usuarios_roles FOREIGN KEY (idroles) REFERENCES roles (idroles) ON UPDATE CASCADE
+CREATE TABLE usuarios (
+  id       BIGINT NOT NULL AUTO_INCREMENT,
+  usuario  VARCHAR(80) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  rol      VARCHAR(20) NOT NULL,
+  activo   BOOLEAN NOT NULL DEFAULT TRUE,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_usuarios_usuario (usuario),
+  CONSTRAINT chk_usuarios_rol CHECK (rol IN ('ADMIN', 'RECEPCIONISTA', 'CLIENTE'))
 ) ENGINE=InnoDB;
 
-CREATE TABLE Perfil_Usuario (
-  idPerfil_Usuario INT NOT NULL AUTO_INCREMENT,
-  Identificacion   VARCHAR(20) NOT NULL,
-  nombres          VARCHAR(100) NOT NULL,
-  apellidos        VARCHAR(100) NOT NULL,
-  telefono         VARCHAR(20) NULL,
-  foto             VARCHAR(255) NULL,
-  peso_kg          DECIMAL(5,2) NULL,
-  altura_cm        DECIMAL(5,2) NULL,
-  dias_disponibles INT NULL,
-  idUsuarios       INT NOT NULL,
-  PRIMARY KEY (idPerfil_Usuario),
-  UNIQUE KEY uq_perfil_identificacion (Identificacion),
-  UNIQUE KEY uq_perfil_usuario (idUsuarios),
-  CONSTRAINT fk_perfil_usuarios FOREIGN KEY (idUsuarios) REFERENCES Usuarios (idUsuarios) ON DELETE CASCADE ON UPDATE CASCADE
+CREATE TABLE clientes (
+  id               BIGINT NOT NULL AUTO_INCREMENT,
+  usuario_id       BIGINT NOT NULL,
+  nombre           VARCHAR(120) NOT NULL,
+  correo           VARCHAR(160) NOT NULL,
+  telefono         VARCHAR(30) NOT NULL,
+  fecha_nacimiento DATE NOT NULL,
+  fecha_alta       DATE NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_clientes_usuario (usuario_id),
+  UNIQUE KEY uq_clientes_correo (correo),
+  CONSTRAINT fk_clientes_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
 --  PLANES / PROMOCIONES / SUSCRIPCIONES
 -- ---------------------------------------------------------------------
-CREATE TABLE plan (
-  idplanas      INT NOT NULL AUTO_INCREMENT,
-  nombre        VARCHAR(100) NOT NULL,
-  descripcion   VARCHAR(255) NULL,
-  precio        DECIMAL(10,2) NOT NULL,
+CREATE TABLE planes (
+  id            BIGINT NOT NULL AUTO_INCREMENT,
+  nombre        VARCHAR(80) NOT NULL,
+  descripcion   VARCHAR(500) NULL,
   duracion_dias INT NOT NULL,
-  estado        TINYINT NOT NULL DEFAULT 1,
-  PRIMARY KEY (idplanas)
+  precio        DECIMAL(10,2) NOT NULL,
+  activo        BOOLEAN NOT NULL DEFAULT TRUE,
+  horario       VARCHAR(200) NULL,
+  beneficios    VARCHAR(1000) NULL,
+  imagen_url    VARCHAR(300) NULL,
+  destacado     BOOLEAN NOT NULL DEFAULT FALSE,
+  orden         INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_planes_nombre (nombre)
 ) ENGINE=InnoDB;
 
 CREATE TABLE promocion_IA (
@@ -82,35 +82,42 @@ CREATE TABLE promocion_IA (
   fecha_fin            DATETIME NULL,
   estado               TINYINT NOT NULL DEFAULT 1,
   creado_en            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  idplanas             INT NOT NULL,
+  plan_id              BIGINT NOT NULL,
   PRIMARY KEY (idpromocion_IA),
-  KEY idx_promo_plan (idplanas),
-  CONSTRAINT fk_promo_plan FOREIGN KEY (idplanas) REFERENCES plan (idplanas) ON UPDATE CASCADE
+  KEY idx_promo_plan (plan_id),
+  CONSTRAINT fk_promo_plan FOREIGN KEY (plan_id) REFERENCES planes (id) ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE TABLE suscripciones (
-  idsuscripciones INT NOT NULL AUTO_INCREMENT,
-  fecha_inicio    DATE NOT NULL,
-  fecha_fin       DATE NOT NULL,
-  estado          TINYINT NOT NULL DEFAULT 1,
-  creado_en       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  idplanas        INT NOT NULL,
-  idUsuarios      INT NOT NULL,
-  PRIMARY KEY (idsuscripciones),
-  KEY idx_susc_plan (idplanas),
-  KEY idx_susc_usuario (idUsuarios),
-  CONSTRAINT fk_susc_plan    FOREIGN KEY (idplanas)   REFERENCES plan (idplanas)        ON UPDATE CASCADE,
-  CONSTRAINT fk_susc_usuario FOREIGN KEY (idUsuarios) REFERENCES Usuarios (idUsuarios) ON UPDATE CASCADE
+CREATE TABLE membresias (
+  id             BIGINT NOT NULL AUTO_INCREMENT,
+  cliente_id     BIGINT NOT NULL,
+  plan_id        BIGINT NOT NULL,
+  creada_por_id  BIGINT NOT NULL,
+  fecha_inicio   DATE NOT NULL,
+  fecha_fin      DATE NOT NULL,
+  precio_total   DECIMAL(10,2) NOT NULL,
+  estado         VARCHAR(20) NOT NULL,
+  PRIMARY KEY (id),
+  KEY idx_membresias_cliente (cliente_id),
+  KEY idx_membresias_plan (plan_id),
+  KEY idx_membresias_creada_por (creada_por_id),
+  CONSTRAINT chk_membresias_estado CHECK (estado IN ('PENDIENTE', 'ACTIVA', 'VENCIDA', 'CANCELADA')),
+  CONSTRAINT fk_membresias_cliente FOREIGN KEY (cliente_id) REFERENCES clientes (id) ON UPDATE CASCADE,
+  CONSTRAINT fk_membresias_plan FOREIGN KEY (plan_id) REFERENCES planes (id) ON UPDATE CASCADE,
+  CONSTRAINT fk_membresias_usuario FOREIGN KEY (creada_por_id) REFERENCES usuarios (id) ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE asistencias (
-  idasistencias INT NOT NULL AUTO_INCREMENT,
-  fecha_entrada DATETIME NOT NULL,
-  fecha_salida  DATETIME NULL,
-  idplanas      INT NOT NULL,
-  PRIMARY KEY (idasistencias),
-  KEY idx_asist_plan (idplanas),
-  CONSTRAINT fk_asist_plan FOREIGN KEY (idplanas) REFERENCES plan (idplanas) ON UPDATE CASCADE
+  id               BIGINT NOT NULL AUTO_INCREMENT,
+  cliente_id       BIGINT NOT NULL,
+  registrada_por_id BIGINT NOT NULL,
+  fecha            DATE NOT NULL,
+  hora_entrada     DATETIME NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_asistencias_cliente_fecha (cliente_id, fecha),
+  KEY idx_asistencias_registrada_por (registrada_por_id),
+  CONSTRAINT fk_asistencias_cliente FOREIGN KEY (cliente_id) REFERENCES clientes (id) ON UPDATE CASCADE,
+  CONSTRAINT fk_asistencias_usuario FOREIGN KEY (registrada_por_id) REFERENCES usuarios (id) ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE permisos_ausencion (
@@ -118,10 +125,10 @@ CREATE TABLE permisos_ausencion (
   motivo               VARCHAR(255) NOT NULL,
   dias_agregados       INT NOT NULL DEFAULT 0,
   solicitado_en        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  idsuscripciones      INT NOT NULL,
+  membresia_id         BIGINT NOT NULL,
   PRIMARY KEY (idpermisos_ausencion),
-  KEY idx_pausencia_susc (idsuscripciones),
-  CONSTRAINT fk_pausencia_susc FOREIGN KEY (idsuscripciones) REFERENCES suscripciones (idsuscripciones) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY idx_pausencia_membresia (membresia_id),
+  CONSTRAINT fk_pausencia_membresia FOREIGN KEY (membresia_id) REFERENCES membresias (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -134,34 +141,36 @@ CREATE TABLE metodos_pago (
 ) ENGINE=InnoDB;
 
 CREATE TABLE pagos (
-  idpagos         INT NOT NULL AUTO_INCREMENT,
-  estado          TINYINT NOT NULL DEFAULT 0,
-  monto           DECIMAL(10,2) NOT NULL,
-  fecha_pago      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  idsuscripciones INT NOT NULL,
-  idmetodos_pago  INT NOT NULL,
-  PRIMARY KEY (idpagos),
-  KEY idx_pagos_susc (idsuscripciones),
-  KEY idx_pagos_metodo (idmetodos_pago),
-  CONSTRAINT fk_pagos_susc   FOREIGN KEY (idsuscripciones) REFERENCES suscripciones (idsuscripciones) ON UPDATE CASCADE,
-  CONSTRAINT fk_pagos_metodo FOREIGN KEY (idmetodos_pago)  REFERENCES metodos_pago (idmetodos_pago)   ON UPDATE CASCADE
+  id               BIGINT NOT NULL AUTO_INCREMENT,
+  membresia_id     BIGINT NOT NULL,
+  registrado_por_id BIGINT NOT NULL,
+  monto            DECIMAL(10,2) NOT NULL,
+  metodo           VARCHAR(20) NOT NULL,
+  fecha_pago       DATETIME NOT NULL,
+  PRIMARY KEY (id),
+  KEY idx_pagos_membresia (membresia_id),
+  KEY idx_pagos_registrado_por (registrado_por_id),
+  CONSTRAINT chk_pagos_metodo CHECK (metodo IN ('EFECTIVO', 'TARJETA', 'TRANSFERENCIA')),
+  CONSTRAINT fk_pagos_membresia FOREIGN KEY (membresia_id) REFERENCES membresias (id) ON UPDATE CASCADE,
+  CONSTRAINT fk_pagos_usuario FOREIGN KEY (registrado_por_id) REFERENCES usuarios (id) ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
 --  RUTINAS IA
 -- ---------------------------------------------------------------------
-CREATE TABLE rutinas_IA (
-  idrutinas_IA     INT NOT NULL AUTO_INCREMENT,
-  titulo           VARCHAR(100) NOT NULL,
-  contexto         VARCHAR(255) NULL,
-  respuesta        TEXT NULL,
-  duracuion_semana INT NULL,
-  estado           TINYINT NOT NULL DEFAULT 1,
-  creado_en        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  idUsuarios       INT NOT NULL,
-  PRIMARY KEY (idrutinas_IA),
-  KEY idx_rutinas_usuario (idUsuarios),
-  CONSTRAINT fk_rutinas_usuario FOREIGN KEY (idUsuarios) REFERENCES Usuarios (idUsuarios) ON DELETE CASCADE ON UPDATE CASCADE
+CREATE TABLE rutinas (
+  id             BIGINT NOT NULL AUTO_INCREMENT,
+  cliente_id     BIGINT NOT NULL,
+  creada_por_id  BIGINT NOT NULL,
+  nombre         VARCHAR(120) NOT NULL,
+  contenido      TEXT NOT NULL,
+  fecha_creacion DATETIME NOT NULL,
+  activa         BOOLEAN NOT NULL DEFAULT TRUE,
+  PRIMARY KEY (id),
+  KEY idx_rutinas_cliente (cliente_id),
+  KEY idx_rutinas_creada_por (creada_por_id),
+  CONSTRAINT fk_rutinas_cliente FOREIGN KEY (cliente_id) REFERENCES clientes (id) ON UPDATE CASCADE,
+  CONSTRAINT fk_rutinas_usuario FOREIGN KEY (creada_por_id) REFERENCES usuarios (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE ejerccios_rutina (
@@ -173,10 +182,10 @@ CREATE TABLE ejerccios_rutina (
   repeticiones       VARCHAR(20) NULL,
   descanso_sec       INT NULL,
   notas_tecnicas     VARCHAR(45) NULL,
-  idrutinas_IA       INT NOT NULL,
+  rutina_id          BIGINT NOT NULL,
   PRIMARY KEY (idejerccios_rutina),
-  KEY idx_ejer_rutina (idrutinas_IA),
-  CONSTRAINT fk_ejer_rutina FOREIGN KEY (idrutinas_IA) REFERENCES rutinas_IA (idrutinas_IA) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY idx_ejer_rutina (rutina_id),
+  CONSTRAINT fk_ejer_rutina FOREIGN KEY (rutina_id) REFERENCES rutinas (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 -- =====================================================================
@@ -217,10 +226,10 @@ CREATE TABLE carrito (
   estado         TINYINT NOT NULL DEFAULT 1,             -- 1 = activo, 2 = convertido en pedido, 3 = abandonado
   creado_en      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   actualizado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  idUsuarios     INT NOT NULL,
+  usuario_id     BIGINT NOT NULL,
   PRIMARY KEY (idcarrito),
-  KEY idx_carrito_usuario_estado (idUsuarios, estado),
-  CONSTRAINT fk_carrito_usuario FOREIGN KEY (idUsuarios) REFERENCES Usuarios (idUsuarios) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY idx_carrito_usuario_estado (usuario_id, estado),
+  CONSTRAINT fk_carrito_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 -- Ítems del carrito
@@ -249,14 +258,14 @@ CREATE TABLE pedidos_bar (
   fecha_pedido   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   fecha_entrega  DATETIME NULL,
   idcarrito      INT NULL,
-  idUsuarios     INT NOT NULL,
+  usuario_id     BIGINT NOT NULL,
   idmetodos_pago INT NOT NULL,
   PRIMARY KEY (idpedidos_bar),
   UNIQUE KEY uq_pedidosbar_carrito (idcarrito),
-  KEY idx_pedidosbar_usuario (idUsuarios),
+  KEY idx_pedidosbar_usuario (usuario_id),
   KEY idx_pedidosbar_metodo (idmetodos_pago),
   CONSTRAINT fk_pedidosbar_carrito FOREIGN KEY (idcarrito)      REFERENCES carrito (idcarrito)           ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT fk_pedidosbar_usuario FOREIGN KEY (idUsuarios)     REFERENCES Usuarios (idUsuarios)         ON UPDATE CASCADE,
+  CONSTRAINT fk_pedidosbar_usuario FOREIGN KEY (usuario_id)     REFERENCES usuarios (id)                  ON UPDATE CASCADE,
   CONSTRAINT fk_pedidosbar_metodo  FOREIGN KEY (idmetodos_pago) REFERENCES metodos_pago (idmetodos_pago) ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
@@ -285,7 +294,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 CREATE OR REPLACE VIEW vista_carrito_detalle AS
 SELECT
   c.idcarrito,
-  c.idUsuarios,
+  c.usuario_id,
   c.estado AS estado_carrito,
   ci.idcarrito_items,
   p.idproductos_bar,
