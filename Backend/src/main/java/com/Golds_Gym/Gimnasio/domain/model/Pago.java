@@ -12,9 +12,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "pagos")
 public class Pago {
@@ -40,11 +47,7 @@ public class Pago {
 
     @Column(name = "fecha_pago", nullable = false)
     private LocalDateTime fechaPago;
-
-    protected Pago() {
-    }
-
-    public Pago(Membresia membresia, Usuario registradoPor, BigDecimal monto, MetodoPago metodo) {
+public Pago(Membresia membresia, Usuario registradoPor, BigDecimal monto, MetodoPago metodo) {
         this.membresia = membresia;
         this.registradoPor = registradoPor;
         this.monto = monto;
@@ -52,27 +55,4 @@ public class Pago {
         this.fechaPago = LocalDateTime.now();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Membresia getMembresia() {
-        return membresia;
-    }
-
-    public Usuario getRegistradoPor() {
-        return registradoPor;
-    }
-
-    public BigDecimal getMonto() {
-        return monto;
-    }
-
-    public MetodoPago getMetodo() {
-        return metodo;
-    }
-
-    public LocalDateTime getFechaPago() {
-        return fechaPago;
-    }
 }

@@ -43,7 +43,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public Page<UsuarioAdminRespuesta> listar(@PageableDefault(size = 20) Pageable pageable) {
+    public Page<UsuarioAdminRespuesta> listar(@PageableDefault(size = 10) Pageable pageable) {
         return usuarioAdminService.listar(pageable);
     }
 

@@ -7,10 +7,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "planes")
 public class Plan {
@@ -48,69 +52,11 @@ public class Plan {
 
     @Column(nullable = false, columnDefinition = "integer not null default 0")
     private int orden = 0;
-
-    protected Plan() {
-    }
-
-    public Plan(String nombre, String descripcion, int duracionDias, BigDecimal precio) {
+public Plan(String nombre, String descripcion, int duracionDias, BigDecimal precio) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.duracionDias = duracionDias;
         this.precio = precio;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public int getDuracionDias() {
-        return duracionDias;
-    }
-
-    public void setDuracionDias(int duracionDias) {
-        this.duracionDias = duracionDias;
-    }
-
-    public BigDecimal getPrecio() {
-        return precio;
-    }
-
-    public void setPrecio(BigDecimal precio) {
-        this.precio = precio;
-    }
-
-    public boolean isActivo() {
-        return activo;
-    }
-
-    public void setActivo(boolean activo) {
-        this.activo = activo;
-    }
-
-    public String getHorario() { return horario; }
-    public void setHorario(String horario) { this.horario = horario; }
-
-    public String getBeneficios() { return beneficios; }
-    public void setBeneficios(String beneficios) { this.beneficios = beneficios; }
-
-    public String getImagenUrl() { return imagenUrl; }
-    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
-
-    public boolean isDestacado() { return destacado; }
-    public void setDestacado(boolean destacado) { this.destacado = destacado; }
-
-    public int getOrden() { return orden; }
-    public void setOrden(int orden) { this.orden = orden; }
 }

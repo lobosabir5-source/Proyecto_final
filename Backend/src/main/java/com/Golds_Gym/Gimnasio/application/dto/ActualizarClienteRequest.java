@@ -24,13 +24,38 @@ public class ActualizarClienteRequest {
     @Past(message = "La fecha de nacimiento debe ser anterior a hoy")
     private LocalDate fechaNacimiento;
 
-    public ActualizarClienteRequest() { }
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre == null ? null : nombre.trim(); }
-    public String getCorreo() { return correo; }
-    public void setCorreo(String correo) { this.correo = correo == null ? null : correo.trim().toLowerCase(); }
-    public String getTelefono() { return telefono; }
-    public void setTelefono(String telefono) { this.telefono = telefono == null ? null : telefono.trim(); }
-    public LocalDate getFechaNacimiento() { return fechaNacimiento; }
-    public void setFechaNacimiento(LocalDate fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
+    public ActualizarClienteRequest() {
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre == null ? null : nombre.trim();
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo == null ? null : correo.trim().toLowerCase();
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono == null ? null : telefono.trim();
+    }
+
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
+    }
+
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
 }

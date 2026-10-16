@@ -11,9 +11,22 @@ public class ActualizarRutinaRequest {
     @Size(max = 10000, message = "El contenido no puede superar 10000 caracteres")
     private String contenido;
 
-    public ActualizarRutinaRequest() { }
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre == null ? null : nombre.trim(); }
-    public String getContenido() { return contenido; }
-    public void setContenido(String contenido) { this.contenido = contenido == null ? null : contenido.trim(); }
+    public ActualizarRutinaRequest() {
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre == null ? null : nombre.trim();
+    }
+
+    public String getContenido() {
+        return contenido;
+    }
+
+    public void setContenido(String contenido) {
+        this.contenido = contenido == null ? null : contenido.trim();
+    }
 }

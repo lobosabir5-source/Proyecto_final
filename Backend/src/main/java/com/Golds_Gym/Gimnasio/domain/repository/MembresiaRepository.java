@@ -25,7 +25,7 @@ public interface MembresiaRepository extends JpaRepository<Membresia, Long> {
     long countByEstadoAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(
             EstadoMembresia estado, LocalDate fechaInicio, LocalDate fechaFin);
 
-        long countByEstadoAndFechaFinGreaterThanEqual(EstadoMembresia estado, LocalDate fecha);
+    long countByEstadoAndFechaFinGreaterThanEqual(EstadoMembresia estado, LocalDate fecha);
 
     Optional<Membresia> findFirstByCliente_IdAndEstadoAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqualOrderByFechaFinDesc(
             Long clienteId, EstadoMembresia estado, LocalDate fechaInicio, LocalDate fechaFin);
@@ -34,5 +34,6 @@ public interface MembresiaRepository extends JpaRepository<Membresia, Long> {
     @Query("select membresia from Membresia membresia where membresia.id = :id")
     Optional<Membresia> findByIdForUpdate(@Param("id") Long id);
 
-    boolean existsByCliente_Usuario_IdAndCreadaPor_IdAndEstado(Long usuarioId, Long creadaPorId, EstadoMembresia estado);
+    boolean existsByCliente_Usuario_IdAndCreadaPor_IdAndEstado(Long usuarioId, Long creadaPorId,
+            EstadoMembresia estado);
 }

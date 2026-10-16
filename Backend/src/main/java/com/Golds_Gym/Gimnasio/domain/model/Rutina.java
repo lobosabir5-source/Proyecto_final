@@ -10,8 +10,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "rutinas")
 public class Rutina {
@@ -39,11 +46,7 @@ public class Rutina {
 
     @Column(nullable = false)
     private boolean activa = true;
-
-    protected Rutina() {
-    }
-
-    public Rutina(Cliente cliente, Usuario creadaPor, String nombre, String contenido) {
+public Rutina(Cliente cliente, Usuario creadaPor, String nombre, String contenido) {
         this.cliente = cliente;
         this.creadaPor = creadaPor;
         this.nombre = nombre;
@@ -51,43 +54,4 @@ public class Rutina {
         this.fechaCreacion = LocalDateTime.now();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Cliente getCliente() {
-        return cliente;
-    }
-
-    public Usuario getCreadaPor() {
-        return creadaPor;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getContenido() {
-        return contenido;
-    }
-
-    public void setContenido(String contenido) {
-        this.contenido = contenido;
-    }
-
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public boolean isActiva() {
-        return activa;
-    }
-
-    public void setActiva(boolean activa) {
-        this.activa = activa;
-    }
 }

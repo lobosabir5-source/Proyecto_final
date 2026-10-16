@@ -12,9 +12,16 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 import java.util.Collection;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "usuarios")
 public class Usuario implements UserDetails {
@@ -35,51 +42,10 @@ public class Usuario implements UserDetails {
 
     @Column(nullable = false)
     private boolean activo = true;
-
-    protected Usuario() {
-    }
-
-    public Usuario(String usuario, String password, Rol rol) {
+public Usuario(String usuario, String password, Rol rol) {
         this.usuario = usuario;
         this.password = password;
         this.rol = rol;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Rol getRol() {
-        return rol;
-    }
-
-    public void setRol(Rol rol) {
-        this.rol = rol;
-    }
-
-    public boolean isActivo() {
-        return activo;
-    }
-
-    public void setActivo(boolean activo) {
-        this.activo = activo;
     }
 
     @Override

@@ -25,12 +25,25 @@ public class PlanService {
     }
 
     @Transactional
-    public PlanRespuesta crear(GuardarPlanRequest request) {
-        if (planRepository.existsByNombreIgnoreCase(request.getNombre())) {
-            throw new IllegalArgumentException("Ya existe un plan con ese nombre");
+    public PlanRespuesta crear(GuardarPlanRequest solicitud) {
+        if (planRepository.existsByNombreIgnoreCase(
+                solicitud.getNombre())) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Ya existe un plan con ese nombre"
+            );
         }
-        return convertir(planRepository.save(new Plan(
-            request.getNombre(), request.getDescripcion(), request.getDuracionDias(), request.getPrecio())));
+        Plan plan = new Plan(
+                solicitud.getNombre(),
+                solicitud.getDescripcion(),
+                solicitud.getDuracionDias(),
+                solicitud.getPrecio()
+        );
+        aplicarDatosDeLanding(plan, solicitud);
+
+        Plan guardado = planRepository.save(plan);
+        return convertir(guardado);
     }
 
     @Transactional(readOnly = true)
@@ -44,17 +57,25 @@ public class PlanService {
     }
 
     @Transactional
-    public PlanRespuesta actualizar(Long id, GuardarPlanRequest request) {
+    public PlanRespuesta actualizar(
+            Long id,
+            GuardarPlanRequest solicitud) {
         Plan plan = buscarPorId(id);
-        if (!plan.getNombre().equalsIgnoreCase(request.getNombre())
-            && planRepository.existsByNombreIgnoreCaseAndIdNot(request.getNombre(), id)) {
-            throw new IllegalArgumentException("Ya existe un plan con ese nombre");
+        if (planRepository.existsByNombreIgnoreCaseAndIdNot(
+                solicitud.getNombre(), id)) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Ya existe otro plan con ese nombre"
+            );
         }
-        plan.setNombre(request.getNombre());
-        plan.setDescripcion(request.getDescripcion());
-        plan.setDuracionDias(request.getDuracionDias());
-        plan.setPrecio(request.getPrecio());
-        return convertir(planRepository.save(plan));
+        plan.setNombre(solicitud.getNombre());
+        plan.setDescripcion(solicitud.getDescripcion());
+        plan.setDuracionDias(solicitud.getDuracionDias());
+        plan.setPrecio(solicitud.getPrecio());
+        aplicarDatosDeLanding(plan, solicitud);
+        Plan actualizado = planRepository.save(plan);
+        return convertir(actualizado);
     }
 
     @Transactional

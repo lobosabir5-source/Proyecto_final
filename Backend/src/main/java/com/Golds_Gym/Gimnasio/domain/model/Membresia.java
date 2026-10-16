@@ -12,9 +12,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "membresias")
 public class Membresia {
@@ -47,11 +54,7 @@ public class Membresia {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private EstadoMembresia estado;
-
-    protected Membresia() {
-    }
-
-    public Membresia(Cliente cliente, Plan plan, Usuario creadaPor, LocalDate fechaInicio) {
+public Membresia(Cliente cliente, Plan plan, Usuario creadaPor, LocalDate fechaInicio) {
         this.cliente = cliente;
         this.plan = plan;
         this.creadaPor = creadaPor;
@@ -61,36 +64,4 @@ public class Membresia {
         this.estado = EstadoMembresia.PENDIENTE;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Cliente getCliente() {
-        return cliente;
-    }
-
-    public Plan getPlan() {
-        return plan;
-    }
-
-    public Usuario getCreadaPor() { return creadaPor; }
-    public LocalDate getFechaInicio() {
-        return fechaInicio;
-    }
-
-    public LocalDate getFechaFin() {
-        return fechaFin;
-    }
-
-    public BigDecimal getPrecioTotal() {
-        return precioTotal;
-    }
-
-    public EstadoMembresia getEstado() {
-        return estado;
-    }
-
-    public void setEstado(EstadoMembresia estado) {
-        this.estado = estado;
-    }
 }

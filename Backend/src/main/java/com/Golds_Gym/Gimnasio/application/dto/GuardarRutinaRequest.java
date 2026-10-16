@@ -16,11 +16,30 @@ public class GuardarRutinaRequest {
     @Size(max = 10000, message = "El contenido no puede superar 10000 caracteres")
     private String contenido;
 
-    public GuardarRutinaRequest() { }
-    public Long getClienteId() { return clienteId; }
-    public void setClienteId(Long clienteId) { this.clienteId = clienteId; }
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre == null ? null : nombre.trim(); }
-    public String getContenido() { return contenido; }
-    public void setContenido(String contenido) { this.contenido = contenido == null ? null : contenido.trim(); }
+    public GuardarRutinaRequest() {
+    }
+
+    public Long getClienteId() {
+        return clienteId;
+    }
+
+    public void setClienteId(Long clienteId) {
+        this.clienteId = clienteId;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre == null ? null : nombre.trim();
+    }
+
+    public String getContenido() {
+        return contenido;
+    }
+
+    public void setContenido(String contenido) {
+        this.contenido = contenido == null ? null : contenido.trim();
+    }
 }

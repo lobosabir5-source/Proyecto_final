@@ -11,9 +11,16 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "asistencias", uniqueConstraints = @UniqueConstraint(columnNames = {"cliente_id", "fecha"}))
 public class Asistencia {
@@ -35,34 +42,11 @@ public class Asistencia {
 
     @Column(name = "hora_entrada", nullable = false)
     private LocalDateTime horaEntrada;
-
-    protected Asistencia() {
-    }
-
-    public Asistencia(Cliente cliente, Usuario registradaPor) {
+public Asistencia(Cliente cliente, Usuario registradaPor) {
         this.cliente = cliente;
         this.registradaPor = registradaPor;
         this.horaEntrada = LocalDateTime.now();
         this.fecha = horaEntrada.toLocalDate();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Cliente getCliente() {
-        return cliente;
-    }
-
-    public Usuario getRegistradaPor() {
-        return registradaPor;
-    }
-
-    public LocalDate getFecha() {
-        return fecha;
-    }
-
-    public LocalDateTime getHoraEntrada() {
-        return horaEntrada;
-    }
 }
