@@ -15,7 +15,7 @@ export class RecepcionLayoutComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
-  usuario = computed(() => this.auth.user()?.usuario ?? '');
+  usuario = computed(() => this.auth.nombreVisible());
 
   menu: { seccion: string; items: NavItem[] }[] = [
     {

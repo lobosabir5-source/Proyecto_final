@@ -35,9 +35,6 @@ public class PagoService {
         return null;
     }
 
-    private void activarCuentaDeAutoRwgistro(Membresia membresia) {
-    }
-
     @Transactional(readOnly = true)
     public List<PagoRespuesta> listarDeMembresia(Long membresiaId) {
         if (!membresiaRepository.existsById(membresiaId)) {
@@ -51,13 +48,6 @@ public class PagoService {
     public Page<PagoRespuesta> listarDeUsuario(Long usuarioId, Pageable pageable) {
         return pagoRepository.findAllByMembresia_Cliente_Usuario_IdOrderByFechaPagoDesc(usuarioId, pageable)
                 .map(this::convertir);
-    }
-
-    private void activarCuentaDeAutoRegistro(Membresia membresia) {
-        Usuario cuenta = membresia.getCliente().getUsuario();
-        if (!cuenta.isActivo() && membresia.getCreadaPor().getId().equals(cuenta.getId())) {
-            cuenta.setActivo(true);
-        }
     }
 
     private void actualizarVencimiento(Membresia membresia) {

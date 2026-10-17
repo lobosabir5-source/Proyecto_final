@@ -42,8 +42,11 @@ public class ClienteService {
         if (clienteRepository.existsByCorreo(request.getCorreo())) {
             throw new IllegalArgumentException("El correo ya está registrado");
         }
+        if (clienteRepository.existsByTelefono(request.getTelefono())) {
+            throw new IllegalArgumentException("El celular ya está registrado");
+        }
         Usuario usuario = authService.crearCuentaCliente(request.getUsuario(), request.getPassword());
-        usuario.setActivo(false); // nace inactivo hasta que recepción lo active
+        usuario.setActivo(false); // las cuentas nuevas esperan la activación de administración
         Cliente cliente = clienteRepository.save(new Cliente(usuario, request.getNombre(), request.getCorreo(),
                 request.getTelefono(), request.getFechaNacimiento()));
         return convertir(cliente);
@@ -87,9 +90,13 @@ public class ClienteService {
         cliente.getUsuario().setActivo(false);
     }
 
-    /** Solo recepción activa o desactiva clientes (el admin no puede activarlos). */
+    /** Recepción puede desactivar clientes; la activación queda reservada a administración. */
     @Transactional
     public ClienteRespuesta cambiarEstado(Long id, boolean activo) {
+        if (activo) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Solo un administrador puede activar cuentas de clientes.");
+        }
         Cliente cliente = buscarPorId(id);
         cliente.getUsuario().setActivo(activo);
         return convertir(cliente);
@@ -99,6 +106,10 @@ public class ClienteService {
         if (!cliente.getCorreo().equals(request.getCorreo())
                 && clienteRepository.existsByCorreoAndIdNot(request.getCorreo(), cliente.getId())) {
             throw new IllegalArgumentException("El correo ya está registrado");
+        }
+        if (!cliente.getTelefono().equals(request.getTelefono())
+                && clienteRepository.existsByTelefonoAndIdNot(request.getTelefono(), cliente.getId())) {
+            throw new IllegalArgumentException("El celular ya está registrado");
         }
         cliente.setNombre(request.getNombre());
         cliente.setCorreo(request.getCorreo());

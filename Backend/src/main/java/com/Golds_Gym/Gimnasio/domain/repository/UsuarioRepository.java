@@ -12,5 +12,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     boolean existsByUsuario(String usuario);
 
+    boolean existsByUsuarioIgnoreCase(String usuario);
+
     Page<Usuario> findAllByOrderByUsuarioAsc(Pageable pageable);
 }

@@ -10,6 +10,6 @@ export class PromocionesComponent {
   srv = inject(ClienteService);
 
   fecha(iso: string) {
-    return new Date(iso).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+    return new Date(`${iso}T00:00:00`).toLocaleDateString('es-BO', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 }

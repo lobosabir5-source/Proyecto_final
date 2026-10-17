@@ -1,3 +1,17 @@
 :host {
   display: block;
 }
+
+@media (min-width: 1024px) and (max-height: 820px) {
+  :host main.auth-page {
+    min-height: 100dvh;
+  }
+
+  :host main.auth-page > section:last-of-type {
+    padding-block: 1rem;
+  }
+
+  :host main.auth-page input {
+    padding-block: 0.65rem;
+  }
+}

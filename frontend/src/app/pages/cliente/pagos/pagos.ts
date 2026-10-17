@@ -8,16 +8,10 @@ import { ClienteService } from '../../../services/cliente.service';
 })
 export class PagosComponent {
   srv = inject(ClienteService);
-
-  lista = computed(() =>
-    [...this.srv.pagos()].sort((a, b) => b.fechaPago.localeCompare(a.fechaPago))
-  );
-
-  total = computed(() =>
-    this.srv.pagos().filter(p => p.estado === 1).reduce((a, p) => a + p.monto, 0)
-  );
+  lista = computed(() => [...this.srv.pagos()].sort((a, b) => b.fechaPago.localeCompare(a.fechaPago)));
+  total = computed(() => this.srv.totalPagado());
 
   fecha(iso: string) {
-    return new Date(iso).toLocaleDateString('es-MX');
+    return new Date(iso).toLocaleDateString('es-BO');
   }
 }

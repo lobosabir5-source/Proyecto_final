@@ -17,16 +17,19 @@ public class RegistroRequest {
 	private String usuario;
 	@NotBlank(message = "La contraseña es obligatoria")
 	@Size(min = 8, max = 100, message = "La contraseña debe tener entre 8 y 100 caracteres")
+	@Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9\\s]).{8,100}$", message = "La contraseña debe incluir mayúscula, minúscula, número y símbolo")
 	private String password;
 	@NotBlank(message = "El nombre es obligatorio")
 	@Size(max = 120, message = "El nombre no puede superar 120 caracteres")
+	@Pattern(regexp = "^[\\p{L}][\\p{L} .'-]{1,119}$", message = "El nombre solo puede contener letras, espacios y guiones")
 	private String nombre;
 	@NotBlank(message = "El correo es obligatorio")
 	@Email(message = "El correo no tiene un formato válido")
+	@Pattern(regexp = "^[A-Za-z0-9._%+-]+@gmail\\.com$", message = "Ingresa una dirección @gmail.com válida")
 	@Size(max = 160, message = "El correo no puede superar 160 caracteres")
 	private String correo;
 	@NotBlank(message = "El teléfono es obligatorio")
-	@Pattern(regexp = "^[+0-9 ()-]{7,30}$", message = "El teléfono no tiene un formato válido")
+	@Pattern(regexp = "^[67][0-9]{7}$", message = "Ingresa solo los 8 dígitos de un celular boliviano que empiece con 6 o 7")
 	private String telefono;
 	@NotNull(message = "La fecha de nacimiento es obligatoria")
 	@Past(message = "La fecha de nacimiento debe ser anterior a hoy")

@@ -14,6 +14,7 @@ export interface AuthResponse {
   token: string;
   usuario: string;
   rol: Rol;
+  nombre?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -51,6 +52,11 @@ export class AuthService {
 
   user(): AuthResponse | null {
     return this.currentUser();
+  }
+
+  nombreVisible(): string {
+    const usuario = this.currentUser();
+    return usuario?.nombre?.trim() || usuario?.usuario || '';
   }
 
   isAuthenticated(): boolean {

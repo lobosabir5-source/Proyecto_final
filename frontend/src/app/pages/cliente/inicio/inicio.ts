@@ -1,6 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ClienteService } from '../../../services/cliente.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-inicio',
@@ -10,11 +11,16 @@ import { ClienteService } from '../../../services/cliente.service';
 })
 export class InicioComponent {
   srv = inject(ClienteService);
+  private readonly auth = inject(AuthService);
 
-  nombre = computed(() => this.srv.cliente().nombres);
+  nombre = computed(() => this.auth.nombreVisible().split(/\s+/)[0] || '');
   diasRestantes = computed(() => this.srv.diasRestantes());
-  visitasMes = computed(() => this.srv.asistencias().length);
-  totalPagado = computed(() =>
-    this.srv.pagos().filter(p => p.estado === 1).reduce((a, p) => a + p.monto, 0)
-  );
+  visitasMes = computed(() => {
+    const hoy = new Date();
+    return this.srv.asistencias().filter(a => {
+      const fecha = new Date(`${a.fecha}T00:00:00`);
+      return fecha.getMonth() === hoy.getMonth() && fecha.getFullYear() === hoy.getFullYear();
+    }).length;
+  });
+  totalPagado = computed(() => this.srv.totalPagado());
 }

@@ -20,6 +20,10 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long>, JpaSpec
 
     boolean existsByCorreoAndIdNot(String correo, Long id);
 
+    boolean existsByTelefono(String telefono);
+
+    boolean existsByTelefonoAndIdNot(String telefono, Long id);
+
     Optional<Cliente> findByUsuarioId(Long usuarioId);
 
     Page<Cliente> findAllByOrderByNombreAsc(Pageable pageable);

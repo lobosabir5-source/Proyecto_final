@@ -4,6 +4,7 @@ import com.Golds_Gym.Gimnasio.application.dto.AuthResponse;
 import com.Golds_Gym.Gimnasio.application.dto.LoginRequest;
 import com.Golds_Gym.Gimnasio.application.dto.RegistroRequest;
 import com.Golds_Gym.Gimnasio.application.dto.RegistroRespuesta;
+import com.Golds_Gym.Gimnasio.application.dto.VerificarRegistroRequest;
 import com.Golds_Gym.Gimnasio.application.service.AuthService;
 import com.Golds_Gym.Gimnasio.domain.model.Usuario;
 import org.springframework.http.HttpStatus;
@@ -27,8 +28,15 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegistroRespuesta> registrar(@Valid @RequestBody RegistroRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.registrarCliente(request));
+    public ResponseEntity<MensajeRespuesta> solicitarCodigo(@Valid @RequestBody RegistroRequest request) {
+        authService.solicitarCodigoRegistro(request);
+        return ResponseEntity.ok(new MensajeRespuesta("Te enviamos un código de verificación a tu correo."));
+    }
+
+    @PostMapping("/register/verify")
+    public ResponseEntity<RegistroRespuesta> verificarCodigo(@Valid @RequestBody VerificarRegistroRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(authService.verificarCodigoRegistro(request.registro(), request.codigo()));
     }
 
     @PostMapping("/login")
@@ -39,9 +47,12 @@ public class AuthController {
     @GetMapping("/me")
     public PerfilRespuesta perfil(Authentication authentication) {
         Usuario usuario = (Usuario) authentication.getPrincipal();
-        return new PerfilRespuesta(usuario.getId(), usuario.getUsuario(), usuario.getRol());
+        return new PerfilRespuesta(usuario.getId(), usuario.getUsuario(), authService.nombreVisible(usuario), usuario.getRol());
     }
 
-    public record PerfilRespuesta(Long id, String usuario, com.Golds_Gym.Gimnasio.domain.model.Rol rol) {
+    public record PerfilRespuesta(Long id, String usuario, String nombre, com.Golds_Gym.Gimnasio.domain.model.Rol rol) {
+    }
+
+    public record MensajeRespuesta(String mensaje) {
     }
 }

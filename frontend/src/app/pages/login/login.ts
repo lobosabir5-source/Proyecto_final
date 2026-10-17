@@ -2,13 +2,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { rutaInicio } from '../../guards/auth.guard';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -44,9 +45,12 @@ export class Login {
       },
       error: (error: HttpErrorResponse) => {
         this.loading = false;
+        const respuesta = error.error as { message?: string; detail?: string } | null;
         this.error = error.status === 0
           ? 'No se pudo conectar con el servidor.'
-          : 'Usuario o contraseña incorrectos.';
+          : respuesta?.message || respuesta?.detail || (error.status === 403
+            ? 'Tu cuenta está inactiva. Un administrador debe activarla antes de que puedas iniciar sesión.'
+            : 'Usuario o contraseña incorrectos.');
       },
       complete: () => this.loading = false
     });

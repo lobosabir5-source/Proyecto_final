@@ -32,6 +32,12 @@
   <!-- Grupo de la derecha: ícono de redes sociales + botón de login -->
   <div class="flex items-center gap-4">
 
+    <a routerLink="/registro"
+      class="hidden sm:inline-flex rounded-md bg-yellow-400 px-5 sm:px-6 py-2.5 font-semibold tracking-wide text-neutral-950
+             hover:bg-yellow-300 transition-colors">
+      Registrarme
+    </a>
+
     <!-- Ícono de Facebook: target="_blank" abre en pestaña nueva, rel="noopener noreferrer" es buena práctica de seguridad para links externos -->
     <a href="https://www.facebook.com/profile.php?id=100090296196405"
        target="_blank"
@@ -44,7 +50,7 @@
       </svg>
     </a>
 
-    <button routerLink="/login"
+    <button routerLink="/registro"
       class="rounded-md border border-yellow-400 px-5 sm:px-6 py-2.5 font-semibold tracking-wide text-yellow-400
              hover:bg-yellow-400 hover:text-neutral-950 transition-colors">
       Iniciar sesión
@@ -149,7 +155,7 @@
             </ul>
 
             <!-- Botón: también reacciona levemente al hover (scale + glow) -->
-            <button routerLink="/login"
+            <button routerLink="/registro"
               class="w-full py-3 font-bold tracking-wide text-sm transition-all duration-300 hover:scale-[1.03]"
               [class]="plan.destacado
                 ? 'bg-neutral-950 text-yellow-400 hover:bg-neutral-800'

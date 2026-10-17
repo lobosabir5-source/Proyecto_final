@@ -1,9 +1,11 @@
 import { Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { ClienteService } from '../../../services/cliente.service';
 
 @Component({
   selector: 'app-suscripcion',
   standalone: true,
+  imports: [RouterLink],
   templateUrl: './suscripcion.html'
 })
 export class SuscripcionComponent {

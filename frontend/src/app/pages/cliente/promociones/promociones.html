@@ -1,31 +1,26 @@
 <div class="p-10">
   <header class="mb-8">
-    <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-2">
-      Beneficios / Promociones
-    </p>
-    <h1 class="text-4xl font-black tracking-tight">Promociones activas</h1>
+    <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-2">Beneficios / Promociones</p>
+    <h1 class="text-4xl font-black tracking-tight">Promociones vigentes</h1>
   </header>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    @for (p of srv.promociones(); track p.idPromocion) {
-      <div class="bg-[#111] border border-yellow-500/20 p-7 relative
-                  hover:border-yellow-400 transition">
+    @for (p of srv.promociones(); track p.id) {
+      <article class="bg-[#111] border border-yellow-500/20 p-7 relative hover:border-yellow-400 transition">
         <div class="absolute top-0 right-0 w-8 h-8 border-t border-r border-yellow-400"></div>
-
         <p class="text-[10px] tracking-[0.3em] text-yellow-400/80 uppercase mb-3">
-          -{{ p.descuentoPorcentaje }}% OFF
+          {{ p.tipo === 'PORCENTAJE' ? p.valor + '% de descuento' : 'Bs ' + p.valor + ' de descuento' }}
         </p>
-        <h3 class="text-2xl font-black mb-2">{{ p.titulo }}</h3>
-        <p class="text-sm text-neutral-400 mb-6 min-h-[60px]">{{ p.texto }}</p>
-
-        <div class="border-t border-yellow-500/20 pt-4 mb-4">
-          <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-1">Cupón</p>
-          <p class="text-xl font-black text-yellow-400 tracking-widest">{{ p.codigoCupon }}</p>
+        <h2 class="text-2xl font-black mb-2">{{ p.nombre }}</h2>
+        <p class="text-sm text-neutral-400 mb-6">{{ p.planId ? 'Válida para el plan #' + p.planId : 'Válida para los planes disponibles' }}</p>
+        <div class="border-t border-yellow-500/20 pt-4">
+          <p class="text-[10px] text-neutral-500 tracking-widest uppercase">Vigencia</p>
+          <p class="mt-1 text-sm text-neutral-300">{{ fecha(p.fechaInicio) }} — {{ fecha(p.fechaFin) }}</p>
         </div>
-
-        <p class="text-[10px] text-neutral-500 tracking-widest uppercase">
-          Válido: {{ fecha(p.fechaInicio) }} → {{ fecha(p.fechaFin) }}
-        </p>
+      </article>
+    } @empty {
+      <div class="border border-white/10 bg-[#111] p-8 text-center text-neutral-400 md:col-span-2 lg:col-span-3">
+        No hay promociones vigentes en este momento.
       </div>
     }
   </div>

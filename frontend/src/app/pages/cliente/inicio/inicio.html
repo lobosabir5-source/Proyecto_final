@@ -14,7 +14,7 @@
     <div class="bg-[#111] border border-yellow-500/20 p-6 relative">
       <div class="absolute top-0 right-0 w-6 h-6 border-t border-r border-yellow-400"></div>
       <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-2">Plan actual</p>
-      <p class="text-2xl font-black text-yellow-400">{{ srv.plan().nombre }}</p>
+      <p class="text-2xl font-black text-yellow-400">{{ srv.membresiaActual()?.plan || 'Sin membresía' }}</p>
     </div>
     <div class="bg-[#111] border border-yellow-500/20 p-6 relative">
       <div class="absolute top-0 right-0 w-6 h-6 border-t border-r border-yellow-400"></div>

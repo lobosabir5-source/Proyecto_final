@@ -28,7 +28,7 @@ export class AdminLayout {
   readonly menuAbierto = signal(this.esPantallaGrande());
 
   readonly inicial = computed(() =>
-    (this.authService.user()?.usuario ?? '?').charAt(0).toUpperCase()
+    (this.authService.nombreVisible() || '?').charAt(0).toUpperCase()
   );
 
   alternarMenu(): void {

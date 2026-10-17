@@ -1,6 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { ClienteService } from '../../services/cliente.service';
 
 interface NavItem { label: string; route: string; }
 
@@ -13,7 +14,12 @@ interface NavItem { label: string; route: string; }
 })
 export class ClienteLayoutComponent {
   private readonly auth = inject(AuthService);
-  usuario = computed(() => this.auth.user()?.usuario ?? '');
+  private readonly clienteService = inject(ClienteService);
+  usuario = computed(() => this.auth.nombreVisible());
+
+  constructor() {
+    this.clienteService.cargar();
+  }
 
   menu: { seccion: string; items: NavItem[] }[] = [
     {

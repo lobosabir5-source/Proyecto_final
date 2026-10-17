@@ -1,161 +1,162 @@
-import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject, signal } from '@angular/core';
+import { API_URL } from '../config/api.config';
 
-export interface Plan {
-  idPlan: number;
+export interface PerfilCliente {
+  id: number;
+  usuarioId: number;
+  usuario: string;
   nombre: string;
-  descripcion: string;
-  precio: number;
-  duracionDias: number;
+  correo: string;
+  telefono: string;
+  fechaNacimiento: string;
+  fechaAlta: string;
+  activo: boolean;
 }
 
-export interface Suscripcion {
-  idSuscripcion: number;
-  idPlan: number;
+export interface MembresiaCliente {
+  id: number;
+  clienteId: number;
+  cliente: string;
+  planId: number;
+  plan: string;
   fechaInicio: string;
   fechaFin: string;
-  estado: number;
+  estado: 'PENDIENTE' | 'ACTIVA' | 'POR_VENCER' | 'VENCIDA' | 'CANCELADA';
+  precioTotal: number;
+  pagado: number;
+  saldo: number;
+  precioPlan: number;
+  descuento: number;
+  precioRenovacion: number;
 }
 
-export interface Asistencia {
-  idAsistencia: number;
-  fechaEntrada: string;
-  fechaSalida?: string;
+export interface AsistenciaCliente {
+  id: number;
+  clienteId: number;
+  cliente: string;
+  fecha: string;
+  horaEntrada: string;
+  registradaPor: string;
 }
 
-export interface Pago {
-  idPago: number;
-  idMetodoPago: number;
+export interface PagoCliente {
+  id: number;
+  membresiaId: number;
+  cliente: string;
   monto: number;
-  estado: number;
+  metodo: 'EFECTIVO' | 'TARJETA' | 'TRANSFERENCIA';
   fechaPago: string;
+  registradoPor: string;
 }
 
-export interface EjercicioRutina {
-  idEjercicio: number;
-  diaNum: number;
-  grupoMuscular: string;
-  nombreEjercicio: string;
-  series: number;
-  repeticiones: string;
-  descansoSeg: number;
-  notas: string;
+export interface RutinaCliente {
+  id: number;
+  clienteId: number;
+  cliente: string;
+  nombre: string;
+  contenido: string;
+  fechaCreacion: string;
+  activa: boolean;
 }
 
-export interface RutinaIA {
-  idRutina: number;
-  titulo: string;
-  contexto: string;
-  respuesta: string;
-  duracionSemana: number;
-  creadoEn: string;
-  ejercicios: EjercicioRutina[];
+export interface PromocionCliente {
+  id: number;
+  nombre: string;
+  tipo: 'PORCENTAJE' | 'MONTO';
+  valor: number;
+  fechaInicio: string;
+  fechaFin: string;
+  planId: number | null;
+  activo: boolean;
 }
 
-export interface PermisoAusencia {
-  idPermiso: number;
+export interface PermisoCliente {
+  id: number;
+  membresiaId: number;
   motivo: string;
   diasAgregados: number;
   solicitadoEn: string;
 }
 
-export interface PromocionIA {
-  idPromocion: number;
-  titulo: string;
-  texto: string;
-  codigoCupon: string;
-  descuentoPorcentaje: number;
-  fechaInicio: string;
-  fechaFin: string;
+interface Pagina<T> {
+  content: T[];
 }
 
 @Injectable({ providedIn: 'root' })
 export class ClienteService {
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = `${API_URL}/cliente`;
 
-  // ======= DATOS SIMULADOS DEL CLIENTE LOGUEADO =======
-  cliente = signal({
-    identificacion: '12345678',
-    nombres: 'Juan',
-    apellidos: 'Pérez',
-    email: 'juan@mail.com',
-    telefono: '12345678',
-    pesoKg: 78,
-    alturaCm: 178,
-    diasDisponibles: 20,
-    miembroDesde: '2026-01-10'
-  });
+  readonly perfil = signal<PerfilCliente | null>(null);
+  readonly membresias = signal<MembresiaCliente[]>([]);
+  readonly asistencias = signal<AsistenciaCliente[]>([]);
+  readonly pagos = signal<PagoCliente[]>([]);
+  readonly rutinas = signal<RutinaCliente[]>([]);
+  readonly permisos = signal<PermisoCliente[]>([]);
+  readonly promociones = signal<PromocionCliente[]>([]);
+  readonly cargando = signal(true);
 
-  plan = signal<Plan>({
-    idPlan: 1,
-    nombre: 'Mensual Básico',
-    descripcion: 'Acceso libre en horario normal',
-    precio: 150,
-    duracionDias: 30
-  });
+  private cargado = false;
 
-  suscripcion = signal<Suscripcion>({
-    idSuscripcion: 1,
-    idPlan: 1,
-    fechaInicio: '2026-09-01',
-    fechaFin: '2026-10-01',
-    estado: 1
-  });
+  cargar(): void {
+    if (this.cargado) return;
+    this.cargado = true;
+    let pendientes = 7;
+    const terminado = () => {
+      pendientes--;
+      if (pendientes === 0) this.cargando.set(false);
+    };
 
-  asistencias = signal<Asistencia[]>([
-    { idAsistencia: 1, fechaEntrada: '2026-10-02T08:30:00', fechaSalida: '2026-10-02T10:15:00' },
-    { idAsistencia: 2, fechaEntrada: '2026-09-30T09:00:00', fechaSalida: '2026-09-30T11:00:00' },
-    { idAsistencia: 3, fechaEntrada: '2026-09-28T07:45:00', fechaSalida: '2026-09-28T09:30:00' },
-    { idAsistencia: 4, fechaEntrada: '2026-09-25T08:00:00', fechaSalida: '2026-09-25T10:00:00' },
-    { idAsistencia: 5, fechaEntrada: '2026-09-23T18:30:00', fechaSalida: '2026-09-23T20:15:00' },
-  ]);
-
-  pagos = signal<Pago[]>([
-    { idPago: 1, idMetodoPago: 1, monto: 150, estado: 1, fechaPago: '2026-09-01' },
-    { idPago: 2, idMetodoPago: 2, monto: 150, estado: 1, fechaPago: '2026-08-01' },
-    { idPago: 3, idMetodoPago: 1, monto: 150, estado: 1, fechaPago: '2026-07-01' },
-    { idPago: 4, idMetodoPago: 1, monto: 150, estado: 1, fechaPago: '2026-06-01' },
-  ]);
-
-  rutina = signal<RutinaIA>({
-    idRutina: 1,
-    titulo: 'Plan de Hipertrofia — 4 semanas',
-    contexto: 'Objetivo: ganar masa muscular en tren superior.',
-    respuesta: 'Rutina dividida en 4 días con énfasis en press y jalones.',
-    duracionSemana: 4,
-    creadoEn: '2026-09-20',
-    ejercicios: [
-      { idEjercicio: 1, diaNum: 1, grupoMuscular: 'Pecho',      nombreEjercicio: 'Press banca',        series: 4, repeticiones: '8-10', descansoSeg: 90, notas: 'Codos a 45°' },
-      { idEjercicio: 2, diaNum: 1, grupoMuscular: 'Pecho',      nombreEjercicio: 'Press inclinado mancuernas', series: 3, repeticiones: '10-12', descansoSeg: 60, notas: 'Controlar bajada' },
-      { idEjercicio: 3, diaNum: 1, grupoMuscular: 'Tríceps',    nombreEjercicio: 'Fondos en paralelas', series: 3, repeticiones: '10',   descansoSeg: 60, notas: 'Peso corporal' },
-      { idEjercicio: 4, diaNum: 2, grupoMuscular: 'Espalda',    nombreEjercicio: 'Dominadas',           series: 4, repeticiones: '6-8',  descansoSeg: 90, notas: 'Completas' },
-      { idEjercicio: 5, diaNum: 2, grupoMuscular: 'Espalda',    nombreEjercicio: 'Remo con barra',      series: 4, repeticiones: '8-10', descansoSeg: 90, notas: 'Espalda recta' },
-      { idEjercicio: 6, diaNum: 2, grupoMuscular: 'Bíceps',     nombreEjercicio: 'Curl barra',          series: 3, repeticiones: '10-12', descansoSeg: 60, notas: 'Sin balanceo' },
-      { idEjercicio: 7, diaNum: 3, grupoMuscular: 'Piernas',    nombreEjercicio: 'Sentadilla',          series: 4, repeticiones: '8-10', descansoSeg: 120, notas: 'Profundidad paralela' },
-      { idEjercicio: 8, diaNum: 3, grupoMuscular: 'Piernas',    nombreEjercicio: 'Peso muerto rumano',  series: 3, repeticiones: '10',   descansoSeg: 90, notas: 'Sentir isquios' },
-      { idEjercicio: 9, diaNum: 4, grupoMuscular: 'Hombros',    nombreEjercicio: 'Press militar',       series: 4, repeticiones: '8-10', descansoSeg: 90, notas: 'Core activo' },
-      { idEjercicio: 10, diaNum: 4, grupoMuscular: 'Hombros',   nombreEjercicio: 'Elevaciones laterales', series: 3, repeticiones: '12-15', descansoSeg: 45, notas: 'Ligero' },
-    ]
-  });
-
-  permisos = signal<PermisoAusencia[]>([
-    { idPermiso: 1, motivo: 'Viaje familiar',       diasAgregados: 5, solicitadoEn: '2026-08-15' },
-    { idPermiso: 2, motivo: 'Lesión de rodilla',    diasAgregados: 10, solicitadoEn: '2026-05-20' },
-  ]);
-
-  promociones = signal<PromocionIA[]>([
-    { idPromocion: 1, titulo: 'Trae un amigo',        texto: '20% de descuento en tu próxima renovación al traer un amigo.', codigoCupon: 'AMIGO',  descuentoPorcentaje: 20, fechaInicio: '2026-09-01', fechaFin: '2026-10-31' },
-    { idPromocion: 2, titulo: 'Renovación anticipada', texto: 'Renueva 15 días antes y llévate 1 mes de regalo.',           codigoCupon: 'ANTICIPA', descuentoPorcentaje: 15, fechaInicio: '2026-09-15', fechaFin: '2026-12-31' },
-    { idPromocion: 3, titulo: 'Plan Anual Elite',      texto: 'Cambia al plan anual y ahorra 30% respecto al mensual.',      codigoCupon: 'ELITE30',  descuentoPorcentaje: 30, fechaInicio: '2026-08-01', fechaFin: '2026-12-31' },
-  ]);
-
-  // ======= HELPERS =======
-  diasRestantes(): number {
-    const fin = new Date(this.suscripcion().fechaFin).getTime();
-    const hoy = Date.now();
-    const diff = Math.ceil((fin - hoy) / (1000 * 60 * 60 * 24));
-    return diff > 0 ? diff : 0;
+    this.http.get<PerfilCliente>(`${this.apiUrl}/perfil`).subscribe({
+      next: perfil => this.perfil.set(perfil),
+      error: () => { this.perfil.set(null); terminado(); },
+      complete: terminado
+    });
+    this.cargarPagina<MembresiaCliente>('membresias', datos => this.membresias.set(datos), terminado);
+    this.cargarPagina<AsistenciaCliente>('asistencias', datos => this.asistencias.set(datos), terminado);
+    this.cargarPagina<PagoCliente>('pagos', datos => this.pagos.set(datos), terminado);
+    this.cargarPagina<RutinaCliente>('rutinas', datos => this.rutinas.set(datos), terminado);
+    this.http.get<PermisoCliente[]>(`${this.apiUrl}/permisos`).subscribe({
+      next: datos => this.permisos.set(datos),
+      error: () => { this.permisos.set([]); terminado(); },
+      complete: terminado
+    });
+    this.http.get<PromocionCliente[]>(`${this.apiUrl}/promociones`).subscribe({
+      next: datos => this.promociones.set(datos),
+      error: () => { this.promociones.set([]); terminado(); },
+      complete: terminado
+    });
   }
 
-  metodoPago(id: number): string {
-    return { 1: 'Efectivo', 2: 'Tarjeta', 3: 'Transferencia' }[id] ?? '—';
+  membresiaActual(): MembresiaCliente | null {
+    return this.membresias().find(m => m.estado === 'ACTIVA' || m.estado === 'POR_VENCER')
+      ?? this.membresias()[0]
+      ?? null;
+  }
+
+  diasRestantes(): number {
+    const fin = this.membresiaActual()?.fechaFin;
+    if (!fin) return 0;
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const fechaFin = new Date(`${fin}T00:00:00`);
+    return Math.max(0, Math.ceil((fechaFin.getTime() - hoy.getTime()) / 86_400_000));
+  }
+
+  totalPagado(): number {
+    return this.pagos().reduce((total, pago) => total + Number(pago.monto), 0);
+  }
+
+  metodoPago(metodo: PagoCliente['metodo']): string {
+    return ({ EFECTIVO: 'Efectivo', TARJETA: 'Tarjeta', TRANSFERENCIA: 'Transferencia' })[metodo];
+  }
+
+  private cargarPagina<T>(ruta: string, guardar: (datos: T[]) => void, terminado: () => void): void {
+    this.http.get<Pagina<T>>(`${this.apiUrl}/${ruta}?page=0&size=100`).subscribe({
+      next: pagina => guardar(pagina.content ?? []),
+      error: () => { guardar([]); terminado(); },
+      complete: terminado
+    });
   }
 }

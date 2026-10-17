@@ -35,9 +35,6 @@ public class UsuarioAdminService {
         if (id.equals(administradorId) && !activo) {
             throw new IllegalArgumentException("No puedes desactivar tu propia cuenta");
         }
-        if (activo && usuario.getRol() == Rol.CLIENTE) {
-            throw new IllegalArgumentException("Solo recepción puede activar a un cliente");
-        }
         usuario.setActivo(activo);
         return convertir(usuario);
     }
@@ -61,8 +58,8 @@ public class UsuarioAdminService {
             throw new IllegalArgumentException("No puedes cambiar tu propio nombre de usuario");
         }
         if (!usuario.getUsuario().equals(request.usuario())
-                && usuarioRepository.existsByUsuario(request.usuario())) {
-            throw new IllegalArgumentException("el usuario ya existe");
+                && usuarioRepository.existsByUsuarioIgnoreCase(request.usuario())) {
+            throw new IllegalArgumentException("Ese nombre de usuario ya está en uso");
         }
 
         usuario.setUsuario(request.usuario());

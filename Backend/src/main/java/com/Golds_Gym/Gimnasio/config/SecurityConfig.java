@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                     // Deja pasar el reenvío interno de errores para que el cliente vea el código real (404, 405, 500...)
                     .requestMatchers("/error").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register", "/api/auth/register/verify").permitAll()
                     // Cualquiera (sin sesión) puede LEER el catálogo público y las imágenes. Solo GET: nadie puede escribir.
                     .requestMatchers(HttpMethod.GET, "/api/public/**", "/uploads/**").permitAll()
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")

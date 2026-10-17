@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { ClienteService } from '../../../services/cliente.service';
 
 @Component({
@@ -8,14 +8,9 @@ import { ClienteService } from '../../../services/cliente.service';
 })
 export class RutinasComponent {
   srv = inject(ClienteService);
-  diaActivo = signal(1);
+  lista = computed(() => this.srv.rutinas());
 
-  dias = computed(() => {
-    const set = new Set(this.srv.rutina().ejercicios.map(e => e.diaNum));
-    return Array.from(set).sort();
-  });
-
-  ejerciciosDia = computed(() =>
-    this.srv.rutina().ejercicios.filter(e => e.diaNum === this.diaActivo())
-  );
+  fecha(iso: string) {
+    return new Date(iso).toLocaleDateString('es-BO', { day: '2-digit', month: 'long', year: 'numeric' });
+  }
 }

@@ -12,7 +12,7 @@
     <section class="sidebar__profile">
       <span class="sidebar__avatar">{{ inicial() }}</span>
       <div>
-        <p class="sidebar__user">{{ authService.user()?.usuario }}</p>
+        <p class="sidebar__user">{{ authService.nombreVisible() }}</p>
         <p class="sidebar__role">{{ authService.user()?.rol }}</p>
       </div>
     </section>
@@ -43,7 +43,7 @@
 
       <div class="topbar__actions">
         <span class="topbar__user">
-          Sesión de <strong>{{ authService.user()?.usuario }}</strong>
+          Sesión de <strong>{{ authService.nombreVisible() }}</strong>
         </span>
         <button type="button" class="btn btn-secondary btn-sm" (click)="cerrarSesion()">
           <app-icon nombre="logout" />

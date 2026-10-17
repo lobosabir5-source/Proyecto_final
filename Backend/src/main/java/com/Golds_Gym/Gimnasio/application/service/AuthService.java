@@ -35,6 +35,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final CodigoRegistroService codigoRegistroService;
 
     public AuthService(
             UsuarioRepository usuarioRepository,
@@ -43,7 +44,8 @@ public class AuthService {
             MembresiaRepository membresiaRepository,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
-            JwtService jwtService) {
+            JwtService jwtService,
+            CodigoRegistroService codigoRegistroService) {
         this.usuarioRepository = usuarioRepository;
         this.clienteRepository = clienteRepository;
         this.planRepository = planRepository;
@@ -51,20 +53,25 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.codigoRegistroService = codigoRegistroService;
+    }
+
+    public void solicitarCodigoRegistro(RegistroRequest request) {
+        validarDisponibilidadRegistro(request);
+        codigoRegistroService.enviar(request);
+    }
+
+    @Transactional
+    public RegistroRespuesta verificarCodigoRegistro(RegistroRequest request, String codigo) {
+        codigoRegistroService.validar(request, codigo);
+        return registrarCliente(request);
     }
 
     @Transactional
     public RegistroRespuesta registrarCliente(RegistroRequest request) {
-        if (clienteRepository.existsByCorreo(request.getCorreo())) {
-            throw new IllegalArgumentException("El correo ya está registrado");
-        }
+        validarDisponibilidadRegistro(request);
         Plan plan = planRepository.findByIdAndActivoTrue(request.getPlanId())
                 .orElseThrow(() -> new IllegalArgumentException("El plan elegido ya no está disponible"));
-
-        validarDatos(request.getUsuario(), request.getPassword());
-        if (usuarioRepository.existsByUsuario(request.getUsuario())) {
-            throw new IllegalArgumentException("el usuario ya existe");
-        }
 
         Usuario usuario = new Usuario(request.getUsuario(), passwordEncoder.encode(request.getPassword()), Rol.CLIENTE);
         usuario.setActivo(false);
@@ -84,7 +91,23 @@ public class AuthService {
                 membresia.getId(),
                 plan.getNombre(),
                 membresia.getPrecioTotal(),
-                "Cuenta creada. Se activará cuando recepción confirme tu pago.");
+                "Correo verificado. Tu cuenta quedará inactiva hasta que un administrador revise y apruebe tu registro.");
+    }
+
+    private void validarDisponibilidadRegistro(RegistroRequest request) {
+        if (clienteRepository.existsByCorreo(request.getCorreo())) {
+            throw new IllegalArgumentException("El correo ya está registrado");
+        }
+        if (clienteRepository.existsByTelefono(request.getTelefono())) {
+            throw new IllegalArgumentException("El celular ya está registrado");
+        }
+        planRepository.findByIdAndActivoTrue(request.getPlanId())
+                .orElseThrow(() -> new IllegalArgumentException("El plan elegido ya no está disponible"));
+
+        validarDatos(request.getUsuario(), request.getPassword());
+        if (usuarioRepository.existsByUsuarioIgnoreCase(request.getUsuario())) {
+            throw new IllegalArgumentException("Ese nombre de usuario ya está en uso");
+        }
     }
 
     public AuthResponse iniciarSesion(LoginRequest request) {
@@ -108,8 +131,8 @@ public class AuthService {
         boolean pendienteDePago = membresiaRepository.existsByCliente_Usuario_IdAndCreadaPor_IdAndEstado(
                 usuario.getId(), usuario.getId(), EstadoMembresia.PENDIENTE);
         return new CuentaInactivaException(pendienteDePago
-                ? "Tu cuenta está pendiente de pago. Acércate a recepción para confirmarlo y activarla."
-                : "Tu cuenta está desactivada. Comunícate con el gimnasio.");
+                ? "Tu cuenta está pendiente de pago y aprobación. Un administrador debe activarla antes de que puedas iniciar sesión."
+                : "Tu cuenta está desactivada. Comunícate con administración.");
     }
 
     public Usuario crearUsuario(String nombre, String password, Rol rol) {
@@ -129,14 +152,28 @@ public class AuthService {
     }
 
     private Usuario crearCuenta(String nombre, String password, Rol rol) {
-        if (usuarioRepository.existsByUsuario(nombre)) {
-            throw new IllegalArgumentException("el usuario ya existe");
+        if (usuarioRepository.existsByUsuarioIgnoreCase(nombre)) {
+            throw new IllegalArgumentException("Ese nombre de usuario ya está en uso");
         }
         return usuarioRepository.save(new Usuario(nombre, passwordEncoder.encode(password), rol));
     }
 
     private AuthResponse generarRespuesta(Usuario usuario) {
-        return new AuthResponse(jwtService.generarToken(usuario), usuario.getUsuario(), usuario.getRol());
+        return new AuthResponse(
+                jwtService.generarToken(usuario),
+                usuario.getUsuario(),
+                nombreVisible(usuario),
+                usuario.getRol());
+    }
+
+    @Transactional(readOnly = true)
+    public String nombreVisible(Usuario usuario) {
+        if (usuario.getRol() == Rol.CLIENTE) {
+            return clienteRepository.findByUsuarioId(usuario.getId())
+                    .map(Cliente::getNombre)
+                    .orElse(usuario.getUsuario());
+        }
+        return usuario.getUsuario();
     }
 
     private void validarDatos(String usuario, String password) {

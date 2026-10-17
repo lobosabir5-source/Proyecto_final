@@ -26,21 +26,21 @@
         </tr>
       </thead>
       <tbody>
-        @for (p of lista(); track p.idPago) {
+        @for (p of lista(); track p.id) {
           <tr class="border-b border-white/5 hover:bg-yellow-400/5 transition">
             <td class="px-6 py-4 font-semibold">{{ fecha(p.fechaPago) }}</td>
-            <td class="px-6 py-4 text-neutral-400">{{ srv.metodoPago(p.idMetodoPago) }}</td>
+            <td class="px-6 py-4 text-neutral-400">{{ srv.metodoPago(p.metodo) }}</td>
             <td class="px-6 py-4 text-right text-yellow-300 font-semibold">
               Bs {{ p.monto }}
             </td>
             <td class="px-6 py-4 text-right">
-              <span [class]="p.estado === 1
-                ? 'px-2 py-1 text-[10px] tracking-widest uppercase border border-yellow-400/60 text-yellow-300'
-                : 'px-2 py-1 text-[10px] tracking-widest uppercase border border-neutral-600 text-neutral-500'">
-                {{ p.estado === 1 ? 'Pagado' : 'Pendiente' }}
+              <span class="px-2 py-1 text-[10px] tracking-widest uppercase border border-yellow-400/60 text-yellow-300">
+                Registrado
               </span>
             </td>
           </tr>
+        } @empty {
+          <tr><td colspan="4" class="px-6 py-10 text-center text-neutral-500">Todavía no tienes pagos registrados.</td></tr>
         }
       </tbody>
     </table>

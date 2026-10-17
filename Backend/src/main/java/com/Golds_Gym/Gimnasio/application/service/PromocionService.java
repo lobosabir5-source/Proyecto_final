@@ -53,6 +53,13 @@ public class PromocionService {
     }
 
     @Transactional(readOnly = true)
+    public java.util.List<PromocionRespuesta> listarVigentes() {
+        java.time.LocalDate hoy = java.time.LocalDate.now();
+        return promociones.findByActivoTrueAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(hoy, hoy)
+                .stream().map(this::respuesta).toList();
+    }
+
+    @Transactional(readOnly = true)
     public PromocionRespuesta obtener(Long id) {
         return respuesta(promociones.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
