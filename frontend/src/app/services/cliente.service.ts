@@ -142,6 +142,7 @@ export class ClienteService {
     hoy.setHours(0, 0, 0, 0);
     const fechaFin = new Date(`${fin}T00:00:00`);
     return Math.max(0, Math.ceil((fechaFin.getTime() - hoy.getTime()) / 86_400_000));
+
   }
 
   totalPagado(): number {

@@ -43,7 +43,7 @@
               <td><span [class]="claseRol(usuario.rol)">{{ etiquetaRol(usuario.rol) }}</span></td>
               <td>
                 <span class="badge" [class.badge-success]="usuario.activo" [class.badge-muted]="!usuario.activo">
-                  {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+
                 </span>
               </td>
               <td class="cell-actions">
@@ -52,7 +52,7 @@
                   @if (esPersonal(usuario)) {
                     <button type="button" class="btn btn-secondary btn-sm" (click)="abrirEdicion(usuario)">
                       <app-icon nombre="edit" />
-                      Editar
+
                     </button>
                   }
 
@@ -65,7 +65,7 @@
                     [title]="esCuentaPropia(usuario) ? 'No puedes desactivar tu propia cuenta' : ''"
                     (click)="pedirCambioEstado(usuario)">
                     <app-icon [nombre]="usuario.activo ? 'ban' : 'check'" />
-                    {{ usuario.activo ? 'Desactivar' : 'Activar' }}
+
                   </button>
                 </div>
               </td>
