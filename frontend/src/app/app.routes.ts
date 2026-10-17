@@ -22,6 +22,7 @@ export const routes: Routes = [
       { path: 'dashboard', loadComponent: () => import('./pages/admin/dashboard/admin-dashboard').then(m => m.AdminDashboard) },
       { path: 'usuarios',  loadComponent: () => import('./pages/admin/usuarios/admin-usuarios').then(m => m.AdminUsuarios) },
       { path: 'planes',    loadComponent: () => import('./pages/admin/planes/admin-planes').then(m => m.AdminPlanes) },
+      { path: 'promociones', loadComponent: () => import('./pages/admin/promociones/admin-promociones').then(m => m.AdminPromociones) },
     ]
   },
   // ---------- RECEPCIÓN ----------
