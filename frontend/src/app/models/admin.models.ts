@@ -44,13 +44,47 @@ export interface Plan {
   duracionDias: number;
   precio: number;
   activo: boolean;
+  horario?: string | null;
+  beneficios?: string[];
+  imagenUrl?: string | null;
+  destacado?: boolean;
+  orden?: number;
 }
 
 export interface GuardarPlan {
   nombre: string;
   descripcion: string;
-  duracionDias: number;
+  duracionDias: number | null;
   precio: number | null;
+  horario: string;
+  beneficios: string[];
+  destacado: boolean;
+  orden: number | null;
+  /** El backend actual lo ignora; el frontend lo usa para decidir si hay que desactivar/reactivar. */
+  activo: boolean;
+}
+
+export type TipoDescuento = 'PORCENTAJE' | 'MONTO';
+
+export interface Promocion {
+  id: number;
+  nombre: string;
+  tipo: TipoDescuento;
+  valor: number;
+  fechaInicio: string;
+  fechaFin: string;
+  planId: number | null;
+  activo: boolean;
+}
+
+export interface GuardarPromocion {
+  nombre: string;
+  tipo: TipoDescuento;
+  valor: number | null;
+  fechaInicio: string;
+  fechaFin: string;
+  planId: number | null;
+  activo: boolean;
 }
 
 export interface ReporteResumen {

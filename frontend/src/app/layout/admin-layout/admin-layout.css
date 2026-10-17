@@ -7,7 +7,7 @@
 /* ---------- Sidebar ---------- */
 .sidebar { @apply fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col overflow-y-auto bg-slate-800 text-slate-300 transition-transform duration-200; }
 .sidebar--open { @apply translate-x-0; }
-
+fv
 .sidebar__brand { @apply flex items-center gap-3 bg-slate-900 px-5 py-4; }
 .sidebar__logo { @apply grid h-9 w-9 place-items-center rounded bg-yellow-400 font-black text-slate-900; }
 .sidebar__name { @apply font-semibold leading-none text-white; }

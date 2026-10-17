@@ -19,20 +19,16 @@ import { leerErrorApi } from '../../../utils/api-error';
   styleUrl: './admin-dashboard.css'
 })
 export class AdminDashboard implements OnInit {
-  // Servicios para pedir datos al backend
   private readonly reporteService = inject(ReporteService);
   private readonly planService = inject(PlanAdminService);
   private readonly usuarioService = inject(UsuarioService);
   readonly authService = inject(AuthService);
 
-  // Estado de la pantalla (signals: cuando cambian, la vista se actualiza sola)
   readonly cargando = signal(false);
   readonly error = signal('');
   readonly resumen = signal<ReporteResumen | null>(null);
   readonly planes = signal<Plan[]>([]);
   readonly usuarios = signal<UsuarioAdmin[]>([]);
-  
-  // Valores calculados a partir de lo anterior
 
   readonly planesActivos = computed(() => this.planes().filter(plan => plan.activo));
 
@@ -50,14 +46,13 @@ export class AdminDashboard implements OnInit {
   );
 
   ngOnInit(): void {
-    this.cargar();  // se ejecuta al abrir la pantalla
+    this.cargar();
   }
 
   cargar(): void {
     this.cargando.set(true);
     this.error.set('');
-     
-    // Hace las 3 peticiones a la vez y espera a que terminen todas
+
     forkJoin({
       resumen: this.reporteService.resumen(),
       planes: this.planService.listar(),

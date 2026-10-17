@@ -21,7 +21,8 @@ export class AdminLayout {
   readonly menu: ItemMenu[] = [
     { ruta: '/admin/dashboard', etiqueta: 'Dashboard', icono: 'dashboard' },
     { ruta: '/admin/usuarios', etiqueta: 'Usuarios', icono: 'users' },
-    { ruta: '/admin/planes', etiqueta: 'Planes', icono: 'tag' }
+    { ruta: '/admin/planes', etiqueta: 'Planes', icono: 'tag' },
+    { ruta: '/admin/promociones', etiqueta: 'Promociones', icono: 'percent' }
   ];
 
   readonly menuAbierto = signal(this.esPantallaGrande());

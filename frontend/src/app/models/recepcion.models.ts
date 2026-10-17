@@ -50,3 +50,43 @@ export interface Pago {
   estado: number;
   fechaPago: string;
 }
+
+export interface ClienteRecepcion {
+  id: number;
+  usuarioId: number;
+  usuario: string;
+  nombre: string;
+  correo: string;
+  telefono: string;
+  numeroDocumento?: string | null;
+  fotoUrl?: string | null;
+  fechaNacimiento: string;
+  fechaAlta: string;
+  activo: boolean;
+}
+
+export interface FiltrosCliente {
+  nombre: string;
+  correo: string;
+  telefono: string;
+  documento: string;
+  estado: '' | 'true' | 'false';
+}
+
+export interface CrearClienteRecepcion {
+  usuario: string;
+  password: string;
+  nombre: string;
+  numeroDocumento: string;
+  correo: string;
+  telefono: string;
+  fechaNacimiento: string;
+}
+
+export interface ActualizarClienteRecepcion {
+  nombre: string;
+  numeroDocumento: string;
+  correo: string;
+  telefono: string;
+  fechaNacimiento: string;
+}

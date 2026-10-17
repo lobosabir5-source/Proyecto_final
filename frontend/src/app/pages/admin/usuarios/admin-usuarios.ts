@@ -88,7 +88,7 @@ export class AdminUsuarios implements OnInit {
     }
   }
 
-  //  Crear oEditar 
+  // ---------- Crear / Editar ----------
   abrirModal(): void {
     this.editando.set(null);
     this.formulario = this.formularioVacio();
@@ -218,7 +218,7 @@ export class AdminUsuarios implements OnInit {
       : `"${usuario.usuario}" podrá volver a iniciar sesión.`;
   }
 
-  // Presentación
+  // ---------- Presentación ----------
   etiquetaRol(rol: Rol): string {
     const etiquetas: Record<Rol, string> = {
       ADMIN: 'Administrador',
