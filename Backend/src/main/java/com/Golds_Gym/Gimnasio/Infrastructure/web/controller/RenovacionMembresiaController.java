@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/recepcion/membresias")
-@PreAuthorize("hasAnyRole('ADMIN','RECEPCION')")
+@PreAuthorize("hasAnyRole('ADMIN','RECEPCIONISTA')")
 public class RenovacionMembresiaController {
     private final RenovacionMembresiaService servicio;
 

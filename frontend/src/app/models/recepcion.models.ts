@@ -90,3 +90,51 @@ export interface ActualizarClienteRecepcion {
   telefono: string;
   fechaNacimiento: string;
 }
+export type EstadoMembresia = 'PENDIENTE' | 'ACTIVA' | 'POR_VENCER' | 'VENCIDA' | 'CANCELADA';
+
+export interface Membresia {
+  id: number;
+  clienteId: number;
+  cliente: string;
+  planId: number;
+  plan: string;
+  fechaInicio: string;
+  fechaFin: string;
+  estado: EstadoMembresia;
+  precioTotal: number;
+  pagado: number;
+  saldo: number;
+  precioPlan: number;
+  descuento: number;
+  precioRenovacion: number;
+}
+
+export interface HistorialMembresia {
+  id: number;
+  membresiaId: number;
+  fechaAnterior: string;
+  fechaNueva: string;
+  precioAplicado: number;
+  fechaOperacion: string;
+  operacion: string;
+  descuento: number;
+}
+
+export interface PagoReciente {
+  id: number;
+  membresiaId: number;
+  cliente: string;
+  monto: number;
+  metodo: string;
+  fechaPago: string;
+}
+
+export interface ResumenRecepcion {
+  clientesActivos: number;
+  asistenciasDeHoy: number;
+  membresiasPorVencer: number;
+  ingresosDelMes: number;
+  proximasAVencer: Membresia[];
+  clientesRecientes: ClienteRecepcion[];
+  pagosRecientes: PagoReciente[];
+}

@@ -43,6 +43,7 @@ public class ClienteService {
             throw new IllegalArgumentException("El correo ya está registrado");
         }
         Usuario usuario = authService.crearCuentaCliente(request.getUsuario(), request.getPassword());
+        usuario.setActivo(false); // nace inactivo hasta que recepción lo active
         Cliente cliente = clienteRepository.save(new Cliente(usuario, request.getNombre(), request.getCorreo(),
                 request.getTelefono(), request.getFechaNacimiento()));
         return convertir(cliente);
@@ -86,6 +87,14 @@ public class ClienteService {
         cliente.getUsuario().setActivo(false);
     }
 
+    /** Solo recepción activa o desactiva clientes (el admin no puede activarlos). */
+    @Transactional
+    public ClienteRespuesta cambiarEstado(Long id, boolean activo) {
+        Cliente cliente = buscarPorId(id);
+        cliente.getUsuario().setActivo(activo);
+        return convertir(cliente);
+    }
+
     private void actualizarDatos(Cliente cliente, ActualizarClienteRequest request) {
         if (!cliente.getCorreo().equals(request.getCorreo())
                 && clienteRepository.existsByCorreoAndIdNot(request.getCorreo(), cliente.getId())) {
@@ -100,6 +109,11 @@ public class ClienteService {
     private Cliente buscarPorId(Long id) {
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado"));
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<ClienteRespuesta> recientes() {
+        return clienteRepository.findTop5ByOrderByFechaAltaDescIdDesc().stream().map(this::convertir).toList();
     }
 
     private ClienteRespuesta convertir(Cliente cliente) {

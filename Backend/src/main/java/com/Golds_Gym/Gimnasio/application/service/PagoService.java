@@ -68,6 +68,11 @@ public class PagoService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public List<PagoRespuesta> recientes() {
+        return pagoRepository.findTop5ByOrderByFechaPagoDesc().stream().map(this::convertir).toList();
+    }
+
     private PagoRespuesta convertir(Pago pago) {
         return new PagoRespuesta(
                 pago.getId(),

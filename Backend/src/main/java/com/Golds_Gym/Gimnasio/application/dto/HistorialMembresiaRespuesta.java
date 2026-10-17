@@ -8,4 +8,5 @@ public record HistorialMembresiaRespuesta(
         LocalDate fechaNueva,
         BigDecimal precioAplicado,
         LocalDateTime fechaOperacion,
-        String operacion) {}
+        String operacion,
+        BigDecimal descuento) {}

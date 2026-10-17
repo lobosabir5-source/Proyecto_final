@@ -1,6 +1,7 @@
 package com.Golds_Gym.Gimnasio.application.service;
 
 import com.Golds_Gym.Gimnasio.application.dto.CrearMembresiaRequest;
+import com.Golds_Gym.Gimnasio.application.dto.EditarMembresiaRequest;
 import com.Golds_Gym.Gimnasio.application.dto.MembresiaRespuesta;
 import com.Golds_Gym.Gimnasio.domain.model.Cliente;
 import com.Golds_Gym.Gimnasio.domain.model.EstadoMembresia;
@@ -29,16 +30,22 @@ public class MembresiaService {
     private final ClienteRepository clienteRepository;
     private final PlanRepository planRepository;
     private final PagoRepository pagoRepository;
+    private final PromocionService promocionService;
+
+    /** Días antes del vencimiento en que una membresía pasa a POR_VENCER. */
+    public static final int DIAS_POR_VENCER = 7;
 
     public MembresiaService(
             MembresiaRepository membresiaRepository,
             ClienteRepository clienteRepository,
             PlanRepository planRepository,
-            PagoRepository pagoRepository) {
+            PagoRepository pagoRepository,
+            PromocionService promocionService) {
         this.membresiaRepository = membresiaRepository;
         this.clienteRepository = clienteRepository;
         this.planRepository = planRepository;
         this.pagoRepository = pagoRepository;
+        this.promocionService = promocionService;
     }
 
     @Transactional
@@ -82,6 +89,36 @@ public class MembresiaService {
                 .map(this::convertirActualizandoEstado);
     }
 
+    /**
+     * Edita las fechas de una membresía y ajusta el estado según la fecha de fin.
+     * Si está PENDIENTE (sin pagar) se mantiene así hasta que se registre el pago.
+     */
+    @Transactional
+    public MembresiaRespuesta editar(Long id, EditarMembresiaRequest request) {
+        Membresia membresia = buscarPorId(id);
+        if (membresia.getEstado() == EstadoMembresia.CANCELADA) {
+            throw new IllegalArgumentException("No se puede editar una membresía cancelada");
+        }
+        if (request.fechaFin().isBefore(request.fechaInicio())) {
+            throw new IllegalArgumentException("La fecha de fin no puede ser anterior a la fecha de inicio");
+        }
+
+        membresia.setFechaInicio(request.fechaInicio());
+        membresia.setFechaFin(request.fechaFin());
+
+        if (membresia.getEstado() != EstadoMembresia.PENDIENTE) {
+            LocalDate hoy = LocalDate.now();
+            if (request.fechaFin().isBefore(hoy)) {
+                membresia.setEstado(EstadoMembresia.VENCIDA);
+            } else if (!request.fechaFin().isAfter(hoy.plusDays(DIAS_POR_VENCER))) {
+                membresia.setEstado(EstadoMembresia.POR_VENCER);
+            } else {
+                membresia.setEstado(EstadoMembresia.ACTIVA);
+            }
+        }
+        return convertir(membresia);
+    }
+
     @Transactional
     public void cancelar(Long id) {
         Membresia membresia = buscarPorId(id);
@@ -96,8 +133,19 @@ public class MembresiaService {
                 || membresia.getEstado() == EstadoMembresia.PENDIENTE)
                 && membresia.getFechaFin().isBefore(LocalDate.now())) {
             membresia.setEstado(EstadoMembresia.VENCIDA);
+        } else if (membresia.getEstado() == EstadoMembresia.ACTIVA
+                && !membresia.getFechaFin().isAfter(LocalDate.now().plusDays(DIAS_POR_VENCER))) {
+            membresia.setEstado(EstadoMembresia.POR_VENCER);
         }
         return convertir(membresia);
+    }
+
+    @Transactional
+    public java.util.List<MembresiaRespuesta> proximasAVencer() {
+        LocalDate hoy = LocalDate.now();
+        return membresiaRepository.findByEstadoInAndFechaInicioLessThanEqualAndFechaFinBetweenOrderByFechaFinAsc(
+                EnumSet.of(EstadoMembresia.ACTIVA, EstadoMembresia.POR_VENCER), hoy, hoy,
+                hoy.plusDays(DIAS_POR_VENCER)).stream().map(this::convertirActualizandoEstado).toList();
     }
 
     private Membresia buscarPorId(Long id) {
@@ -108,6 +156,9 @@ public class MembresiaService {
     private MembresiaRespuesta convertir(Membresia membresia) {
         BigDecimal pagado = pagoRepository.totalPorMembresia(membresia.getId());
         BigDecimal saldo = membresia.getPrecioTotal().subtract(pagado).max(BigDecimal.ZERO);
+        BigDecimal precioPlan = membresia.getPlan().getPrecio();
+        BigDecimal precioRenovacion = promocionService.aplicar(precioPlan, membresia.getPlan().getId(), LocalDate.now());
+        BigDecimal descuento = precioPlan.subtract(precioRenovacion).max(BigDecimal.ZERO);
         return new MembresiaRespuesta(
                 membresia.getId(),
                 membresia.getCliente().getId(),
@@ -119,6 +170,9 @@ public class MembresiaService {
                 membresia.getEstado(),
                 membresia.getPrecioTotal(),
                 pagado,
-                saldo);
+                saldo,
+                precioPlan,
+                descuento,
+                precioRenovacion);
     }
 }

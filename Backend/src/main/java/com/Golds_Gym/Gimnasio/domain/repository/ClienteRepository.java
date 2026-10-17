@@ -12,6 +12,10 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long>, JpaSpec
     boolean existsByNumeroDocumentoAndIdNot(String numeroDocumento,Long id);
     long countByUsuario_ActivoTrue();
 
+    long countByFechaAltaBetween(java.time.LocalDate desde, java.time.LocalDate hasta);
+
+    java.util.List<Cliente> findTop5ByOrderByFechaAltaDescIdDesc();
+
     boolean existsByCorreo(String correo);
 
     boolean existsByCorreoAndIdNot(String correo, Long id);

@@ -16,5 +16,8 @@ public record MembresiaRespuesta(
         EstadoMembresia estado,
         BigDecimal precioTotal,
         BigDecimal pagado,
-        BigDecimal saldo) {
+        BigDecimal saldo,
+        BigDecimal precioPlan,
+        BigDecimal descuento,
+        BigDecimal precioRenovacion) {
 }

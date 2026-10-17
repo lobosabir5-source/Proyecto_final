@@ -35,6 +35,9 @@ public class UsuarioAdminService {
         if (id.equals(administradorId) && !activo) {
             throw new IllegalArgumentException("No puedes desactivar tu propia cuenta");
         }
+        if (activo && usuario.getRol() == Rol.CLIENTE) {
+            throw new IllegalArgumentException("Solo recepción puede activar a un cliente");
+        }
         usuario.setActivo(activo);
         return convertir(usuario);
     }

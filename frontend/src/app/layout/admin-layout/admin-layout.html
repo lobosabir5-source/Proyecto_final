@@ -1,13 +1,13 @@
 <div class="shell">
 
   <aside class="sidebar" [class.sidebar--open]="menuAbierto()">
-    <div class="sidebar__brand">
-      <span class="sidebar__logo">G</span>
-      <div>
-        <p class="sidebar__name">Gold's Gym</p>
-        <p class="sidebar__tag">Administración</p>
-      </div>
-    </div>
+ <div class="sidebar__brand" style="display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;background:#0f172a">
+  <span class="sidebar__logo" style="display:flex;align-items:center;justify-content:center;flex:0 0 2.25rem;width:2.25rem;height:2.25rem;line-height:1;border-radius:.25rem;background:#facc15;color:#0f172a;font-weight:900">G</span>
+  <div>
+    <p class="sidebar__name" style="margin:0;line-height:1;font-weight:600;color:#fff">Gold's Gym</p>
+    <p class="sidebar__tag" style="margin:.25rem 0 0;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#facc15">Administración</p>
+  </div>
+</div>
 
     <section class="sidebar__profile">
       <span class="sidebar__avatar">{{ inicial() }}</span>

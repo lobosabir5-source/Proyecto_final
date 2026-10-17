@@ -1,0 +1,145 @@
+<div class="p-10">
+  <header class="flex flex-wrap items-end justify-between mb-8 gap-4">
+    <div>
+      <p class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-2">Recepción / Suscripciones</p>
+      <h1 class="text-4xl font-black tracking-tight">Membresías</h1>
+    </div>
+    <button type="button" (click)="mostrarContratar.set(!mostrarContratar())"
+            class="bg-yellow-400 text-black px-5 py-2.5 text-xs font-bold tracking-[0.2em] uppercase hover:bg-yellow-300 transition">
+      {{ mostrarContratar() ? 'Cerrar' : '+ Añadir' }}
+    </button>
+  </header>
+
+  @if (exito()) { <div class="mb-4 p-4 bg-emerald-950/40 border-l-4 border-emerald-500 text-emerald-300 text-sm" role="status">{{ exito() }}</div> }
+  @if (error()) { <div class="mb-4 p-4 bg-red-950/40 border-l-4 border-red-500 text-red-300 text-sm" role="alert">{{ error() }}</div> }
+
+  @if (mostrarContratar()) {
+    <section class="bg-[#111] border border-yellow-500/20 p-5 mb-6 grid gap-4 md:grid-cols-4 items-end">
+      <div>
+        <label for="m-buscar" class="block text-[10px] tracking-[0.2em] text-neutral-400 mb-1.5">BUSCAR CLIENTE</label>
+        <div class="flex gap-2">
+          <input id="m-buscar" name="m-buscar" [(ngModel)]="busqueda" (keyup.enter)="buscarClientes()" placeholder="Nombre" autocomplete="off"
+                 class="w-full bg-neutral-900 border border-neutral-800 focus:border-yellow-400 px-3 py-2 text-sm outline-none" />
+          <button type="button" (click)="buscarClientes()" class="border border-yellow-500/40 text-yellow-300 px-3 text-xs uppercase hover:bg-yellow-400/10">Buscar</button>
+        </div>
+      </div>
+      <div>
+        <label for="m-cliente" class="block text-[10px] tracking-[0.2em] text-neutral-400 mb-1.5">CLIENTE</label>
+        <select id="m-cliente" name="m-cliente" [(ngModel)]="clienteId" class="w-full bg-neutral-900 border border-neutral-800 focus:border-yellow-400 px-3 py-2 text-sm outline-none">
+          <option [ngValue]="null">Selecciona…</option>
+          @for (c of clientesEncontrados(); track c.id) { <option [ngValue]="c.id">{{ c.nombre }}</option> }
+        </select>
+      </div>
+      <div>
+        <label for="m-plan" class="block text-[10px] tracking-[0.2em] text-neutral-400 mb-1.5">PLAN</label>
+        <select id="m-plan" name="m-plan" [(ngModel)]="planId" class="w-full bg-neutral-900 border border-neutral-800 focus:border-yellow-400 px-3 py-2 text-sm outline-none">
+          <option [ngValue]="null">Selecciona…</option>
+          @for (p of planes(); track p.id) { <option [ngValue]="p.id">{{ p.nombre }} · Bs {{ p.precio | number:'1.2-2' }}</option> }
+        </select>
+      </div>
+      <button type="button" (click)="contratar()" class="bg-yellow-400 text-black px-5 py-2.5 text-xs font-bold tracking-[0.2em] uppercase hover:bg-yellow-300 transition">Contratar</button>
+    </section>
+  }
+
+  @if (editando(); as e) {
+    <section class="bg-[#111] border border-yellow-500/20 p-5 mb-6 grid gap-4 md:grid-cols-4 items-end">
+      <div class="md:col-span-4 text-sm text-neutral-300">
+        Editando: <strong>{{ e.cliente }}</strong> · {{ e.plan }}
+        <span class="text-neutral-500">(el estado se recalcula según la fecha de fin)</span>
+      </div>
+      <div>
+        <label for="e-inicio" class="block text-[10px] tracking-[0.2em] text-neutral-400 mb-1.5">FECHA INICIO</label>
+        <input id="e-inicio" name="e-inicio" type="date" [(ngModel)]="fechaInicioEdit"
+               class="w-full bg-neutral-900 border border-neutral-800 focus:border-yellow-400 px-3 py-2 text-sm outline-none" />
+      </div>
+      <div>
+        <label for="e-fin" class="block text-[10px] tracking-[0.2em] text-neutral-400 mb-1.5">FECHA FIN</label>
+        <input id="e-fin" name="e-fin" type="date" [(ngModel)]="fechaFinEdit"
+               class="w-full bg-neutral-900 border border-neutral-800 focus:border-yellow-400 px-3 py-2 text-sm outline-none" />
+      </div>
+      <button type="button" (click)="guardarEdicion()" class="bg-yellow-400 text-black px-5 py-2.5 text-xs font-bold tracking-[0.2em] uppercase hover:bg-yellow-300 transition">Guardar</button>
+      <button type="button" (click)="cerrarEditar()" class="border border-neutral-700 text-neutral-300 px-5 py-2.5 text-xs tracking-[0.2em] uppercase hover:bg-white/5">Cancelar</button>
+    </section>
+  }
+
+  <section class="bg-[#111] border border-yellow-500/20 p-5 mb-4 flex items-end gap-4">
+    <div>
+      <label for="m-estado" class="block text-[10px] tracking-[0.2em] text-neutral-400 mb-1.5">ESTADO (PÁGINA ACTUAL)</label>
+      <select id="m-estado" name="m-estado" [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)"
+              class="bg-neutral-900 border border-neutral-800 focus:border-yellow-400 px-3 py-2 text-sm outline-none">
+        <option value="">Todos</option>
+        @for (e of estados; track e) { <option [value]="e">{{ etiqueta(e) }}</option> }
+      </select>
+    </div>
+  </section>
+
+  <div class="bg-[#111] border border-yellow-500/20 overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-left text-[10px] tracking-[0.2em] text-neutral-500 uppercase border-b border-neutral-800">
+          <th class="p-3">Cliente</th><th class="p-3">Plan</th><th class="p-3">Vencimiento</th><th class="p-3">Estado</th>
+          <th class="p-3 text-right">Precio plan</th><th class="p-3 text-right">Descuento</th>
+          <th class="p-3 text-right">Renovación</th><th class="p-3 text-right">Saldo</th><th class="p-3"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (m of visibles(); track m.id) {
+          <tr class="border-b border-neutral-900">
+            <td class="p-3 font-semibold">{{ m.cliente }}</td>
+            <td class="p-3">{{ m.plan }}</td>
+            <td class="p-3">
+              {{ m.fechaFin | date:'dd/MM/yyyy' }}
+              @if (m.estado === 'ACTIVA' || m.estado === 'POR_VENCER') { <span class="block text-xs text-neutral-500">{{ diasRestantes(m) }} días</span> }
+            </td>
+            <td class="p-3"><span class="border px-2 py-0.5 text-[10px] tracking-[0.15em] uppercase" [class]="clase(m.estado)">{{ etiqueta(m.estado) }}</span></td>
+            <td class="p-3 text-right">Bs {{ m.precioPlan | number:'1.2-2' }}</td>
+            <td class="p-3 text-right text-emerald-300">{{ m.descuento > 0 ? '- Bs ' + (m.descuento | number:'1.2-2') : '—' }}</td>
+            <td class="p-3 text-right text-yellow-400 font-bold">Bs {{ m.precioRenovacion | number:'1.2-2' }}</td>
+            <td class="p-3 text-right">Bs {{ m.saldo | number:'1.2-2' }}</td>
+            <td class="p-3 text-right whitespace-nowrap">
+              @if (puedeRenovar(m)) {
+                <button type="button" (click)="renovar(m)" class="text-xs uppercase tracking-[0.15em] text-yellow-300 hover:text-yellow-200 mr-3">Renovar</button>
+              }
+              @if (m.estado !== 'CANCELADA') {
+                <button type="button" (click)="abrirEditar(m)" class="text-xs uppercase tracking-[0.15em] text-neutral-300 hover:text-white mr-3">Editar</button>
+              }
+              <button type="button" (click)="verHistorial(m)" class="text-xs uppercase tracking-[0.15em] text-neutral-400 hover:text-white">Historial</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="9" class="p-6 text-center text-neutral-500">{{ cargando() ? 'Cargando…' : 'No hay membresías para mostrar.' }}</td></tr>
+        }
+      </tbody>
+    </table>
+    <app-paginador tema="oscuro" [pagina]="pagina()" [totalPaginas]="totalPaginas()"
+                   [totalElementos]="totalElementos()" [tamano]="tamanoPagina" (cambiar)="irAPagina($event)" />
+  </div>
+
+  @if (historialDe()) {
+    <section class="bg-[#111] border border-yellow-500/20 p-5 mt-6">
+      <h2 class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-4">Historial de {{ historialDe() }}</h2>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-[10px] tracking-[0.2em] text-neutral-500 uppercase border-b border-neutral-800">
+            <th class="p-2">Fecha</th><th class="p-2">Operación</th><th class="p-2">Vencía</th>
+            <th class="p-2">Nuevo vencimiento</th><th class="p-2 text-right">Descuento</th><th class="p-2 text-right">Precio aplicado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (h of historial(); track h.id) {
+            <tr class="border-b border-neutral-900">
+              <td class="p-2">{{ h.fechaOperacion | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td class="p-2">{{ etiquetaOperacion(h.operacion) }}</td>
+              <td class="p-2">{{ h.fechaAnterior | date:'dd/MM/yyyy' }}</td>
+              <td class="p-2">{{ h.fechaNueva | date:'dd/MM/yyyy' }}</td>
+              <td class="p-2 text-right text-emerald-300">{{ h.descuento > 0 ? '- Bs ' + (h.descuento | number:'1.2-2') : '—' }}</td>
+              <td class="p-2 text-right">Bs {{ h.precioAplicado | number:'1.2-2' }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="6" class="p-4 text-center text-neutral-500">Sin renovaciones registradas.</td></tr>
+          }
+        </tbody>
+      </table>
+    </section>
+  }
+</div>

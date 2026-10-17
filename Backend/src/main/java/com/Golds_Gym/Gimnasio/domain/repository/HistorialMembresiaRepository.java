@@ -6,4 +6,7 @@ import java.util.List;
 
 public interface HistorialMembresiaRepository extends JpaRepository<HistorialMembresia, Long> {
     List<HistorialMembresia> findByMembresia_Cliente_IdOrderByFechaOperacionDesc(Long clienteId);
+
+    long countByOperacionAndFechaOperacionBetween(
+            String operacion, java.time.LocalDateTime desde, java.time.LocalDateTime hasta);
 }

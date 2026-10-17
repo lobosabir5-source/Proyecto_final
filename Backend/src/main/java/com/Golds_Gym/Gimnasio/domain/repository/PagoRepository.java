@@ -14,6 +14,8 @@ import java.util.List;
 public interface PagoRepository extends JpaRepository<Pago, Long> {
     List<Pago> findAllByMembresia_IdOrderByFechaPagoDesc(Long membresiaId);
 
+    List<Pago> findTop5ByOrderByFechaPagoDesc();
+
     Page<Pago> findAllByMembresia_Cliente_Usuario_IdOrderByFechaPagoDesc(Long usuarioId, Pageable pageable);
 
     @Query("select coalesce(sum(pago.monto), 0) from Pago pago where pago.membresia.id = :membresiaId")

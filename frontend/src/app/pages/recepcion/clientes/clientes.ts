@@ -123,6 +123,23 @@ export class ClientesComponent implements OnInit {
     this.irAPagina$.next(pagina);
   }
 
+  // =========================== ESTADO (ACTIVAR / DESACTIVAR) ===========================
+  /** Solo recepción puede activar a un cliente; los clientes nuevos nacen inactivos. */
+  cambiarEstado(cliente: ClienteRecepcion): void {
+    const nuevo = !cliente.activo;
+    if (!confirm(`¿${nuevo ? 'Activar' : 'Desactivar'} a ${cliente.nombre}?`)) {
+      return;
+    }
+    this.errorLista.set('');
+    this.service.cambiarEstado(cliente.id, nuevo).subscribe({
+      next: () => {
+        this.mostrarExito(`Cliente "${cliente.nombre}" ${nuevo ? 'activado' : 'desactivado'}.`);
+        this.irAPagina$.next(this.pagina());
+      },
+      error: (e: HttpErrorResponse) => this.errorLista.set(leerErrorApi(e).mensaje)
+    });
+  }
+
   // =========================== FORMULARIO ===========================
   abrirCrear(): void {
     this.clienteEditando.set(null);

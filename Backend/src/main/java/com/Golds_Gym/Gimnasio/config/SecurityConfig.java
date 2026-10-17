@@ -33,11 +33,14 @@ public class SecurityConfig {
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                    // Deja pasar el reenvío interno de errores para que el cliente vea el código real (404, 405, 500...)
+                    .requestMatchers("/error").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
                     // Cualquiera (sin sesión) puede LEER el catálogo público y las imágenes. Solo GET: nadie puede escribir.
                     .requestMatchers(HttpMethod.GET, "/api/public/**", "/uploads/**").permitAll()
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/api/recepcion/clientes/**").hasRole("ADMIN")
+                    // Recepción también edita clientes
+                    .requestMatchers(HttpMethod.PUT, "/api/recepcion/clientes/**").hasAnyRole("ADMIN", "RECEPCIONISTA")
                     .requestMatchers(HttpMethod.DELETE, "/api/recepcion/clientes/**").hasRole("ADMIN")
                     .requestMatchers("/api/recepcion/**").hasAnyRole("ADMIN", "RECEPCIONISTA")
                     .requestMatchers("/api/cliente/**").hasAnyRole("ADMIN", "CLIENTE")

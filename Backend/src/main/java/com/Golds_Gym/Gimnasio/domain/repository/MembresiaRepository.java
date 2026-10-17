@@ -27,6 +27,19 @@ public interface MembresiaRepository extends JpaRepository<Membresia, Long> {
 
     long countByEstadoAndFechaFinGreaterThanEqual(EstadoMembresia estado, LocalDate fecha);
 
+    long countByEstado(EstadoMembresia estado);
+
+    long countByEstadoInAndFechaFinLessThan(Collection<EstadoMembresia> estados, LocalDate fecha);
+
+    long countByEstadoInAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(
+            Collection<EstadoMembresia> estados, LocalDate inicio, LocalDate fin);
+
+    long countByEstadoInAndFechaInicioLessThanEqualAndFechaFinBetween(
+            Collection<EstadoMembresia> estados, LocalDate inicio, LocalDate desde, LocalDate hasta);
+
+    List<Membresia> findByEstadoInAndFechaInicioLessThanEqualAndFechaFinBetweenOrderByFechaFinAsc(
+            Collection<EstadoMembresia> estados, LocalDate inicio, LocalDate desde, LocalDate hasta);
+
     Optional<Membresia> findFirstByCliente_IdAndEstadoAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqualOrderByFechaFinDesc(
             Long clienteId, EstadoMembresia estado, LocalDate fechaInicio, LocalDate fechaFin);
 

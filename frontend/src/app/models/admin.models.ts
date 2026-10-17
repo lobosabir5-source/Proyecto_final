@@ -87,10 +87,20 @@ export interface GuardarPromocion {
   activo: boolean;
 }
 
+export interface PuntoMensual {
+  mes: string;
+  valor: number;
+}
+
 export interface ReporteResumen {
   clientesActivos: number;
   membresiasActivas: number;
   membresiasPendientes: number;
+  membresiasPorVencer: number;
+  membresiasVencidas: number;
   asistenciasDeHoy: number;
   ingresosDelMes: number;
+  clientesPorMes: PuntoMensual[];
+  ingresosPorMes: PuntoMensual[];
+  renovacionesPorMes: PuntoMensual[];
 }

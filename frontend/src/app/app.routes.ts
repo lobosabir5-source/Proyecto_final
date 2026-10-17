@@ -35,6 +35,7 @@ export const routes: Routes = [
       { path: 'inicio',       loadComponent: () => import('./pages/recepcion/inicio/inicio').then(m => m.InicioComponent) },
       { path: 'clientes',     loadComponent: () => import('./pages/recepcion/clientes/clientes').then(m => m.ClientesComponent) },
       { path: 'asistencias',  loadComponent: () => import('./pages/recepcion/asistencias/asistencias').then(m => m.AsistenciasComponent) },
+      { path: 'suscripciones', loadComponent: () => import('./pages/recepcion/suscripciones/suscripciones').then(m => m.SuscripcionesComponent) },
       { path: 'pagos',        loadComponent: () => import('./pages/recepcion/pagos/pagos').then(m => m.PagosComponent) },
       { path: 'planes',       loadComponent: () => import('./pages/recepcion/planes/planes').then(m => m.PlanesComponent) },
     ]

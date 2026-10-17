@@ -1,6 +1,7 @@
 package com.Golds_Gym.Gimnasio.Infrastructure.web.controller;
 
 import com.Golds_Gym.Gimnasio.application.dto.ActualizarClienteRequest;
+import com.Golds_Gym.Gimnasio.application.dto.CambiarEstadoUsuarioRequest;
 import com.Golds_Gym.Gimnasio.application.dto.ClienteRespuesta;
 import com.Golds_Gym.Gimnasio.application.dto.CrearClienteRequest;
 import com.Golds_Gym.Gimnasio.application.service.ClienteService;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -47,6 +49,12 @@ public class ClienteRecepcionController {
     @PutMapping("/{id}")
     public ClienteRespuesta actualizar(@PathVariable Long id, @Valid @RequestBody ActualizarClienteRequest request) {
         return clienteService.actualizar(id, request);
+    }
+
+    @PatchMapping("/{id}/estado")
+    public ClienteRespuesta cambiarEstado(@PathVariable Long id,
+                                          @Valid @RequestBody CambiarEstadoUsuarioRequest request) {
+        return clienteService.cambiarEstado(id, request.activo());
     }
 
     @DeleteMapping("/{id}")

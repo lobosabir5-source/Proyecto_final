@@ -53,6 +53,7 @@ public class RenovacionMembresiaService {
 
     private HistorialMembresiaRespuesta convertir(HistorialMembresia h) {
         return new HistorialMembresiaRespuesta(h.getId(), h.getMembresia().getId(), h.getFechaAnterior(),
-                h.getFechaNueva(), h.getPrecioAplicado(), h.getFechaOperacion(), h.getOperacion());
+                h.getFechaNueva(), h.getPrecioAplicado(), h.getFechaOperacion(), h.getOperacion(),
+                h.getMembresia().getPlan().getPrecio().subtract(h.getPrecioAplicado()).max(java.math.BigDecimal.ZERO));
     }
 }

@@ -46,6 +46,11 @@ export class ClienteRecepcionService {
     return this.http.put<ClienteRecepcion>(`${this.url}/${id}`, datos);
   }
 
+  /** Solo recepción activa o desactiva clientes. */
+  cambiarEstado(id: number, activo: boolean): Observable<ClienteRecepcion> {
+    return this.http.patch<ClienteRecepcion>(`${this.url}/${id}/estado`, { activo });
+  }
+
   /** Sube la fotografía (JPEG/PNG, máx. 5 MB). El campo multipart se llama "archivo". */
   subirFotografia(id: number, archivo: File): Observable<{ fotoUrl: string }> {
     const datos = new FormData();

@@ -1,6 +1,7 @@
 package com.Golds_Gym.Gimnasio.Infrastructure.web.controller;
 
 import com.Golds_Gym.Gimnasio.application.dto.CrearMembresiaRequest;
+import com.Golds_Gym.Gimnasio.application.dto.EditarMembresiaRequest;
 import com.Golds_Gym.Gimnasio.application.dto.MembresiaRespuesta;
 import com.Golds_Gym.Gimnasio.application.service.MembresiaService;
 import com.Golds_Gym.Gimnasio.domain.model.Usuario;
@@ -40,6 +41,13 @@ public class MembresiaRecepcionController {
             Authentication authentication) {
         Usuario usuario = (Usuario) authentication.getPrincipal();
         return ResponseEntity.status(HttpStatus.CREATED).body(membresiaService.crear(request, usuario));
+    }
+
+    @PatchMapping("/{id}")
+    public MembresiaRespuesta editar(
+            @PathVariable Long id,
+            @Valid @RequestBody EditarMembresiaRequest request) {
+        return membresiaService.editar(id, request);
     }
 
     @PatchMapping("/{id}/cancelar")
