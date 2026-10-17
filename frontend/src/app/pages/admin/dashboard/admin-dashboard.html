@@ -26,13 +26,38 @@
                      icono="users" variante="cyan" detalle="Cuentas de cliente habilitadas" />
       <app-stat-card titulo="Membresías activas" [valor]="datos.membresiasActivas"
                      icono="check" variante="green" detalle="Vigentes el día de hoy" />
+      <app-stat-card titulo="Membresías por vencer" [valor]="datos.membresiasPorVencer"
+                     icono="clock" variante="gray" detalle="Vencen en los próximos 7 días" />
+      <app-stat-card titulo="Membresías vencidas" [valor]="datos.membresiasVencidas"
+                     icono="clock" variante="red" detalle="Requieren renovación" />
       <app-stat-card titulo="Membresías pendientes" [valor]="datos.membresiasPendientes"
-                     icono="clock" variante="red" detalle="Por iniciar o por activar" />
+                     icono="clock" variante="gray" detalle="Por iniciar o por activar" />
       <app-stat-card titulo="Ingresos del mes" [valor]="'Bs ' + (datos.ingresosDelMes | number:'1.2-2')"
                      icono="dollar" variante="gray" detalle="Pagos registrados este mes" />
     </div>
 
     <div class="dashboard-grid">
+
+      <article class="panel dashboard-grid__wide">
+        <header class="panel-header">
+          <h2 class="panel-title"><app-icon nombre="dollar" /> Ingresos por mes (Bs)</h2>
+        </header>
+        <div class="panel-body chart-box">
+          <ngx-charts-bar-vertical [results]="datosIngresos()" [scheme]="esquemaIngresos"
+                                   [xAxis]="true" [yAxis]="true" [showDataLabel]="true" />
+        </div>
+      </article>
+
+      <article class="panel dashboard-grid__wide">
+        <header class="panel-header">
+          <h2 class="panel-title"><app-icon nombre="users" /> Clientes nuevos y renovaciones</h2>
+        </header>
+        <div class="panel-body chart-box">
+          <ngx-charts-line-chart [results]="datosTendencia()" [scheme]="esquemaTendencia"
+                                 [xAxis]="true" [yAxis]="true" [legend]="true"
+                                 [legendPosition]="posicionLeyenda" [autoScale]="true" />
+        </div>
+      </article>
 
       <article class="panel dashboard-grid__wide">
         <header class="panel-header">
@@ -61,17 +86,14 @@
         <header class="panel-header">
           <h2 class="panel-title"><app-icon nombre="check" /> Estado de membresías</h2>
         </header>
-        <div class="panel-body donut-box">
-          <div class="donut" [style.--porcentaje]="porcentajeActivas()">
-            <div class="donut__center">
-              <strong class="donut__value">{{ porcentajeActivas() }}%</strong>
-              <span class="donut__label">ACTIVAS</span>
-            </div>
-          </div>
-          <ul class="legend">
-            <li class="legend__item"><span class="dot dot--green"></span> Activas: {{ datos.membresiasActivas }}</li>
-            <li class="legend__item"><span class="dot dot--gray"></span> Pendientes: {{ datos.membresiasPendientes }}</li>
-          </ul>
+        <div class="panel-body chart-box">
+          @if (hayEstados()) {
+            <ngx-charts-pie-chart [results]="datosEstados()" [scheme]="esquemaEstados"
+                                  [doughnut]="true" [labels]="true" [legend]="true"
+                                  [legendPosition]="posicionLeyenda" />
+          } @else {
+            <p class="empty-state">Aún no hay membresías vigentes ni vencidas.</p>
+          }
         </div>
       </article>
 

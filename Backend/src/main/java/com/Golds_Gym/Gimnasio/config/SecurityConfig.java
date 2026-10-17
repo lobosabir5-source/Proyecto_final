@@ -1,0 +1,63 @@
+package com.Golds_Gym.Gimnasio.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
+public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> {
+                })
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                    // Deja pasar el reenvío interno de errores para que el cliente vea el código real (404, 405, 500...)
+                    .requestMatchers("/error").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
+                    // Cualquiera (sin sesión) puede LEER el catálogo público y las imágenes. Solo GET: nadie puede escribir.
+                    .requestMatchers(HttpMethod.GET, "/api/public/**", "/uploads/**").permitAll()
+                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    // Recepción también edita clientes
+                    .requestMatchers(HttpMethod.PUT, "/api/recepcion/clientes/**").hasAnyRole("ADMIN", "RECEPCIONISTA")
+                    .requestMatchers(HttpMethod.DELETE, "/api/recepcion/clientes/**").hasRole("ADMIN")
+                    .requestMatchers("/api/recepcion/**").hasAnyRole("ADMIN", "RECEPCIONISTA")
+                    .requestMatchers("/api/cliente/**").hasAnyRole("ADMIN", "CLIENTE")
+                    .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
+                    .anyRequest().authenticated())
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+}

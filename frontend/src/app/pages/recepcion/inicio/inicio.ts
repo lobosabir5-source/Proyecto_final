@@ -1,23 +1,25 @@
-import { Component, computed, inject } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { RecepcionService } from '../../../services/recepcion.service';
+import { ResumenRecepcion } from '../../../models/recepcion.models';
+import { MembresiaRecepcionService } from '../../../services/membresia-recepcion.service';
+import { leerErrorApi } from '../../../utils/api-error';
 
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, DatePipe, DecimalPipe],
   templateUrl: './inicio.html'
 })
-export class InicioComponent {
-  private srv = inject(RecepcionService);
+export class InicioComponent implements OnInit {
+  private readonly api = inject(MembresiaRecepcionService);
+  readonly resumen = signal<ResumenRecepcion | null>(null);
+  readonly error = signal('');
 
-  totalClientes = computed(() => this.srv.usuarios().length);
-  activos = computed(() => this.srv.usuarios().filter(u => u.estado === 1).length);
-  presentes = computed(() =>
-    this.srv.asistencias().filter(a => !a.fechaSalida).length
-  );
-  ingresosMes = computed(() =>
-    this.srv.pagos().filter(p => p.estado === 1)
-      .reduce((acc, p) => acc + p.monto, 0)
-  );
+  ngOnInit(): void {
+    this.api.resumen().subscribe({
+      next: r => this.resumen.set(r),
+      error: e => this.error.set(leerErrorApi(e).mensaje)
+    });
+  }
 }

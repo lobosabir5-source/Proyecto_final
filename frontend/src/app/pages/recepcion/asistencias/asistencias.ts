@@ -1,6 +1,19 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RecepcionService } from '../../../services/recepcion.service';
+import { API_URL } from '../../../config/api.config';
+import { leerErrorApi } from '../../../utils/api-error';
+
+interface Pagina<T> { content: T[]; }
+interface ClienteApi { id: number; usuario: string; nombre: string; correo: string; }
+interface AsistenciaApi {
+  id: number;
+  clienteId: number;
+  cliente: string;
+  fecha: string;
+  horaEntrada: string;
+  registradaPor: string;
+}
 
 @Component({
   selector: 'app-asistencias',
@@ -8,34 +21,46 @@ import { RecepcionService } from '../../../services/recepcion.service';
   imports: [FormsModule],
   templateUrl: './asistencias.html'
 })
-export class AsistenciasComponent {
-  private srv = inject(RecepcionService);
-  cedula = signal('');
+export class AsistenciasComponent implements OnInit {
+  private http = inject(HttpClient);
+  private url = `${API_URL}/recepcion/asistencias`;
 
-  nombreDe(idUsuario: number) {
-    const p = this.srv.getPerfil(idUsuario);
-    return p ? `${p.nombres} ${p.apellidos}` : '—';
+  busqueda = signal('');
+  clientes = signal<ClienteApi[]>([]);
+  asistencias = signal<AsistenciaApi[]>([]);
+
+  ngOnInit(): void {
+    this.http.get<Pagina<ClienteApi>>(`${API_URL}/recepcion/clientes?size=1000`)
+      .subscribe(p => this.clientes.set(p.content));
+    this.cargar();
   }
 
-  asistenciasHoy = computed(() =>
-    [...this.srv.asistencias()].sort((a, b) =>
-      b.fechaEntrada.localeCompare(a.fechaEntrada))
-  );
+  cargar(): void {
+    this.http.get<Pagina<AsistenciaApi>>(`${this.url}?size=200`)
+      .subscribe(p => this.asistencias.set(p.content));
+  }
 
   hora(iso?: string) {
-    return iso ? new Date(iso).toLocaleTimeString('es-MX',
+    return iso ? new Date(iso).toLocaleTimeString('es-BO',
       { hour: '2-digit', minute: '2-digit' }) : '—';
   }
 
-  entrar() {
-    const perfil = this.srv.perfiles()
-      .find(p => p.identificacion === this.cedula().trim());
-    if (!perfil) { alert('Cliente no encontrado'); return; }
-    this.srv.registrarEntrada(perfil.idUsuario);
-    this.cedula.set('');
-  }
+  entrar(): void {
+    const q = this.busqueda().toLowerCase().trim();
+    if (!q) return;
 
-  salir(idUsuario: number) {
-    this.srv.registrarSalida(idUsuario);
+    const exactos = this.clientes().filter(c =>
+      c.usuario.toLowerCase() === q || c.correo.toLowerCase() === q);
+    const coincidencias = exactos.length
+      ? exactos
+      : this.clientes().filter(c => c.nombre.toLowerCase().includes(q));
+
+    if (coincidencias.length === 0) { alert('Cliente no encontrado'); return; }
+    if (coincidencias.length > 1) { alert('Hay varios clientes con ese dato, sé más específico'); return; }
+
+    this.http.post<AsistenciaApi>(this.url, { clienteId: coincidencias[0].id }).subscribe({
+      next: () => { this.busqueda.set(''); this.cargar(); },
+      error: (e: HttpErrorResponse) => alert(leerErrorApi(e).mensaje)
+    });
   }
 }

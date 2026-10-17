@@ -42,3 +42,8 @@
 .today { @apply py-6 text-center; }
 .today__value { @apply block text-6xl font-light leading-none text-cyan-600; }
 .today__label { @apply mt-2 text-sm text-slate-400; }
+
+.chart-box {
+  height: 300px;
+  min-width: 0;
+}

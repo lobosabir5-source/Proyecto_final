@@ -1,0 +1,207 @@
+<section class="page">
+
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Promociones</h1>
+      <p class="page-subtitle">Descuentos por porcentaje o monto fijo, aplicables a un plan o a todos</p>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="abrirCrear()">
+      <app-icon nombre="plus" />
+      Nueva promoción
+    </button>
+  </header>
+
+  @if (exito()) {
+    <div class="alert alert-success" role="status">{{ exito() }}</div>
+  }
+  @if (error()) {
+    <div class="alert alert-error" role="alert">{{ error() }}</div>
+  }
+
+  <article class="panel">
+    <header class="panel-header">
+      <span class="panel-title">Listado de promociones</span>
+      <span class="promo-count">{{ totalElementos() }} en total</span>
+    </header>
+
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Plan aplicable</th>
+            <th>Descuento</th>
+            <th>Vigencia</th>
+            <th>Estado</th>
+            <th class="cell-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (promocion of promociones(); track promocion.id) {
+            <tr [class.row-inactive]="!promocion.activo">
+              <td class="promo-name">{{ promocion.nombre }}</td>
+              <td>{{ nombrePlan(promocion.planId) }}</td>
+              <td class="whitespace-nowrap font-semibold">{{ descuento(promocion) }}</td>
+              <td class="cell-muted whitespace-nowrap">
+                {{ fecha(promocion.fechaInicio) }} – {{ fecha(promocion.fechaFin) }}
+              </td>
+              <td>
+                <span [class]="estadoVigencia(promocion).clase">{{ estadoVigencia(promocion).texto }}</span>
+              </td>
+              <td class="cell-actions">
+                <div class="cell-actions-group">
+                  <button type="button" class="btn btn-secondary btn-sm" (click)="abrirEditar(promocion)">
+                    <app-icon nombre="edit" />
+
+                  </button>
+                  @if (promocion.activo) {
+                    <button type="button" class="btn btn-danger btn-sm" (click)="pedirDesactivar(promocion)">
+                      <app-icon nombre="ban" />
+
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="empty-state">
+                {{ cargando() ? 'Cargando promociones...' : 'Todavía no hay promociones registradas.' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-paginador tema="claro"
+                   [pagina]="pagina()" [totalPaginas]="totalPaginas()"
+                   [totalElementos]="totalElementos()" [tamano]="tamanoPagina"
+                   (cambiar)="cargar($event)" />
+  </article>
+
+</section>
+
+@if (modalAbierto()) {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <form (ngSubmit)="guardar()" novalidate>
+
+        <header class="modal-header">
+          <h2 class="modal-title">{{ editando() ? 'Editar promoción' : 'Nueva promoción' }}</h2>
+          <button type="button" class="modal-close" aria-label="Cerrar" (click)="cerrarModal()">
+            <app-icon nombre="close" />
+          </button>
+        </header>
+
+        <div class="modal-body">
+          @if (errorFormulario()) {
+            <div class="alert alert-error" role="alert">{{ errorFormulario() }}</div>
+          }
+
+          <div class="field">
+            <label class="field-label" for="nombre">Nombre</label>
+            <input id="nombre" name="nombre" type="text" class="field-input"
+                   [class.field-input--invalid]="errorDe('nombre')"
+                   [(ngModel)]="formulario.nombre" maxlength="100" />
+            @if (errorDe('nombre')) {
+              <p class="field-error">{{ errorDe('nombre') }}</p>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="planId">Plan aplicable</label>
+            <select id="planId" name="planId" class="field-input" [(ngModel)]="formulario.planId">
+              <option [ngValue]="null">Todos los planes</option>
+              @for (plan of planesSeleccionables(); track plan.id) {
+                <option [ngValue]="plan.id">
+                  {{ plan.nombre }} — Bs {{ plan.precio | number:'1.2-2' }}{{ plan.activo ? '' : ' (inactivo)' }}
+                </option>
+              }
+            </select>
+            @if (errorDe('planId')) {
+              <p class="field-error">{{ errorDe('planId') }}</p>
+            }
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="tipo">Tipo de descuento</label>
+              <select id="tipo" name="tipo" class="field-input" [(ngModel)]="formulario.tipo">
+                <option value="PORCENTAJE">Porcentaje (%)</option>
+                <option value="MONTO">Monto fijo (Bs)</option>
+              </select>
+              @if (errorDe('tipo')) {
+                <p class="field-error">{{ errorDe('tipo') }}</p>
+              }
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="valor">
+                {{ formulario.tipo === 'PORCENTAJE' ? 'Porcentaje (1–100)' : 'Monto a descontar (Bs)' }}
+              </label>
+              <input id="valor" name="valor" type="number" min="0.01" step="0.01" class="field-input"
+                     [attr.max]="formulario.tipo === 'PORCENTAJE' ? 100 : null"
+                     [class.field-input--invalid]="errorDe('valor')"
+                     [(ngModel)]="formulario.valor" />
+              @if (errorDe('valor')) {
+                <p class="field-error">{{ errorDe('valor') }}</p>
+              }
+            </div>
+          </div>
+
+          @if (resumenDescuento()) {
+            <p class="field-hint resumen">{{ resumenDescuento() }}</p>
+          }
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="fechaInicio">Fecha de inicio</label>
+              <input id="fechaInicio" name="fechaInicio" type="date" class="field-input"
+                     [class.field-input--invalid]="errorDe('fechaInicio')"
+                     [(ngModel)]="formulario.fechaInicio" />
+              @if (errorDe('fechaInicio')) {
+                <p class="field-error">{{ errorDe('fechaInicio') }}</p>
+              }
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="fechaFin">Fecha de finalización</label>
+              <input id="fechaFin" name="fechaFin" type="date" class="field-input"
+                     [attr.min]="formulario.fechaInicio || null"
+                     [class.field-input--invalid]="errorDe('fechaFin')"
+                     [(ngModel)]="formulario.fechaFin" />
+              @if (errorDe('fechaFin')) {
+                <p class="field-error">{{ errorDe('fechaFin') }}</p>
+              }
+            </div>
+          </div>
+
+          <label class="field-check">
+            <input type="checkbox" name="activo" [(ngModel)]="formulario.activo" />
+            Promoción activa
+          </label>
+        </div>
+
+        <footer class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="guardando()">
+            {{ guardando() ? 'Guardando...' : (editando() ? 'Guardar cambios' : 'Crear promoción') }}
+          </button>
+        </footer>
+
+      </form>
+    </div>
+  </div>
+}
+
+@if (promocionPendiente(); as promocion) {
+  <app-confirm-dialog
+    titulo="Desactivar promoción"
+    [mensaje]="'&quot;' + promocion.nombre + '&quot; dejará de aplicarse a las nuevas membresías. Podrás reactivarla desde Editar.'"
+    textoConfirmar="Desactivar"
+    [peligro]="true"
+    [procesando]="desactivando()"
+    (confirmar)="confirmarDesactivar()"
+    (cancelar)="cancelarDesactivar()" />
+}

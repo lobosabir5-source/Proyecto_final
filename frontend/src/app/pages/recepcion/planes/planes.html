@@ -7,7 +7,7 @@
   </header>
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-    @for (plan of srv.planes(); track plan.idPlan) {
+    @for (plan of planes(); track plan.id) {
       <div class="bg-[#111] border border-yellow-500/20 p-7 relative
                   hover:border-yellow-400 transition">
         <div class="absolute top-0 right-0 w-8 h-8 border-t border-r border-yellow-400"></div>

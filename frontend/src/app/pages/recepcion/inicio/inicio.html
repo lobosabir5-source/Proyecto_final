@@ -12,19 +12,21 @@
     <p class="text-neutral-400 mt-3">Resumen operativo del día.</p>
   </header>
 
+  @if (error()) {
+    <div class="mb-6 p-4 bg-red-950/40 border-l-4 border-red-500 text-red-300 text-sm" role="alert">{{ error() }}</div>
+  }
+
   <!-- KPIs -->
   <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
     @for (kpi of [
-      { label: 'Clientes totales', valor: totalClientes(), sufijo: '' },
-      { label: 'Activos',          valor: activos(),       sufijo: '' },
-      { label: 'En gimnasio',      valor: presentes(),     sufijo: '' },
-      { label: 'Ingresos mes',     valor: ingresosMes(),   sufijo: 'MXN' }
+      { label: 'Clientes activos',      valor: resumen()?.clientesActivos ?? 0,      sufijo: '' },
+      { label: 'Asistencias hoy',       valor: resumen()?.asistenciasDeHoy ?? 0,     sufijo: '' },
+      { label: 'Membresías por vencer', valor: resumen()?.membresiasPorVencer ?? 0,  sufijo: '' },
+      { label: 'Cobrado del mes',       valor: ((resumen()?.ingresosDelMes ?? 0) | number:'1.2-2'), sufijo: 'Bs' }
     ]; track kpi.label) {
       <div class="bg-[#111] border border-yellow-500/20 p-6 relative">
         <div class="absolute top-0 right-0 w-6 h-6 border-t border-r border-yellow-400"></div>
-        <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-2">
-          {{ kpi.label }}
-        </p>
+        <p class="text-[10px] tracking-[0.3em] text-neutral-500 uppercase mb-2">{{ kpi.label }}</p>
         <p class="text-4xl font-black text-yellow-400">
           {{ kpi.valor }}
           @if (kpi.sufijo) {
@@ -33,6 +35,51 @@
         </p>
       </div>
     }
+  </section>
+
+  <!-- Actividad reciente -->
+  <section class="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-10">
+    <article class="bg-[#111] border border-yellow-500/20 p-6">
+      <h2 class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-4">Próximas a vencer</h2>
+      <ul class="space-y-3 text-sm">
+        @for (m of resumen()?.proximasAVencer ?? []; track m.id) {
+          <li class="flex justify-between gap-3">
+            <span>{{ m.cliente }} <span class="text-neutral-500">· {{ m.plan }}</span></span>
+            <span class="text-amber-300 whitespace-nowrap">{{ m.fechaFin | date:'dd/MM' }}</span>
+          </li>
+        } @empty {
+          <li class="text-neutral-500">Ninguna en los próximos 7 días.</li>
+        }
+      </ul>
+    </article>
+
+    <article class="bg-[#111] border border-yellow-500/20 p-6">
+      <h2 class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-4">Clientes recientes</h2>
+      <ul class="space-y-3 text-sm">
+        @for (c of resumen()?.clientesRecientes ?? []; track c.id) {
+          <li class="flex justify-between gap-3">
+            <span>{{ c.nombre }}</span>
+            <span class="text-neutral-500 whitespace-nowrap">{{ c.fechaAlta | date:'dd/MM/yyyy' }}</span>
+          </li>
+        } @empty {
+          <li class="text-neutral-500">Aún no hay registros.</li>
+        }
+      </ul>
+    </article>
+
+    <article class="bg-[#111] border border-yellow-500/20 p-6">
+      <h2 class="text-[11px] tracking-[0.4em] text-yellow-400 uppercase mb-4">Pagos recientes</h2>
+      <ul class="space-y-3 text-sm">
+        @for (p of resumen()?.pagosRecientes ?? []; track p.id) {
+          <li class="flex justify-between gap-3">
+            <span>{{ p.cliente }} <span class="text-neutral-500">· {{ p.fechaPago | date:'dd/MM HH:mm' }}</span></span>
+            <span class="text-yellow-400 whitespace-nowrap">Bs {{ p.monto | number:'1.2-2' }}</span>
+          </li>
+        } @empty {
+          <li class="text-neutral-500">Aún no hay pagos.</li>
+        }
+      </ul>
+    </article>
   </section>
 
   <!-- Accesos rápidos -->

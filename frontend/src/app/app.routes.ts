@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './guards/auth.guard';
+import { roleGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   // ---------- LANDING PAGE (pública) ----------
@@ -12,10 +12,23 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./pages/login/login').then(m => m.Login)
   },
+   // ---------- ADMIN (nuevo) ----------
+  {
+    path: 'admin',
+    canActivate: [roleGuard(['ADMIN'])],
+    loadComponent: () => import('./layout/admin-layout/admin-layout').then(m => m.AdminLayout),
+    children: [
+      { path: '', redirectTo: 'usuarios', pathMatch: 'full' },
+      { path: 'dashboard', loadComponent: () => import('./pages/admin/dashboard/admin-dashboard').then(m => m.AdminDashboard) },
+      { path: 'usuarios',  loadComponent: () => import('./pages/admin/usuarios/admin-usuarios').then(m => m.AdminUsuarios) },
+      { path: 'planes',    loadComponent: () => import('./pages/admin/planes/admin-planes').then(m => m.AdminPlanes) },
+      { path: 'promociones', loadComponent: () => import('./pages/admin/promociones/admin-promociones').then(m => m.AdminPromociones) },
+    ]
+  },
   // ---------- RECEPCIÓN ----------
   {
     path: 'recepcion',
-    canActivate: [authGuard],
+    canActivate: [roleGuard(['RECEPCIONISTA'])],
     loadComponent: () =>
       import('./pages/recepcion/recepcion-layout').then(m => m.RecepcionLayoutComponent),
     children: [
@@ -23,6 +36,7 @@ export const routes: Routes = [
       { path: 'inicio',       loadComponent: () => import('./pages/recepcion/inicio/inicio').then(m => m.InicioComponent) },
       { path: 'clientes',     loadComponent: () => import('./pages/recepcion/clientes/clientes').then(m => m.ClientesComponent) },
       { path: 'asistencias',  loadComponent: () => import('./pages/recepcion/asistencias/asistencias').then(m => m.AsistenciasComponent) },
+      { path: 'suscripciones', loadComponent: () => import('./pages/recepcion/suscripciones/suscripciones').then(m => m.SuscripcionesComponent) },
       { path: 'pagos',        loadComponent: () => import('./pages/recepcion/pagos/pagos').then(m => m.PagosComponent) },
       { path: 'planes',       loadComponent: () => import('./pages/recepcion/planes/planes').then(m => m.PlanesComponent) },
     ]
@@ -30,7 +44,7 @@ export const routes: Routes = [
   // ---------- CLIENTE ----------
   {
     path: 'cliente',
-    canActivate: [authGuard],
+    canActivate: [roleGuard(['CLIENTE'])],
     loadComponent: () =>
       import('./pages/cliente/cliente-layout').then(m => m.ClienteLayoutComponent),
     children: [

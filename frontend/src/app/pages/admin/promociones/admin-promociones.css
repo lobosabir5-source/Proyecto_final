@@ -1,0 +1,8 @@
+@reference "tailwindcss";
+
+:host { @apply block; }
+
+.promo-name { @apply font-medium text-slate-800; }
+.promo-count { @apply text-xs text-slate-400; }
+.row-inactive { @apply opacity-60; }
+.resumen { @apply -mt-2 mb-4 text-cyan-700; }
