@@ -5,10 +5,10 @@
       <h1 class="page-title">Usuarios</h1>
       <p class="page-subtitle">Cuentas de administradores, recepcionistas y clientes</p>
     </div>
-    <button type="button" class="btn btn-primary" (click)="abrirModal()">
+    <app-button (click)="abrirModal()">
       <app-icon nombre="plus" />
       Nuevo usuario
-    </button>
+    </app-button>
   </header>
 
   @if (exito()) {
@@ -19,8 +19,7 @@
   }
 
   <article class="panel">
-    <div class="table-wrap">
-      <table class="table">
+    <app-table etiqueta="Usuarios">
         <thead>
           <tr>
             <th>#</th>
@@ -50,10 +49,9 @@
                 <div class="cell-actions-group">
 
                   @if (esPersonal(usuario)) {
-                    <button type="button" class="btn btn-secondary btn-sm" (click)="abrirEdicion(usuario)">
+                    <app-button variante="secondary" tamano="sm" (click)="abrirEdicion(usuario)" [attr.aria-label]="'Editar usuario '+usuario.usuario">
                       <app-icon nombre="edit" />
-
-                    </button>
+                    </app-button>
                   }
 
                   <button
@@ -78,8 +76,7 @@
             </tr>
           }
         </tbody>
-      </table>
-    </div>
+    </app-table>
 
     @if (pagina(); as datos) {
       <footer class="panel-footer">

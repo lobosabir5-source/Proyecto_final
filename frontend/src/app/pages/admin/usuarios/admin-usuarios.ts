@@ -2,6 +2,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { UiButton } from '../../../components/ui-button/ui-button';
+import { UiTable } from '../../../components/ui-table/ui-table';
 import { ConfirmDialog } from '../../../components/confirm-dialog/confirm-dialog';
 import { Icon } from '../../../components/icon/icon';
 import { Pagina, UsuarioAdmin } from '../../../models/admin.models';
@@ -21,7 +23,7 @@ interface FormularioUsuario {
 
 @Component({
   selector: 'app-admin-usuarios',
-  imports: [FormsModule, Icon, ConfirmDialog],
+  imports: [UiButton, UiTable, FormsModule, Icon, ConfirmDialog],
   templateUrl: './admin-usuarios.html',
   styleUrl: './admin-usuarios.css'
 })

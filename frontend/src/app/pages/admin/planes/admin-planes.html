@@ -5,10 +5,10 @@
       <h1 class="page-title">Planes de membresía</h1>
       <p class="page-subtitle">Catálogo que verán recepción y los clientes</p>
     </div>
-    <button type="button" class="btn btn-primary" (click)="abrirCrear()">
+    <app-button (click)="abrirCrear()">
       <app-icon nombre="plus" />
       Nuevo plan
-    </button>
+    </app-button>
   </header>
 
   @if (exito()) {
@@ -27,8 +27,7 @@
       <span class="plans-count">{{ planesVisibles().length }} planes</span>
     </header>
 
-    <div class="table-wrap">
-      <table class="table">
+    <app-table etiqueta="Planes">
         <thead>
           <tr>
             <th>Nombre</th>
@@ -53,15 +52,13 @@
               </td>
               <td class="cell-actions">
                 <div class="cell-actions-group">
-                  <button type="button" class="btn btn-secondary btn-sm" (click)="abrirEditar(plan)">
+                  <app-button variante="secondary" tamano="sm" (click)="abrirEditar(plan)" [attr.aria-label]="'Editar plan '+plan.nombre">
                     <app-icon nombre="edit" />
-
-                  </button>
+                  </app-button>
                   @if (plan.activo) {
-                    <button type="button" class="btn btn-danger btn-sm" (click)="pedirDesactivar(plan)">
+                    <app-button variante="danger" tamano="sm" (click)="pedirDesactivar(plan)" [attr.aria-label]="'Desactivar plan '+plan.nombre">
                       <app-icon nombre="ban" />
-
-                    </button>
+                    </app-button>
                   }
                 </div>
               </td>
@@ -74,8 +71,7 @@
             </tr>
           }
         </tbody>
-      </table>
-    </div>
+    </app-table>
   </article>
 
 </section>

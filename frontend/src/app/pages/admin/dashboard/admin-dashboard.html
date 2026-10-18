@@ -43,8 +43,7 @@
           <h2 class="panel-title"><app-icon nombre="dollar" /> Ingresos por mes (Bs)</h2>
         </header>
         <div class="panel-body chart-box">
-          <ngx-charts-bar-vertical [results]="datosIngresos()" [scheme]="esquemaIngresos"
-                                   [xAxis]="true" [yAxis]="true" [showDataLabel]="true" />
+          <canvas baseChart [data]="datosIngresos()" [options]="opcionesBarras" type="bar"></canvas>
         </div>
       </article>
 
@@ -53,9 +52,7 @@
           <h2 class="panel-title"><app-icon nombre="users" /> Clientes nuevos y renovaciones</h2>
         </header>
         <div class="panel-body chart-box">
-          <ngx-charts-line-chart [results]="datosTendencia()" [scheme]="esquemaTendencia"
-                                 [xAxis]="true" [yAxis]="true" [legend]="true"
-                                 [legendPosition]="posicionLeyenda" [autoScale]="true" />
+          <canvas baseChart [data]="datosTendencia()" [options]="opcionesLineas" type="line"></canvas>
         </div>
       </article>
 
@@ -88,9 +85,7 @@
         </header>
         <div class="panel-body chart-box">
           @if (hayEstados()) {
-            <ngx-charts-pie-chart [results]="datosEstados()" [scheme]="esquemaEstados"
-                                  [doughnut]="true" [labels]="true" [legend]="true"
-                                  [legendPosition]="posicionLeyenda" />
+            <canvas baseChart [data]="datosEstados()" [options]="opcionesDona" type="doughnut"></canvas>
           } @else {
             <p class="empty-state">Aún no hay membresías vigentes ni vencidas.</p>
           }

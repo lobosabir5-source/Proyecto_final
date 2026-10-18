@@ -2,6 +2,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { DecimalPipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { UiButton } from '../../../components/ui-button/ui-button';
+import { UiTable } from '../../../components/ui-table/ui-table';
 import { ConfirmDialog } from '../../../components/confirm-dialog/confirm-dialog';
 import { Icon } from '../../../components/icon/icon';
 import { GuardarPlan, Plan } from '../../../models/admin.models';
@@ -12,7 +14,7 @@ const MAX_BENEFICIOS = 8;
 
 @Component({
   selector: 'app-admin-planes',
-  imports: [FormsModule, DecimalPipe, Icon, ConfirmDialog],
+  imports: [UiButton, UiTable, FormsModule, DecimalPipe, Icon, ConfirmDialog],
   templateUrl: './admin-planes.html',
   styleUrl: './admin-planes.css'
 })

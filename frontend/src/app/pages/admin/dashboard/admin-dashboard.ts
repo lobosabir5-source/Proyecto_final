@@ -1,8 +1,9 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { DecimalPipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Color, LegendPosition, NgxChartsModule, ScaleType } from '@swimlane/ngx-charts';
+import { BaseChartDirective } from 'ng2-charts';
+import { Chart, registerables, type ChartData, type ChartOptions } from 'chart.js';
 import { forkJoin } from 'rxjs';
 import { Icon } from '../../../components/icon/icon';
 import { StatCard } from '../../../components/stat-card/stat-card';
@@ -13,9 +14,11 @@ import { ReporteService } from '../../../services/reporte.service';
 import { UsuarioService } from '../../../services/usuario.service';
 import { leerErrorApi } from '../../../utils/api-error';
 
+Chart.register(...registerables);
+
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [RouterLink, DecimalPipe, Icon, StatCard, NgxChartsModule],
+  imports: [RouterLink, DecimalPipe, Icon, StatCard, BaseChartDirective],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css'
 })
@@ -30,52 +33,64 @@ export class AdminDashboard implements OnInit {
   readonly resumen = signal<ReporteResumen | null>(null);
   readonly planes = signal<Plan[]>([]);
   readonly usuarios = signal<UsuarioAdmin[]>([]);
-
   readonly planesActivos = computed(() => this.planes().filter(plan => plan.activo));
 
-  readonly posicionLeyenda = LegendPosition.Below;
-  readonly esquemaEstados = this.esquema(['#16a34a', '#f59e0b', '#dc2626']);
-  readonly esquemaIngresos = this.esquema(['#eab308']);
-  readonly esquemaTendencia = this.esquema(['#0ea5e9', '#eab308']);
+  readonly opcionesBarras: ChartOptions<'bar'> = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true } }
+  };
+  readonly opcionesLineas: ChartOptions<'line'> = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom' } },
+    scales: { y: { beginAtZero: true } }
+  };
+  readonly opcionesDona: ChartOptions<'doughnut'> = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom' } }
+  };
 
-  /** Activas / por vencer / vencidas, tal como las calcula el backend. */
-  readonly datosEstados = computed(() => {
-    const datos = this.resumen();
-    return datos
-      ? [
-          { name: 'Activas', value: datos.membresiasActivas },
-          { name: 'Por vencer', value: datos.membresiasPorVencer },
-          { name: 'Vencidas', value: datos.membresiasVencidas }
-        ]
-      : [];
+  readonly datosIngresos = computed<ChartData<'bar'>>(() => {
+    const puntos = this.resumen()?.ingresosPorMes ?? [];
+    return {
+      labels: puntos.map(p => p.mes),
+      datasets: [{ label: 'Ingresos (Bs)', data: puntos.map(p => Number(p.valor)), backgroundColor: '#eab308' }]
+    };
   });
 
-  readonly datosIngresos = computed(() => this.aPuntos(this.resumen()?.ingresosPorMes));
-
-  readonly datosTendencia = computed(() => {
-    const datos = this.resumen();
-    return datos
-      ? [
-          { name: 'Clientes nuevos', series: this.aPuntos(datos.clientesPorMes) },
-          { name: 'Renovaciones', series: this.aPuntos(datos.renovacionesPorMes) }
-        ]
-      : [];
+  readonly datosTendencia = computed<ChartData<'line'>>(() => {
+    const resumen = this.resumen();
+    const clientes = resumen?.clientesPorMes ?? [];
+    const renovaciones = resumen?.renovacionesPorMes ?? [];
+    const meses = [...new Set([...clientes.map(p => p.mes), ...renovaciones.map(p => p.mes)])];
+    return {
+      labels: meses,
+      datasets: [
+        { label: 'Clientes nuevos', data: this.valoresPorMes(clientes, meses), borderColor: '#0ea5e9', backgroundColor: '#0ea5e9', tension: 0.3 },
+        { label: 'Renovaciones', data: this.valoresPorMes(renovaciones, meses), borderColor: '#eab308', backgroundColor: '#eab308', tension: 0.3 }
+      ]
+    };
   });
 
-  readonly hayEstados = computed(() => this.datosEstados().some(punto => punto.value > 0));
+  readonly datosEstados = computed<ChartData<'doughnut'>>(() => {
+    const datos = this.resumen();
+    return {
+      labels: ['Activas', 'Por vencer', 'Vencidas'],
+      datasets: [{
+        data: datos ? [datos.membresiasActivas, datos.membresiasPorVencer, datos.membresiasVencidas] : [],
+        backgroundColor: ['#16a34a', '#f59e0b', '#dc2626']
+      }]
+    };
+  });
 
-  private readonly precioMaximo = computed(() =>
-    Math.max(0, ...this.planesActivos().map(plan => plan.precio))
-  );
+  readonly hayEstados = computed(() => (this.datosEstados().datasets[0]?.data ?? []).some(valor => Number(valor) > 0));
+  private readonly precioMaximo = computed(() => Math.max(0, ...this.planesActivos().map(plan => plan.precio)));
 
-  ngOnInit(): void {
-    this.cargar();
-  }
+  ngOnInit(): void { this.cargar(); }
 
   cargar(): void {
     this.cargando.set(true);
     this.error.set('');
-
     forkJoin({
       resumen: this.reporteService.resumen(),
       planes: this.planService.listar(),
@@ -94,12 +109,9 @@ export class AdminDashboard implements OnInit {
     });
   }
 
-  private esquema(domain: string[]): Color {
-    return { name: 'gym', selectable: true, group: ScaleType.Ordinal, domain };
-  }
-
-  private aPuntos(puntos: PuntoMensual[] | undefined): { name: string; value: number }[] {
-    return (puntos ?? []).map(punto => ({ name: punto.mes, value: Number(punto.valor) }));
+  private valoresPorMes(puntos: PuntoMensual[], meses: string[]): number[] {
+    const valores = new Map(puntos.map(p => [p.mes, Number(p.valor)]));
+    return meses.map(mes => valores.get(mes) ?? 0);
   }
 
   porcentajePrecio(plan: Plan): number {
@@ -107,16 +119,10 @@ export class AdminDashboard implements OnInit {
     return maximo > 0 ? Math.round((plan.precio / maximo) * 100) : 0;
   }
 
-  inicial(nombre: string): string {
-    return nombre.charAt(0).toUpperCase();
-  }
+  inicial(nombre: string): string { return nombre.charAt(0).toUpperCase(); }
 
   etiquetaRol(rol: Rol): string {
-    const etiquetas: Record<Rol, string> = {
-      ADMIN: 'Administrador',
-      RECEPCIONISTA: 'Recepcionista',
-      CLIENTE: 'Cliente'
-    };
+    const etiquetas: Record<Rol, string> = { ADMIN: 'Administrador', RECEPCIONISTA: 'Recepcionista', CLIENTE: 'Cliente' };
     return etiquetas[rol];
   }
 }
