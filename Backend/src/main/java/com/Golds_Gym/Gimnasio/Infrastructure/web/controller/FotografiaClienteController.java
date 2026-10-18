@@ -9,7 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/recepcion/clientes")
-@PreAuthorize("hasAnyRole('ADMIN','RECEPCION')")
+@PreAuthorize("hasAnyRole('ADMIN','RECEPCIONISTA')")
 public class FotografiaClienteController {
     private final FotografiaClienteService servicio;
 

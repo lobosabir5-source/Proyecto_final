@@ -1,5 +1,7 @@
 package com.Golds_Gym.Gimnasio.application.dto;
 
+import lombok.Getter;
+import lombok.Setter;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,6 +11,8 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
+@Getter
+@Setter
 public class ActualizarClienteRequest {
     @NotBlank(message = "El nombre es obligatorio")
     @Size(max = 120, message = "El nombre no puede superar 120 caracteres")
@@ -27,35 +31,21 @@ public class ActualizarClienteRequest {
     public ActualizarClienteRequest() {
     }
 
-    public String getNombre() {
-        return nombre;
-    }
 
-    public void setNombre(String nombre) {
+public void setNombre(String nombre) {
         this.nombre = nombre == null ? null : nombre.trim();
     }
 
-    public String getCorreo() {
-        return correo;
-    }
 
-    public void setCorreo(String correo) {
+public void setCorreo(String correo) {
         this.correo = correo == null ? null : correo.trim().toLowerCase();
     }
 
-    public String getTelefono() {
-        return telefono;
-    }
 
-    public void setTelefono(String telefono) {
+public void setTelefono(String telefono) {
         this.telefono = telefono == null ? null : telefono.trim();
     }
 
-    public LocalDate getFechaNacimiento() {
-        return fechaNacimiento;
-    }
 
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
-    }
+
 }

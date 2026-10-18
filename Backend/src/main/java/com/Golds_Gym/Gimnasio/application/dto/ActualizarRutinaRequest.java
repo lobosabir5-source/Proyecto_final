@@ -1,8 +1,12 @@
 package com.Golds_Gym.Gimnasio.application.dto;
 
+import lombok.Getter;
+import lombok.Setter;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+@Getter
+@Setter
 public class ActualizarRutinaRequest {
     @NotBlank(message = "El nombre es obligatorio")
     @Size(max = 120, message = "El nombre no puede superar 120 caracteres")
@@ -14,19 +18,13 @@ public class ActualizarRutinaRequest {
     public ActualizarRutinaRequest() {
     }
 
-    public String getNombre() {
-        return nombre;
-    }
 
-    public void setNombre(String nombre) {
+public void setNombre(String nombre) {
         this.nombre = nombre == null ? null : nombre.trim();
     }
 
-    public String getContenido() {
-        return contenido;
-    }
 
-    public void setContenido(String contenido) {
+public void setContenido(String contenido) {
         this.contenido = contenido == null ? null : contenido.trim();
     }
 }

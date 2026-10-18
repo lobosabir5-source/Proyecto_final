@@ -1,5 +1,7 @@
 package com.Golds_Gym.Gimnasio.application.dto;
 
+import lombok.Getter;
+import lombok.Setter;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +12,8 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import jakarta.validation.constraints.Positive;
 
+@Getter
+@Setter
 public class RegistroRequest {
 
 	@NotBlank(message = "El usuario es obligatorio")
@@ -41,18 +45,16 @@ public class RegistroRequest {
 	public RegistroRequest() {
 	}
 
-	public String getUsuario() { return usuario; }
-	public void setUsuario(String usuario) { this.usuario = usuario == null ? null : usuario.trim(); }
-	public String getPassword() { return password; }
-	public void setPassword(String password) { this.password = password; }
-	public String getNombre() { return nombre; }
-	public void setNombre(String nombre) { this.nombre = nombre == null ? null : nombre.trim(); }
-	public String getCorreo() { return correo; }
-	public void setCorreo(String correo) { this.correo = correo == null ? null : correo.trim().toLowerCase(); }
-	public String getTelefono() { return telefono; }
-	public void setTelefono(String telefono) { this.telefono = telefono == null ? null : telefono.trim(); }
-	public LocalDate getFechaNacimiento() { return fechaNacimiento; }
-	public void setFechaNacimiento(LocalDate fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
-	public Long getPlanId() { return planId; }
-	public void setPlanId(Long planId) { this.planId = planId; }
+
+public void setUsuario(String usuario) { this.usuario = usuario == null ? null : usuario.trim(); }
+
+
+public void setNombre(String nombre) { this.nombre = nombre == null ? null : nombre.trim(); }
+
+public void setCorreo(String correo) { this.correo = correo == null ? null : correo.trim().toLowerCase(); }
+
+public void setTelefono(String telefono) { this.telefono = telefono == null ? null : telefono.trim(); }
+
+
+
 }

@@ -28,6 +28,7 @@ public class PromocionService {
     public PromocionRespuesta guardar(Long id, GuardarPromocionSolicitud solicitud) {
         if (solicitud.fechaFin().isBefore(solicitud.fechaInicio()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Vigencia inválida");
+
         if (solicitud.tipo() == Promocion.TipoDescuento.PORCENTAJE
                 && solicitud.valor().compareTo(BigDecimal.valueOf(100)) > 0)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Porcentaje máximo 100");
