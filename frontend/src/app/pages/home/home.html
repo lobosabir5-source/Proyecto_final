@@ -31,13 +31,7 @@
 
   <!-- Grupo de la derecha: ícono de redes sociales + botón de login -->
   <div class="flex items-center gap-4">
-
-    <a routerLink="/registro"
-      class="hidden sm:inline-flex rounded-md bg-yellow-400 px-5 sm:px-6 py-2.5 font-semibold tracking-wide text-neutral-950
-             hover:bg-yellow-300 transition-colors">
-      Registrarme
-    </a>
-
+    
     <!-- Ícono de Facebook: target="_blank" abre en pestaña nueva, rel="noopener noreferrer" es buena práctica de seguridad para links externos -->
     <a href="https://www.facebook.com/profile.php?id=100090296196405"
        target="_blank"
@@ -50,7 +44,13 @@
       </svg>
     </a>
 
-    <button routerLink="/registro"
+    <a routerLink="/registro"
+       class="hidden sm:inline-flex rounded-md bg-yellow-400 px-5 sm:px-6 py-2.5 font-semibold tracking-wide text-neutral-950
+             hover:bg-yellow-300 transition-colors">
+      Registrarme
+    </a>
+
+    <button routerLink="/login"
       class="rounded-md border border-yellow-400 px-5 sm:px-6 py-2.5 font-semibold tracking-wide text-yellow-400
              hover:bg-yellow-400 hover:text-neutral-950 transition-colors">
       Iniciar sesión
@@ -86,16 +86,16 @@
   <!-- ============ ESTADÍSTICAS ============ -->
   <section class="relative z-10 grid grid-cols-3 max-w-2xl mx-auto gap-6 border-t border-yellow-500/20 pt-8 pb-24 px-6">
     <div class="text-center">
-      <p class="font-bebas text-4xl sm:text-5xl text-yellow-400">100+</p>
-      <p class="text-[10px] text-neutral-500 tracking-[0.2em] uppercase font-semibold">Miembros</p>
+      <p class="font-bebas text-4xl sm:text-5xl text-yellow-400">GOLD'S</p>
+      <p class="text-[10px] text-neutral-500 tracking-[0.2em] uppercase font-semibold">Entrena con nosotros</p>
     </div>
     <div class="text-center">
-      <p class="font-bebas text-4xl sm:text-5xl text-yellow-400">24/7</p>
-      <p class="text-[10px] text-neutral-500 tracking-[0.2em] uppercase font-semibold">Acceso</p>
+      <p class="font-bebas text-4xl sm:text-5xl text-yellow-400">GYM</p>
+      <p class="text-[10px] text-neutral-500 tracking-[0.2em] uppercase font-semibold">Tu espacio fitness</p>
     </div>
     <div class="text-center">
-      <p class="font-bebas text-4xl sm:text-5xl text-yellow-400">4</p>
-      <p class="text-[10px] text-neutral-500 tracking-[0.2em] uppercase font-semibold">Planes</p>
+      <p class="font-bebas text-4xl sm:text-5xl text-yellow-400">{{ planes.length }}</p>
+      <p class="text-[10px] text-neutral-500 tracking-[0.2em] uppercase font-semibold">Planes activos</p>
     </div>
   </section>
 
@@ -106,8 +106,18 @@
       <h2 class="font-bebas text-5xl sm:text-6xl">ELIGE TU PLAN</h2>
     </div>
 
+    @if (cargandoPlanes) {
+      <p class="text-center text-neutral-400" role="status">Cargando planes disponibles...</p>
+    } @else if (errorPlanes) {
+      <div class="text-center" role="alert">
+        <p class="text-neutral-300 mb-4">No se pudieron cargar los planes. Comprueba tu conexión e inténtalo de nuevo.</p>
+        <button type="button" (click)="cargarPlanes()" class="bg-yellow-400 text-neutral-950 font-semibold px-5 py-3 hover:bg-yellow-300">Reintentar</button>
+      </div>
+    } @else if (planes.length === 0) {
+      <p class="text-center text-neutral-400">No hay planes disponibles por el momento.</p>
+    }
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-      @for (plan of planes; track plan.nombre) {
+      @for (plan of planes; track plan.id) {
         <!--
           group: permite que la imagen de adentro (group-hover:scale-110) reaccione
           cuando el cursor está sobre CUALQUIER parte de la tarjeta, no solo la imagen.
@@ -125,8 +135,12 @@
 
           <!-- Imagen: overflow-hidden recorta el zoom para que no se salga del contenedor -->
           <div class="relative h-40 overflow-hidden">
-            <img [src]="plan.imagen" [alt]="plan.nombre"
-                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+            @if (imagenPlan(plan); as imagen) {
+              <img [src]="imagen" [alt]="plan.nombre" loading="lazy"
+                   class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+            } @else {
+              <div class="w-full h-full flex items-center justify-center bg-neutral-800 text-yellow-400 font-bebas text-3xl">GOLD'S GYM</div>
+            }
             <div class="absolute inset-0 bg-linear-to-t from-neutral-950/80 to-transparent"></div>
           </div>
 
@@ -137,16 +151,16 @@
             </p>
 
             <p class="text-xs mb-4" [class]="plan.destacado ? 'text-neutral-800' : 'text-neutral-400'">
-              {{ plan.horario }}
+              {{ plan.horario || plan.descripcion || 'Consulta los horarios en recepción' }}
             </p>
 
             <p class="mb-5">
               <span class="font-bebas text-4xl">{{ plan.precio }}</span>
-              <span class="text-xs"> {{ plan.periodo }}</span>
+              <span class="text-xs"> Bs / {{ plan.duracionDias }} días</span>
             </p>
 
             <ul class="space-y-2 mb-6 text-xs">
-              @for (beneficio of plan.beneficios; track beneficio) {
+              @for (beneficio of beneficiosPlan(plan); track $index) {
                 <li class="flex items-start gap-2">
                   <span [class]="plan.destacado ? 'text-neutral-800' : 'text-yellow-400'">✓</span>
                   <span>{{ beneficio }}</span>

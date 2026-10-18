@@ -63,7 +63,6 @@ public void setBeneficios(List<String> beneficios) {
                 : beneficios.stream().filter(b -> b != null && !b.isBlank()).map(String::trim).toList();
     }
 
-    public boolean isDestacado() { return destacado; }
 
 
 }

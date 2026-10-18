@@ -18,8 +18,10 @@ import java.math.BigDecimal;
 public class PromocionService {
     private final PromocionRepository promociones;
     private final PlanRepository planes;
+    private final ImagenPromocionService imagenes;
 
-    public PromocionService(PromocionRepository promociones, PlanRepository planes) {
+    public PromocionService(PromocionRepository promociones, PlanRepository planes, ImagenPromocionService imagenes) {
+        this.imagenes = imagenes;
         this.promociones = promociones;
         this.planes = planes;
     }
@@ -28,7 +30,6 @@ public class PromocionService {
     public PromocionRespuesta guardar(Long id, GuardarPromocionSolicitud solicitud) {
         if (solicitud.fechaFin().isBefore(solicitud.fechaInicio()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Vigencia inválida");
-
         if (solicitud.tipo() == Promocion.TipoDescuento.PORCENTAJE
                 && solicitud.valor().compareTo(BigDecimal.valueOf(100)) > 0)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Porcentaje máximo 100");
@@ -71,6 +72,27 @@ public class PromocionService {
         p.setActivo(false);
     }
 
+    @Transactional
+    public PromocionRespuesta subirImagen(Long id, org.springframework.web.multipart.MultipartFile archivo) {
+        Promocion p = promociones.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        String anterior = p.getImagenUrl();
+        String nueva = imagenes.guardar(archivo);
+        p.setImagenUrl(nueva);
+        PromocionRespuesta r = respuesta(promociones.save(p));
+        imagenes.eliminar(anterior);
+        return r;
+    }
+
+    @Transactional
+    public PromocionRespuesta quitarImagen(Long id) {
+        Promocion p = promociones.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        String anterior = p.getImagenUrl();
+        p.setImagenUrl(null);
+        PromocionRespuesta r = respuesta(promociones.save(p));
+        imagenes.eliminar(anterior);
+        return r;
+    }
+
     public BigDecimal aplicar(BigDecimal precio, Long planId, java.time.LocalDate fecha) {
         BigDecimal resultado = precio;
         for (Promocion p : promociones.findByActivoTrueAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(fecha,
@@ -87,6 +109,6 @@ public class PromocionService {
 
     private PromocionRespuesta respuesta(Promocion p) {
         return new PromocionRespuesta(p.getId(), p.getNombre(), p.getTipo(), p.getValor(), p.getFechaInicio(),
-                p.getFechaFin(), p.getPlan() == null ? null : p.getPlan().getId(), p.isActivo());
+                p.getFechaFin(), p.getPlan() == null ? null : p.getPlan().getId(), p.isActivo(), p.getImagenUrl());
     }
 }

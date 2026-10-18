@@ -15,7 +15,8 @@ public record PromocionRespuesta(
         LocalDate fechaInicio,
         LocalDate fechaFin,
         Long planId,
-        boolean activo
+        boolean activo,
+        String imagenUrl
 
 ) {
 }

@@ -39,6 +39,9 @@ public class Promocion {
     private Plan plan;
 
 
+    @Column(name="imagen_url", length=500)
+    private String imagenUrl;
+
     @Column(nullable = false)
     private boolean activo = true;
 
