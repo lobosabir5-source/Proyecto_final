@@ -40,6 +40,18 @@ public class PromocionAdminController {
         return servicio.guardar(id, s);
     }
 
+    // Imagen almacenada fuera de PostgreSQL; en la entidad se conserva su URL.
+    @PostMapping(value = "/{id}/imagen", consumes = "multipart/form-data")
+    public PromocionRespuesta subirImagen(@PathVariable Long id,
+            @RequestParam("archivo") org.springframework.web.multipart.MultipartFile archivo) {
+        return servicio.subirImagen(id, archivo);
+    }
+
+    @DeleteMapping("/{id}/imagen")
+    public PromocionRespuesta quitarImagen(@PathVariable Long id) {
+        return servicio.quitarImagen(id);
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void desactivar(@PathVariable Long id) {

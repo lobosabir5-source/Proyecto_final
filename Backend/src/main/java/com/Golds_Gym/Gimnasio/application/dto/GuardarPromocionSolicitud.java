@@ -13,7 +13,7 @@ import java.time.LocalDate;
 
 public record GuardarPromocionSolicitud(
         @NotBlank(message = "El nombre es obligatorio")
-        @Size(max = 120, message = "El nombre no puede superar 120 caracteres") String nombre,
+        @Size(max = 100, message = "El nombre no puede superar 100 caracteres") String nombre,
         @NotNull(message = "El tipo de descuento es obligatorio") TipoDescuento tipo,
         @NotNull(message = "El valor es obligatorio")
         @DecimalMin(value = "0.01", message = "El valor debe ser mayor a cero")

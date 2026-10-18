@@ -79,7 +79,8 @@ public class PromocionService {
         String nueva = imagenes.guardar(archivo);
         p.setImagenUrl(nueva);
         PromocionRespuesta r = respuesta(promociones.save(p));
-        imagenes.eliminar(anterior);
+        // El archivo anterior se conserva para evitar pérdida si la transacción revierte.
+        // Su limpieza debe hacerse tras confirmar el commit o mediante tarea programada.
         return r;
     }
 
@@ -89,7 +90,8 @@ public class PromocionService {
         String anterior = p.getImagenUrl();
         p.setImagenUrl(null);
         PromocionRespuesta r = respuesta(promociones.save(p));
-        imagenes.eliminar(anterior);
+        // El archivo anterior se conserva para evitar pérdida si la transacción revierte.
+        // Su limpieza debe hacerse tras confirmar el commit o mediante tarea programada.
         return r;
     }
 
