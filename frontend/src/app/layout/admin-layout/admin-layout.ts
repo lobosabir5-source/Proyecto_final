@@ -22,7 +22,8 @@ export class AdminLayout {
     { ruta: '/admin/dashboard', etiqueta: 'Dashboard', icono: 'dashboard' },
     { ruta: '/admin/usuarios', etiqueta: 'Usuarios', icono: 'users' },
     { ruta: '/admin/planes', etiqueta: 'Planes', icono: 'tag' },
-    { ruta: '/admin/promociones', etiqueta: 'Promociones', icono: 'percent' }
+    { ruta: '/admin/promociones', etiqueta: 'Promociones', icono: 'percent' },
+    { ruta: '/admin/configuracion', etiqueta: 'Configuración', icono: 'dashboard' }
   ];
 
   readonly menuAbierto = signal(this.esPantallaGrande());

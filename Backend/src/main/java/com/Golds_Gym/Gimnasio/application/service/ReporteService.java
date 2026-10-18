@@ -15,7 +15,8 @@ import java.util.function.BiFunction;
 public class ReporteService {
     private static final int MESES_GRAFICO = 6;
     private static final Set<EstadoMembresia> VIGENTES = EnumSet.of(EstadoMembresia.ACTIVA, EstadoMembresia.POR_VENCER);
-    private static final DateTimeFormatter ETIQUETA_MES = DateTimeFormatter.ofPattern("MMM yy", Locale.forLanguageTag("es"));
+    private static final DateTimeFormatter ETIQUETA_MES = DateTimeFormatter.ofPattern("MMM yy",
+            Locale.forLanguageTag("es"));
 
     private final ClienteRepository clienteRepository;
     private final MembresiaRepository membresiaRepository;

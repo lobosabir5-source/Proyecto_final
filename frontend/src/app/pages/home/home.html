@@ -18,7 +18,7 @@
       <span class="text-neutral-950 font-black text-xl">G</span>
     </div>
     <div>
-      <p class="font-bebas text-xl tracking-widest text-white leading-none">GOLD'S FITNESS</p>
+      <p class="font-bebas text-xl tracking-widest text-white leading-none">{{ configuracion?.nombreComercial || "GOLD'S FITNESS" }}</p>
       <p class="text-yellow-400 text-[9px] tracking-[0.3em] font-semibold">GIMNASIO PREMIUM</p>
     </div>
   </div>
@@ -31,18 +31,12 @@
 
   <!-- Grupo de la derecha: ícono de redes sociales + botón de login -->
   <div class="flex items-center gap-4">
-    
-    <!-- Ícono de Facebook: target="_blank" abre en pestaña nueva, rel="noopener noreferrer" es buena práctica de seguridad para links externos -->
-    <a href="https://www.facebook.com/profile.php?id=100090296196405"
-       target="_blank"
-       rel="noopener noreferrer"
-       aria-label="Facebook de Gold's Fitness"
-       class="w-9 h-9 rounded-full border border-neutral-700 flex items-center justify-center
-              text-neutral-400 hover:text-yellow-400 hover:border-yellow-400 transition-colors">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.891h-2.33v6.987C18.343 21.128 22 16.991 22 12z"/>
-      </svg>
-    </a>
+
+    <!-- Redes sociales registradas en el panel de administración -->
+    @for (red of configuracion?.redesSociales ?? []; track red.id) {
+      <a [href]="red.url" target="_blank" rel="noopener noreferrer"
+         class="text-sm text-neutral-300 hover:text-yellow-400" [attr.aria-label]="red.plataforma">{{ red.plataforma }}</a>
+    }
 
     <a routerLink="/registro"
        class="hidden sm:inline-flex rounded-md bg-yellow-400 px-5 sm:px-6 py-2.5 font-semibold tracking-wide text-neutral-950
@@ -67,8 +61,7 @@
     </h1>
 
     <p class="text-neutral-400 text-lg max-w-xl mb-10">
-      Entrena donde los campeones forjan disciplina. Planes flexibles, entrenadores certificados
-      y el equipo que necesitas para llegar a tu meta.
+      {{ configuracion?.descripcion || 'Entrena con nosotros. Conoce nuestros planes y alcanza tus objetivos.' }}
     </p>
 
     <button routerLink="/login"
@@ -182,23 +175,38 @@
     </div>
   </section>
 
+  <!-- Promociones vigentes consultadas directamente al backend -->
+  @if (promociones.length > 0) {
+    <section id="promociones" class="relative z-10 px-6 py-20 max-w-7xl mx-auto">
+      <h2 class="font-bebas text-5xl text-center mb-10">PROMOCIONES VIGENTES</h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (promo of promociones; track promo.id) {
+          <article class="border border-neutral-800 bg-neutral-900/60 overflow-hidden">
+            @if (urlImagen(promo.imagenUrl); as foto) {
+              <img [src]="foto" [alt]="promo.nombre" loading="lazy" class="h-48 w-full object-cover" />
+            }
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-yellow-400">{{ promo.nombre }}</h3>
+              <p class="text-neutral-300 mt-2">Descuento: {{ promo.valor }} {{ promo.tipo === 'PORCENTAJE' ? '%' : 'Bs' }}</p>
+              <p class="text-neutral-400 text-sm mt-2">Hasta {{ promo.fechaFin }}</p>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+  }
+
   <!-- ============ UBICACIÓN ============ -->
   <section id="ubicacion" class="relative z-10 px-6 py-24 max-w-6xl mx-auto scroll-mt-24">
     <div class="text-center mb-14">
       <p class="text-yellow-400 text-xs tracking-[0.4em] font-bold mb-3">CÓMO LLEGAR</p>
       <h2 class="font-bebas text-5xl sm:text-6xl">UBICACIÓN</h2>
-      <p class="text-neutral-400 mt-4">📍 Av. Apumalla #422, Nudo Vita, 4° piso</p>
+      <p class="text-neutral-400 mt-4">📍 {{ configuracion?.direccion || 'Consulta nuestra dirección en recepción' }}</p>
     </div>
 
-    <div class="border border-neutral-800">
-      <iframe
-        class="w-full h-96 grayscale invert-[0.9] contrast-125"
-        style="border:0;"
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-        src="https://www.google.com/maps?q=Av.+Apumalla+422+Nudo+Vita+La+Paz+Bolivia&output=embed">
-      </iframe>
-    </div>
+    @if (configuracion?.direccion) {
+      <p class="text-center text-neutral-300">Ubicación registrada por el administrador. Consulta el mapa usando la dirección indicada.</p>
+    }
   </section>
 
   <!-- ============ CONTACTO ============ -->
@@ -209,24 +217,38 @@
     <h2 class="font-bebas text-5xl sm:text-6xl">CONTACTO</h2>
   </div>
 
-  <div class="max-w-2xl mx-auto grid sm:grid-cols-2 gap-6 text-center">
-    <div class="p-6 border border-neutral-800">
-      <p class="text-yellow-400 font-bold mb-1">Teléfono</p>
-      <p class="text-neutral-300 text-sm">+591 69710992</p>
-    </div>
-
-    <!-- Tarjeta de Facebook: toda la tarjeta es clickeable y abre tu página real -->
-    <a href="https://www.facebook.com/profile.php?id=100090296196405"
-       target="_blank"
-       rel="noopener noreferrer"
-       class="p-6 border border-neutral-800 hover:border-yellow-500/50 transition-colors flex flex-col items-center justify-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.891h-2.33v6.987C18.343 21.128 22 16.991 22 12z"/>
-      </svg>
-      <p class="text-yellow-400 font-bold">Facebook</p>
-      <p class="text-neutral-300 text-sm">Gold's Fitness</p>
-    </a>
+  <div class="max-w-4xl mx-auto grid sm:grid-cols-2 gap-6 text-center">
+    @for (telefono of configuracion?.telefonos ?? []; track telefono.id) {
+      <div class="p-6 border border-neutral-800">
+        <p class="text-yellow-400 font-bold mb-1">{{ telefono.etiqueta || 'Teléfono' }}</p>
+        @if (telefono.whatsapp) {
+          <a [href]="enlaceWhatsapp(telefono.numero)" target="_blank" rel="noopener noreferrer" class="text-neutral-300 hover:text-yellow-400">{{ telefono.numero }} · WhatsApp</a>
+        } @else {
+          <a [href]="'tel:' + telefono.numero" class="text-neutral-300 hover:text-yellow-400">{{ telefono.numero }}</a>
+        }
+      </div>
+    }
+    @for (red of configuracion?.redesSociales ?? []; track red.id) {
+      <a [href]="red.url" target="_blank" rel="noopener noreferrer" class="p-6 border border-neutral-800 hover:border-yellow-500/50 transition-colors">
+        <p class="text-yellow-400 font-bold">{{ red.plataforma }}</p>
+        <p class="text-neutral-300 text-sm">{{ red.nombreUsuario || red.url }}</p>
+      </a>
+    }
+    @if (configuracion?.correoContacto) {
+      <a [href]="'mailto:' + configuracion?.correoContacto" class="p-6 border border-neutral-800 text-neutral-300">Correo: {{ configuracion?.correoContacto }}</a>
+    }
   </div>
+  @if ((configuracion?.horarios?.length ?? 0) > 0) {
+    <div class="max-w-2xl mx-auto mt-12">
+      <h3 class="text-yellow-400 font-bold text-center mb-4">HORARIOS DE ATENCIÓN</h3>
+      @for (horario of configuracion?.horarios ?? []; track horario.id) {
+        <div class="flex justify-between border-b border-neutral-800 py-2 text-sm">
+          <span>{{ dias[horario.diaSemana] || 'Día' }}</span>
+          <span>{{ horario.cerrado ? 'Cerrado' : (horario.apertura?.slice(0,5) + ' – ' + horario.cierre?.slice(0,5)) }}</span>
+        </div>
+      }
+    </div>
+  }
 </section>
 
 </main>

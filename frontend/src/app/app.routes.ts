@@ -27,6 +27,7 @@ export const routes: Routes = [
       { path: 'usuarios',  loadComponent: () => import('./pages/admin/usuarios/admin-usuarios').then(m => m.AdminUsuarios) },
       { path: 'planes',    loadComponent: () => import('./pages/admin/planes/admin-planes').then(m => m.AdminPlanes) },
       { path: 'promociones', loadComponent: () => import('./pages/admin/promociones/admin-promociones').then(m => m.AdminPromociones) },
+      { path: 'configuracion', loadComponent: () => import('./pages/admin/configuracion/admin-configuracion').then(m => m.AdminConfiguracion) },
     ]
   },
   // ---------- RECEPCIÓN ----------

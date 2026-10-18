@@ -1,0 +1,264 @@
+<div class="config-page">
+  <header>
+    <h1>Configuración del gimnasio</h1>
+    <p>Administra la información que aparece en tu sitio público.</p>
+  </header>
+  @if (cargando()) {
+  <p>Cargando configuración...</p>
+  } @if (error()) {
+  <div class="alert error" role="alert">{{ error() }}</div>
+  } @if (mensaje()) {
+  <div class="alert ok" role="status">{{ mensaje() }}</div>
+  }
+  <section class="panel">
+    <h2>Información general</h2>
+    <form (ngSubmit)="guardarGeneral()" #generalForm="ngForm" class="form-grid">
+      <label
+        >Nombre comercial
+        <input
+          name="nombre"
+          [(ngModel)]="general.nombreComercial"
+          required
+          maxlength="150"
+      /></label>
+      <label
+        >Correo de contacto
+        <input
+          name="correo"
+          type="email"
+          [(ngModel)]="general.correoContacto"
+          email
+      /></label>
+      <label
+        >Dirección <input name="direccion" [(ngModel)]="general.direccion"
+      /></label>
+      <label
+        >Logo (URL) <input name="logo" [(ngModel)]="general.logoUrl"
+      /></label>
+      <label
+        >Portada (URL) <input name="portada" [(ngModel)]="general.portadaUrl"
+      /></label>
+      <label
+        >Color principal
+        <input name="color1" type="color" [(ngModel)]="general.colorPrimario"
+      /></label>
+      <label
+        >Color secundario
+        <input name="color2" type="color" [(ngModel)]="general.colorSecundario"
+      /></label>
+      <label class="full"
+        >Descripción
+        <textarea
+          name="descripcion"
+          [(ngModel)]="general.descripcion"
+          rows="3"
+          maxlength="2000"
+        ></textarea>
+      </label>
+      <div class="full">
+        <button type="submit" [disabled]="guardando() || generalForm.invalid">
+          Guardar información
+        </button>
+      </div>
+    </form>
+  </section>
+  <section class="panel">
+    <h2>Teléfonos de contacto</h2>
+    <form
+      (ngSubmit)="guardarTelefono()"
+      #telefonoForm="ngForm"
+      class="form-grid"
+    >
+      <label
+        >Número
+        <input
+          name="numero"
+          [(ngModel)]="telefono.numero"
+          required
+          maxlength="40"
+      /></label>
+      <label
+        >Etiqueta <input name="etiqueta" [(ngModel)]="telefono.etiqueta"
+      /></label>
+      <label
+        >Orden
+        <input name="orden" type="number" min="0" [(ngModel)]="telefono.orden"
+      /></label>
+      <div class="checks">
+        <label
+          ><input
+            type="checkbox"
+            name="whatsapp"
+            [(ngModel)]="telefono.whatsapp"
+          />
+          WhatsApp</label
+        ><label
+          ><input
+            type="checkbox"
+            name="principal"
+            [(ngModel)]="telefono.principal"
+          />
+          Principal</label
+        ><label
+          ><input type="checkbox" name="activo" [(ngModel)]="telefono.activo" />
+          Activo</label
+        >
+      </div>
+      <div class="full actions">
+        <button type="submit" [disabled]="guardando() || telefonoForm.invalid">
+          {{ telefonoId === null ? 'Agregar teléfono' : 'Guardar cambios' }}</button
+        ><button type="button" class="secondary" (click)="cancelarTelefono()">
+          Cancelar
+        </button>
+      </div>
+    </form>
+    <div class="items">
+      @for (x of telefonos(); track x.id) {
+      <div class="item">
+        <span
+          ><strong>{{ x.numero }}</strong> — {{ x.etiqueta }} @if (x.principal)
+          { · Principal } @if (x.whatsapp) { · WhatsApp }</span
+        >
+        <div>
+          <button type="button" class="secondary" (click)="editarTelefono(x)">
+            Editar</button
+          ><button type="button" class="danger" (click)="borrarTelefono(x)">
+            Eliminar
+          </button>
+        </div>
+      </div>
+      } @empty {
+      <p>No hay teléfonos registrados.</p>
+      }
+    </div>
+  </section>
+  <section class="panel">
+    <h2>Redes sociales</h2>
+    <form (ngSubmit)="guardarRed()" #redForm="ngForm" class="form-grid">
+      <label
+        >Plataforma
+        <input
+          name="plataforma"
+          [(ngModel)]="red.plataforma"
+          required
+          maxlength="70"
+      /></label>
+      <label
+        >Enlace (https://...)
+        <input
+          name="url"
+          type="url"
+          [(ngModel)]="red.url"
+          required
+          pattern="https?://.+"
+      /></label>
+      <label
+        >Usuario <input name="usuario" [(ngModel)]="red.nombreUsuario"
+      /></label>
+      <label>Icono <input name="icono" [(ngModel)]="red.icono" /></label>
+      <label
+        >Orden
+        <input name="orden" type="number" min="0" [(ngModel)]="red.orden"
+      /></label>
+      <div class="checks">
+        <label
+          ><input type="checkbox" name="activo" [(ngModel)]="red.activo" />
+          Activa</label
+        >
+      </div>
+      <div class="full actions">
+        <button type="submit" [disabled]="guardando() || redForm.invalid">
+          {{ redId === null ? 'Agregar red' : 'Guardar cambios' }}</button
+        ><button type="button" class="secondary" (click)="cancelarRed()">
+          Cancelar
+        </button>
+      </div>
+    </form>
+    <div class="items">
+      @for (x of redes(); track x.id) {
+      <div class="item">
+        <span
+          ><strong>{{ x.plataforma }}</strong> — {{ x.nombreUsuario }} · {{
+          x.activo ? 'Activa' : 'Inactiva' }}</span
+        >
+        <div>
+          <button type="button" class="secondary" (click)="editarRed(x)">
+            Editar</button
+          ><button type="button" class="danger" (click)="borrarRed(x)">
+            Eliminar
+          </button>
+        </div>
+      </div>
+      } @empty {
+      <p>No hay redes sociales registradas.</p>
+      }
+    </div>
+  </section>
+  <section class="panel">
+    <h2>Horarios de atención</h2>
+    <form (ngSubmit)="guardarHorario()" #horarioForm="ngForm" class="form-grid">
+      <label
+        >Día
+        <select name="dia" [(ngModel)]="horario.diaSemana">
+          @for (dia of dias; track $index) {
+          <option [ngValue]="$index + 1">{{ dia }}</option>
+          }
+        </select></label
+      >
+      <label
+        >Apertura
+        <input
+          name="apertura"
+          type="time"
+          [(ngModel)]="horario.apertura"
+          [disabled]="horario.cerrado"
+          [required]="!horario.cerrado"
+      /></label>
+      <label
+        >Cierre
+        <input
+          name="cierre"
+          type="time"
+          [(ngModel)]="horario.cierre"
+          [disabled]="horario.cerrado"
+          [required]="!horario.cerrado"
+      /></label>
+      <div class="checks">
+        <label
+          ><input
+            name="cerrado"
+            type="checkbox"
+            [(ngModel)]="horario.cerrado"
+          />
+          Cerrado</label
+        >
+      </div>
+      <div class="full actions">
+        <button type="submit" [disabled]="guardando() || horarioForm.invalid">
+          {{ horarioId === null ? 'Agregar horario' : 'Guardar cambios' }}</button
+        ><button type="button" class="secondary" (click)="cancelarHorario()">
+          Cancelar
+        </button>
+      </div>
+    </form>
+    <div class="items">
+      @for (x of horarios(); track x.id) {
+      <div class="item">
+        <span
+          ><strong>{{ dias[x.diaSemana - 1] }}</strong> — {{ x.cerrado ?
+          'Cerrado' : (x.apertura + ' a ' + x.cierre) }}</span
+        >
+        <div>
+          <button type="button" class="secondary" (click)="editarHorario(x)">
+            Editar</button
+          ><button type="button" class="danger" (click)="borrarHorario(x)">
+            Eliminar
+          </button>
+        </div>
+      </div>
+      } @empty {
+      <p>No hay horarios registrados.</p>
+      }
+    </div>
+  </section>
+</div>
