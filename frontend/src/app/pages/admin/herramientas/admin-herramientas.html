@@ -1,0 +1,33 @@
+<section class="tools">
+  <h1>Herramientas administrativas</h1>
+  <p>Reportes, copias de seguridad y registros del servidor. Solo administradores.</p>
+  @if (error()) { <p class="error" role="alert">{{error()}}</p> }
+  @if (mensaje()) { <p class="success" role="status">{{mensaje()}}</p> }
+  <div class="panel"><h2>Reportes del gimnasio</h2>
+    <p>Resumen actual de clientes, membresías, asistencias e ingresos de los últimos seis meses.</p>
+    <div class="actions">
+      <button (click)="descargarReporte('pdf')">Descargar PDF</button>
+      <button (click)="descargarReporte('xlsx')">Descargar Excel</button>
+      <button (click)="descargarReporte('csv')">Descargar CSV</button>
+    </div>
+  </div>
+  <div class="panel"><h2>Respaldos de PostgreSQL</h2>
+    <p>Genera una copia completa en formato custom de PostgreSQL (.dump). No restaura automáticamente la base activa.</p>
+    <button [disabled]="ocupado()" (click)="crearBackup()">{{ocupado() ? 'Generando...' : 'Crear respaldo'}}</button>
+    <button class="secondary" (click)="actualizar()">Actualizar</button>
+    <ul>@for (b of backups(); track b.nombre) {
+      <li><span>{{b.nombre}} ({{b.bytes}} bytes)</span><button (click)="descargarBackup(b.nombre)">Descargar</button></li>
+    } @empty {<li>No hay respaldos registrados.</li>}</ul>
+  </div>
+  <div class="panel"><h2>Logs del servidor</h2>
+    <p>Últimas 100 líneas del registro de Spring Boot y acciones administrativas.</p>
+    <button class="secondary" (click)="actualizar()">Recargar logs</button>
+
+    <pre class="logs-contenido">@for (linea of logs(); track $index) {
+      {{ linea + '\n' }}
+    } @empty {
+      No hay registros disponibles.
+    }</pre>
+
+  </div>
+</section>

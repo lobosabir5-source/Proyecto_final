@@ -23,6 +23,7 @@ export class AdminLayout {
     { ruta: '/admin/usuarios', etiqueta: 'Usuarios', icono: 'users' },
     { ruta: '/admin/planes', etiqueta: 'Planes', icono: 'tag' },
     { ruta: '/admin/promociones', etiqueta: 'Promociones', icono: 'percent' },
+    { ruta: '/admin/herramientas', etiqueta: 'Reportes y respaldos', icono: 'dashboard' },
     { ruta: '/admin/configuracion', etiqueta: 'Configuración', icono: 'dashboard' }
   ];
 
