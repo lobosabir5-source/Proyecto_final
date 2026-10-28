@@ -1,0 +1,161 @@
+
+<section class="space-y-6">
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900">
+        Categorías del bar
+      </h1>
+      <p class="mt-1 text-sm text-slate-500">
+        Administra las categorías de productos del gimnasio.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="rounded-lg bg-yellow-400 px-4 py-2 font-semibold text-slate-950 hover:bg-yellow-300"
+      (click)="nuevaCategoria()">
+      + Nueva categoría
+    </button>
+  </header>
+
+  @if (mensaje()) {
+    <div role="status" class="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+      {{ mensaje() }}
+    </div>
+  }
+
+  @if (error()) {
+    <div role="alert" class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+      {{ error() }}
+    </div>
+  }
+
+  @if (formularioVisible()) {
+    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h2 class="mb-5 text-lg font-bold text-slate-900">
+        {{ editandoId() === null ? 'Nueva categoría' : 'Editar categoría' }}
+      </h2>
+
+      <form [formGroup]="formulario" (ngSubmit)="guardar()" class="space-y-4">
+        <div>
+          <label for="nombreCategoria" class="mb-1 block text-sm font-medium text-slate-700">
+            Nombre
+          </label>
+
+          <input
+            id="nombreCategoria"
+            type="text"
+            formControlName="nombre"
+            maxlength="100"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-yellow-500"
+            placeholder="Ej. Bebidas"
+          />
+
+          @if (formulario.controls.nombre.touched && formulario.controls.nombre.invalid) {
+            <p class="mt-1 text-xs text-red-600">
+              Ingresa un nombre válido (máximo 100 caracteres).
+            </p>
+          }
+        </div>
+
+        <div>
+          <label for="descripcionCategoria" class="mb-1 block text-sm font-medium text-slate-700">
+            Descripción
+          </label>
+
+          <textarea
+            id="descripcionCategoria"
+            formControlName="descripcion"
+            rows="3"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-yellow-500"
+            placeholder="Descripción de la categoría">
+          </textarea>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+          <button
+            type="submit"
+            [disabled]="guardando()"
+            class="rounded-lg bg-yellow-400 px-5 py-2 font-semibold text-slate-950 disabled:opacity-50">
+            {{ guardando() ? 'Guardando...' : 'Guardar categoría' }}
+          </button>
+
+          <button
+            type="button"
+            [disabled]="guardando()"
+            (click)="cancelar()"
+            class="rounded-lg border border-slate-300 px-5 py-2 text-slate-700">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div class="border-b border-slate-200 p-5">
+      <h2 class="font-semibold text-slate-900">
+        Listado de categorías
+      </h2>
+      <p class="text-sm text-slate-500">
+        Total de registros: {{ totalElementos() }}
+      </p>
+    </div>
+
+    @if (cargando()) {
+      <p class="p-6 text-sm text-slate-500">Cargando categorías...</p>
+    } @else {
+      <app-table etiqueta="Listado de categorías del bar">
+        <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Descripción</th>
+          <th scope="col">Acciones</th>
+        </tr>
+        </thead>
+
+        <tbody>
+          @for (categoria of categorias(); track categoria.id) {
+            <tr>
+              <td>{{ categoria.id }}</td>
+              <td class="font-medium">{{ categoria.nombre }}</td>
+              <td>{{ categoria.descripcion || 'Sin descripción' }}</td>
+              <td>
+                <div class="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    class="rounded-md bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700"
+                    (click)="editar(categoria)">
+                    Editar
+                  </button>
+
+                  <button
+                    type="button"
+                    class="rounded-md bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700"
+                    (click)="eliminar(categoria)">
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="py-8 text-center text-slate-500">
+                No existen categorías registradas.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+
+      <app-paginador
+        [pagina]="pagina()"
+        [totalPaginas]="totalPaginas()"
+        [totalElementos]="totalElementos()"
+        [tamano]="10"
+        (cambiar)="cambiarPagina($event)"
+      />
+    }
+  </div>
+</section>

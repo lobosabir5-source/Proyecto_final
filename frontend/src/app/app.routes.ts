@@ -29,6 +29,8 @@ export const routes: Routes = [
       { path: 'promociones', loadComponent: () => import('./pages/admin/promociones/admin-promociones').then(m => m.AdminPromociones) },
       { path: 'herramientas', loadComponent: () => import('./pages/admin/herramientas/admin-herramientas').then(m => m.AdminHerramientas)},
       { path: 'configuracion', loadComponent: () => import('./pages/admin/configuracion/admin-configuracion').then(m => m.AdminConfiguracion) },
+      { path: 'categorias-bar', loadComponent: () => import('./pages/admin/categorias-bar/categorias-bar').then(m => m.CategoriasBar)},
+
     ]
   },
   // ---------- RECEPCIÓN ----------
