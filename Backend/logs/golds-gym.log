@@ -1,18 +1,18 @@
-2026-10-18T22:35:06.332-04:00  INFO 20560 --- [Gimnasio] [main] c.G.Gimnasio.GimnasioApplication         : Starting GimnasioApplication using Java 21.0.12 with PID 20560 (C:\Users\carlo\Desktop\Gimnasio\Backend\build\classes\java\main started by carlo in C:\Users\carlo\Desktop\Gimnasio\Backend)
-2026-10-18T22:35:06.337-04:00  INFO 20560 --- [Gimnasio] [main] c.G.Gimnasio.GimnasioApplication         : No active profile set, falling back to 1 default profile: "default"
-2026-10-18T22:35:07.539-04:00  INFO 20560 --- [Gimnasio] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-10-18T22:35:07.670-04:00  INFO 20560 --- [Gimnasio] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 118 ms. Found 15 JPA repository interfaces.
-2026-10-18T22:35:09.158-04:00  INFO 20560 --- [Gimnasio] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-10-18T22:35:09.193-04:00  INFO 20560 --- [Gimnasio] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-10-18T22:35:09.193-04:00  INFO 20560 --- [Gimnasio] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-10-18T22:35:09.288-04:00  INFO 20560 --- [Gimnasio] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2862 ms
-2026-10-18T22:35:09.692-04:00  INFO 20560 --- [Gimnasio] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
-2026-10-18T22:35:09.838-04:00  INFO 20560 --- [Gimnasio] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
-2026-10-18T22:35:10.714-04:00  INFO 20560 --- [Gimnasio] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-10-18T22:35:10.764-04:00  INFO 20560 --- [Gimnasio] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-10-18T22:35:11.039-04:00  INFO 20560 --- [Gimnasio] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@651caa2e
-2026-10-18T22:35:11.041-04:00  INFO 20560 --- [Gimnasio] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-10-18T22:35:11.151-04:00  INFO 20560 --- [Gimnasio] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-10-27T21:16:49.421-04:00  INFO 3900 --- [Gimnasio] [main] c.G.Gimnasio.GimnasioApplication         : Starting GimnasioApplication using Java 21.0.12 with PID 3900 (C:\Users\carlo\Desktop\Gimnasio\Backend\build\classes\java\main started by carlo in C:\Users\carlo\Desktop\Gimnasio\Backend)
+2026-10-27T21:16:49.435-04:00  INFO 3900 --- [Gimnasio] [main] c.G.Gimnasio.GimnasioApplication         : No active profile set, falling back to 1 default profile: "default"
+2026-10-27T21:16:51.043-04:00  INFO 3900 --- [Gimnasio] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-27T21:16:51.500-04:00  INFO 3900 --- [Gimnasio] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 429 ms. Found 16 JPA repository interfaces.
+2026-10-27T21:16:56.117-04:00  INFO 3900 --- [Gimnasio] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-27T21:16:56.175-04:00  INFO 3900 --- [Gimnasio] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-27T21:16:56.176-04:00  INFO 3900 --- [Gimnasio] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-27T21:16:56.386-04:00  INFO 3900 --- [Gimnasio] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 6878 ms
+2026-10-27T21:16:57.476-04:00  INFO 3900 --- [Gimnasio] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-27T21:16:57.742-04:00  INFO 3900 --- [Gimnasio] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-10-27T21:17:07.138-04:00  INFO 3900 --- [Gimnasio] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-27T21:17:07.644-04:00  INFO 3900 --- [Gimnasio] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-27T21:17:09.645-04:00  INFO 3900 --- [Gimnasio] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1fca53a7
+2026-10-27T21:17:09.754-04:00  INFO 3900 --- [Gimnasio] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-27T21:17:10.938-04:00  INFO 3900 --- [Gimnasio] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
 	Database JDBC URL [jdbc:postgresql://localhost:5432/golds_gym]
 	Database driver: PostgreSQL JDBC Driver
 	Database dialect: PostgreSQLDialect
@@ -24,40 +24,59 @@
 	Pool: DataSourceConnectionProvider
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2026-10-18T22:35:13.269-04:00  INFO 20560 --- [Gimnasio] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-10-18T22:35:13.417-04:00  INFO 20560 --- [Gimnasio] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-10-18T22:35:13.542-04:00  INFO 20560 --- [Gimnasio] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
-2026-10-18T22:35:15.202-04:00  INFO 20560 --- [Gimnasio] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name usuarioDetailsServiceImpl
-2026-10-18T22:35:16.025-04:00  WARN 20560 --- [Gimnasio] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2026-10-18T22:35:17.252-04:00  INFO 20560 --- [Gimnasio] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
-2026-10-18T22:35:17.259-04:00  INFO 20560 --- [Gimnasio] [main] c.G.Gimnasio.GimnasioApplication         : Started GimnasioApplication in 11.613 seconds (process running for 12.169)
-2026-10-18T22:35:17.422-04:00  INFO 20560 --- [Gimnasio] [main] c.Golds_Gym.Gimnasio.config.Dataseeder   : El usuario 'admin' ya existe, no se crea de nuevo
-2026-10-18T22:35:17.427-04:00  INFO 20560 --- [Gimnasio] [main] c.Golds_Gym.Gimnasio.config.Dataseeder   : El usuario 'recepcionista' ya existe, no se crea de nuevo
-2026-10-18T22:35:17.524-04:00  INFO 20560 --- [Gimnasio] [main] c.Golds_Gym.Gimnasio.config.Dataseeder   : El cliente de prueba ya tiene perfil, no se crea de nuevo
-2026-10-18T22:35:31.400-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-10-18T22:35:31.401-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2026-10-18T22:35:31.406-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
-2026-10-18T22:35:41.117-04:00  WARN 20560 --- [Gimnasio] [http-nio-8080-exec-7] ration$PageModule$WarningLoggingModifier : Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+2026-10-27T21:17:28.718-04:00  INFO 3900 --- [Gimnasio] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-27T21:17:29.044-04:00  INFO 3900 --- [Gimnasio] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-27T21:17:29.196-04:00  INFO 3900 --- [Gimnasio] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-27T21:17:30.729-04:00  INFO 3900 --- [Gimnasio] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name usuarioDetailsServiceImpl
+2026-10-27T21:17:31.411-04:00  WARN 3900 --- [Gimnasio] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-10-27T21:17:32.457-04:00  INFO 3900 --- [Gimnasio] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-10-27T21:17:32.465-04:00  INFO 3900 --- [Gimnasio] [main] c.G.Gimnasio.GimnasioApplication         : Started GimnasioApplication in 43.724 seconds (process running for 44.442)
+2026-10-27T21:17:32.614-04:00  INFO 3900 --- [Gimnasio] [main] c.Golds_Gym.Gimnasio.config.Dataseeder   : El usuario 'admin' ya existe, no se crea de nuevo
+2026-10-27T21:17:32.617-04:00  INFO 3900 --- [Gimnasio] [main] c.Golds_Gym.Gimnasio.config.Dataseeder   : El usuario 'recepcionista' ya existe, no se crea de nuevo
+2026-10-27T21:17:32.664-04:00  INFO 3900 --- [Gimnasio] [main] c.Golds_Gym.Gimnasio.config.Dataseeder   : El cliente de prueba ya tiene perfil, no se crea de nuevo
+2026-10-27T21:18:43.918-04:00  INFO 3900 --- [Gimnasio] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-27T21:18:43.919-04:00  INFO 3900 --- [Gimnasio] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-27T21:18:43.922-04:00  INFO 3900 --- [Gimnasio] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-10-27T21:21:54.800-04:00  WARN 3900 --- [Gimnasio] [http-nio-8080-exec-2] ration$PageModule$WarningLoggingModifier : Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
 	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
 	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
 
-2026-10-18T22:42:04.217-04:00  WARN 20560 --- [Gimnasio] [http-nio-8080-exec-8] o.a.p.p.font.FileSystemFontProvider      : 343 new fonts found, font cache will be re-built
-2026-10-18T22:42:04.221-04:00  WARN 20560 --- [Gimnasio] [http-nio-8080-exec-8] o.a.p.p.font.FileSystemFontProvider      : Building on-disk font cache, this may take a while
-2026-10-18T22:42:06.263-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-2] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=EXPORTAR_REPORTE formato=csv
-2026-10-18T22:42:06.394-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-3] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=EXPORTAR_REPORTE formato=csv
-2026-10-18T22:42:07.002-04:00  WARN 20560 --- [Gimnasio] [http-nio-8080-exec-8] o.a.p.p.font.FileSystemFontProvider      : Finished building on-disk font cache, found 366 fonts
-2026-10-18T22:42:07.377-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-8] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=EXPORTAR_REPORTE formato=pdf
-2026-10-18T22:42:07.468-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-5] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=EXPORTAR_REPORTE formato=pdf
-2026-10-18T22:42:07.549-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-5] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=EXPORTAR_REPORTE formato=pdf
-2026-10-18T22:42:07.635-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-6] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=EXPORTAR_REPORTE formato=pdf
-2026-10-18T22:42:08.074-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-4] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=EXPORTAR_REPORTE formato=xlsx
-2026-10-18T22:42:08.394-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-7] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=EXPORTAR_REPORTE formato=xlsx
-2026-10-18T22:42:27.569-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-10] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=EXPORTAR_REPORTE formato=xlsx
-2026-10-18T22:42:28.765-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-9] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=EXPORTAR_REPORTE formato=xlsx
-2026-10-18T22:42:28.944-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-1] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=EXPORTAR_REPORTE formato=xlsx
-2026-10-18T22:42:52.921-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-2] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=EXPORTAR_REPORTE formato=pdf
-2026-10-18T22:42:59.114-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-8] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=CREAR_BACKUP archivo=golds-gym-20261018-224258.dump
-2026-10-18T22:43:04.598-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-7] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=DESCARGAR_BACKUP archivo=golds-gym-20261018-224258.dump
-2026-10-18T22:43:38.494-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-9] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=DESCARGAR_BACKUP archivo=golds-gym-20261018-224258.dump
-2026-10-18T22:44:09.351-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-5] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=EXPORTAR_REPORTE formato=xlsx
-2026-10-18T22:44:12.574-04:00  INFO 20560 --- [Gimnasio] [http-nio-8080-exec-6] c.G.G.I.w.c.HerramientasAdminController  : AUDITORIA usuario=admin accion=EXPORTAR_REPORTE formato=csv
+2026-10-27T21:36:23.170-04:00  INFO 11584 --- [Gimnasio] [main] c.G.Gimnasio.GimnasioApplication         : Starting GimnasioApplication using Java 21.0.12 with PID 11584 (C:\Users\carlo\Desktop\Gimnasio\Backend\build\classes\java\main started by carlo in C:\Users\carlo\Desktop\Gimnasio\Backend)
+2026-10-27T21:36:23.181-04:00  INFO 11584 --- [Gimnasio] [main] c.G.Gimnasio.GimnasioApplication         : No active profile set, falling back to 1 default profile: "default"
+2026-10-27T21:36:24.297-04:00  INFO 11584 --- [Gimnasio] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-27T21:36:24.464-04:00  INFO 11584 --- [Gimnasio] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 153 ms. Found 17 JPA repository interfaces.
+2026-10-27T21:36:25.767-04:00  INFO 11584 --- [Gimnasio] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-27T21:36:25.785-04:00  INFO 11584 --- [Gimnasio] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-27T21:36:25.786-04:00  INFO 11584 --- [Gimnasio] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-27T21:36:25.870-04:00  INFO 11584 --- [Gimnasio] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2594 ms
+2026-10-27T21:36:26.281-04:00  INFO 11584 --- [Gimnasio] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-27T21:36:26.461-04:00  INFO 11584 --- [Gimnasio] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-10-27T21:36:27.160-04:00  INFO 11584 --- [Gimnasio] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-27T21:36:27.200-04:00  INFO 11584 --- [Gimnasio] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-27T21:36:27.469-04:00  INFO 11584 --- [Gimnasio] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@16ef1160
+2026-10-27T21:36:27.471-04:00  INFO 11584 --- [Gimnasio] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-27T21:36:27.605-04:00  INFO 11584 --- [Gimnasio] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/golds_gym]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 18.3
+	Default catalog/schema: golds_gym/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-27T21:36:29.763-04:00  INFO 11584 --- [Gimnasio] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-27T21:36:29.903-04:00  INFO 11584 --- [Gimnasio] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-27T21:36:30.034-04:00  INFO 11584 --- [Gimnasio] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-27T21:36:31.550-04:00  INFO 11584 --- [Gimnasio] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name usuarioDetailsServiceImpl
+2026-10-27T21:36:32.195-04:00  WARN 11584 --- [Gimnasio] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-10-27T21:36:33.239-04:00  INFO 11584 --- [Gimnasio] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-10-27T21:36:33.244-04:00  INFO 11584 --- [Gimnasio] [main] c.G.Gimnasio.GimnasioApplication         : Started GimnasioApplication in 10.618 seconds (process running for 11.094)
+2026-10-27T21:36:33.349-04:00  INFO 11584 --- [Gimnasio] [main] c.Golds_Gym.Gimnasio.config.Dataseeder   : El usuario 'admin' ya existe, no se crea de nuevo
+2026-10-27T21:36:33.352-04:00  INFO 11584 --- [Gimnasio] [main] c.Golds_Gym.Gimnasio.config.Dataseeder   : El usuario 'recepcionista' ya existe, no se crea de nuevo
+2026-10-27T21:36:33.387-04:00  INFO 11584 --- [Gimnasio] [main] c.Golds_Gym.Gimnasio.config.Dataseeder   : El cliente de prueba ya tiene perfil, no se crea de nuevo
+2026-10-27T21:36:41.849-04:00  INFO 11584 --- [Gimnasio] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-27T21:36:41.854-04:00  INFO 11584 --- [Gimnasio] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-27T21:36:41.857-04:00  INFO 11584 --- [Gimnasio] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
