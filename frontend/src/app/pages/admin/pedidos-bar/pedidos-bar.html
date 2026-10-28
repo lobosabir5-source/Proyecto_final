@@ -1,0 +1,300 @@
+
+<section class="space-y-6 p-4 md:p-6">
+  <header>
+    <h1 class="text-2xl font-bold">Pedidos del bar</h1>
+    <p class="text-sm text-gray-500">
+      Registra pedidos y consulta su historial.
+    </p>
+  </header>
+
+  @if (error()) {
+    <div class="rounded-lg bg-red-100 p-3 text-red-700">
+      {{ error() }}
+    </div>
+  }
+
+  @if (mensaje()) {
+    <div class="rounded-lg bg-green-100 p-3 text-green-700">
+      {{ mensaje() }}
+    </div>
+  }
+
+  <div class="grid gap-6 xl:grid-cols-2">
+    <div class="space-y-4 rounded-xl border p-5">
+      <h2 class="text-lg font-semibold">Nuevo pedido</h2>
+
+      <label class="block space-y-1">
+        <span class="text-sm">Usuario</span>
+        <select
+          [(ngModel)]="usuarioId"
+          class="w-full rounded-lg border p-2"
+        >
+          <option [ngValue]="null">Seleccionar usuario</option>
+          @for (usuario of usuarios(); track usuario.id) {
+            <option [ngValue]="usuario.id">
+              {{ usuario.usuario }}
+            </option>
+          }
+        </select>
+      </label>
+
+      <div class="flex items-center justify-between">
+        <span class="text-xs text-gray-500">
+          Página de usuarios {{ paginaUsuarios() + 1 }}
+          de {{ totalPaginasUsuarios() }}
+        </span>
+        <div class="flex gap-2">
+          <button
+            type="button"
+            [disabled]="paginaUsuarios() === 0"
+            (click)="cargarUsuarios(paginaUsuarios() - 1)"
+            class="rounded border px-3 py-1 text-sm"
+          >
+            Anterior
+          </button>
+          <button
+            type="button"
+            [disabled]="paginaUsuarios() + 1 >= totalPaginasUsuarios()"
+            (click)="cargarUsuarios(paginaUsuarios() + 1)"
+            class="rounded border px-3 py-1 text-sm"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+
+      <label class="block space-y-1">
+        <span class="text-sm">Método de pago</span>
+        <select
+          [(ngModel)]="metodoPagoId"
+          class="w-full rounded-lg border p-2"
+        >
+          <option [ngValue]="null">Seleccionar método</option>
+          @for (metodo of metodos(); track metodo.id) {
+            <option [ngValue]="metodo.id">
+              {{ metodo.nombre }}
+            </option>
+          }
+        </select>
+      </label>
+
+      <div class="space-y-2">
+        <h3 class="font-medium">Buscar productos</h3>
+
+        <div class="flex gap-2">
+          <input
+            [(ngModel)]="busquedaProducto"
+            (keyup.enter)="buscarProductos()"
+            placeholder="Nombre del producto"
+            class="min-w-0 flex-1 rounded-lg border p-2"
+          />
+          <button
+            type="button"
+            (click)="buscarProductos()"
+            class="rounded-lg bg-gray-900 px-4 py-2 text-white"
+          >
+            Buscar
+          </button>
+        </div>
+
+        @for (producto of productos(); track producto.id) {
+          <div class="flex items-center justify-between gap-3 border-b py-2">
+            <div>
+              <p class="font-medium">{{ producto.nombre }}</p>
+              <p class="text-xs text-gray-500">
+                Bs {{ producto.precio | number:'1.2-2' }}
+                · Stock: {{ producto.stock }}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              [disabled]="producto.stock === 0"
+              (click)="agregarProducto(producto)"
+              class="rounded-lg bg-yellow-500 px-3 py-2 text-sm font-semibold text-black disabled:opacity-50"
+            >
+              Agregar
+            </button>
+          </div>
+        } @empty {
+          <p class="py-3 text-sm text-gray-500">
+            No se encontraron productos.
+          </p>
+        }
+
+        <div class="flex justify-between text-sm">
+          <button
+            type="button"
+            [disabled]="paginaProductos() === 0"
+            (click)="buscarProductos(paginaProductos() - 1)"
+          >
+            Anterior
+          </button>
+          <span>
+            Página {{ paginaProductos() + 1 }}
+            de {{ totalPaginasProductos() }}
+          </span>
+          <button
+            type="button"
+            [disabled]="paginaProductos() + 1 >= totalPaginasProductos()"
+            (click)="buscarProductos(paginaProductos() + 1)"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-4 rounded-xl border p-5">
+      <h2 class="text-lg font-semibold">Carrito del pedido</h2>
+
+      @for (item of carrito(); track item.producto.id) {
+        <div class="flex items-center justify-between gap-3 border-b py-3">
+          <div class="min-w-0">
+            <p class="font-medium">{{ item.producto.nombre }}</p>
+            <p class="text-sm text-gray-500">
+              Bs {{ item.producto.precio | number:'1.2-2' }}
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <input
+              type="number"
+              min="1"
+              [max]="item.producto.stock"
+              [ngModel]="item.cantidad"
+              (ngModelChange)="cambiarCantidad(item.producto.id, $event)"
+              class="w-16 rounded border p-2"
+            />
+
+            <button
+              type="button"
+              (click)="quitarProducto(item.producto.id)"
+              class="text-sm text-red-600"
+            >
+              Quitar
+            </button>
+          </div>
+        </div>
+      } @empty {
+        <p class="text-sm text-gray-500">
+          Todavía no agregaste productos.
+        </p>
+      }
+
+      <div class="flex items-center justify-between border-t pt-4">
+        <span class="font-semibold">Total estimado</span>
+        <span class="text-xl font-bold">
+          Bs {{ totalEstimado() | number:'1.2-2' }}
+        </span>
+      </div>
+
+      <p class="text-xs text-gray-500">
+        El backend calculará el total definitivo y descontará el stock.
+        El pago permanecerá pendiente.
+      </p>
+
+      <button
+        type="button"
+        [disabled]="guardando() || carrito().length === 0"
+        (click)="registrarPedido()"
+        class="w-full rounded-lg bg-yellow-500 px-4 py-3 font-semibold text-black disabled:opacity-50"
+      >
+        {{ guardando() ? 'Registrando...' : 'Registrar pedido' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    <h2 class="text-xl font-semibold">Historial de pedidos</h2>
+
+    <div class="overflow-x-auto rounded-xl border">
+      <app-table>
+        <thead>
+        <tr class="bg-gray-100 text-left text-sm">
+          <th class="p-3">Pedido</th>
+          <th class="p-3">Usuario ID</th>
+          <th class="p-3">Fecha</th>
+          <th class="p-3">Total</th>
+          <th class="p-3">Pago</th>
+          <th class="p-3">Acciones</th>
+        </tr>
+        </thead>
+
+        <tbody>
+          @for (pedido of pedidos(); track pedido.id) {
+            <tr class="border-t">
+              <td class="p-3">#{{ pedido.id }}</td>
+              <td class="p-3">{{ pedido.usuarioId }}</td>
+              <td class="p-3">
+                {{ pedido.fechaPedido | date:'dd/MM/yyyy HH:mm' }}
+              </td>
+              <td class="p-3">
+                Bs {{ pedido.total | number:'1.2-2' }}
+              </td>
+              <td class="p-3">
+                {{ pedido.estadoPago === 0 ? 'Pendiente' : 'Procesado' }}
+              </td>
+              <td class="p-3">
+                <button
+                  type="button"
+                  (click)="verDetalle(pedido)"
+                  class="text-blue-600"
+                >
+                  Ver detalle
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="p-5 text-center text-gray-500">
+                No hay pedidos registrados.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+    </div>
+
+    @if (cargando()) {
+      <p class="text-sm text-gray-500">Cargando pedidos...</p>
+    }
+
+    <app-paginador
+      [pagina]="paginaPedidos()"
+      [totalPaginas]="totalPaginas()"
+      [totalElementos]="totalElementos()"
+      [tamano]="10"
+      (cambiar)="cargarPedidos($event)"
+    />
+  </div>
+
+  @if (pedidoSeleccionado(); as pedido) {
+    <div class="space-y-3 rounded-xl border p-5">
+      <div class="flex justify-between">
+        <h2 class="text-lg font-semibold">
+          Detalle del pedido #{{ pedido.id }}
+        </h2>
+        <button
+          type="button"
+          (click)="pedidoSeleccionado.set(null)"
+          class="text-sm text-gray-500"
+        >
+          Cerrar
+        </button>
+      </div>
+
+      @for (item of pedido.items; track item.productoId) {
+        <div class="flex justify-between border-b py-2 text-sm">
+          <span>{{ item.nombre }} × {{ item.cantidad }}</span>
+          <span>Bs {{ item.subtotal | number:'1.2-2' }}</span>
+        </div>
+      }
+
+      <div class="flex justify-between font-semibold">
+        <span>Total</span>
+        <span>Bs {{ pedido.total | number:'1.2-2' }}</span>
+      </div>
+    </div>
+  }
+</section>

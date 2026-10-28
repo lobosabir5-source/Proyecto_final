@@ -127,3 +127,46 @@
 	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
 	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
 
+2026-10-28T09:46:41.212-04:00  INFO 9468 --- [Gimnasio] [main] c.G.Gimnasio.GimnasioApplication         : Starting GimnasioApplication using Java 21.0.12 with PID 9468 (C:\Users\carlo\Desktop\Gimnasio\Backend\build\classes\java\main started by carlo in C:\Users\carlo\Desktop\Gimnasio\Backend)
+2026-10-28T09:46:41.216-04:00  INFO 9468 --- [Gimnasio] [main] c.G.Gimnasio.GimnasioApplication         : No active profile set, falling back to 1 default profile: "default"
+2026-10-28T09:46:42.576-04:00  INFO 9468 --- [Gimnasio] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-28T09:46:42.741-04:00  INFO 9468 --- [Gimnasio] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 144 ms. Found 20 JPA repository interfaces.
+2026-10-28T09:46:44.138-04:00  INFO 9468 --- [Gimnasio] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-28T09:46:44.159-04:00  INFO 9468 --- [Gimnasio] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-28T09:46:44.160-04:00  INFO 9468 --- [Gimnasio] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-28T09:46:44.262-04:00  INFO 9468 --- [Gimnasio] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2957 ms
+2026-10-28T09:46:44.626-04:00  INFO 9468 --- [Gimnasio] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-28T09:46:44.728-04:00  INFO 9468 --- [Gimnasio] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-10-28T09:46:45.521-04:00  INFO 9468 --- [Gimnasio] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-28T09:46:45.562-04:00  INFO 9468 --- [Gimnasio] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-28T09:46:45.801-04:00  INFO 9468 --- [Gimnasio] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1c610f
+2026-10-28T09:46:45.802-04:00  INFO 9468 --- [Gimnasio] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-28T09:46:45.898-04:00  INFO 9468 --- [Gimnasio] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/golds_gym]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 18.3
+	Default catalog/schema: golds_gym/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-28T09:46:48.160-04:00  INFO 9468 --- [Gimnasio] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-28T09:46:48.329-04:00  INFO 9468 --- [Gimnasio] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-28T09:46:48.429-04:00  INFO 9468 --- [Gimnasio] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-28T09:46:49.853-04:00  INFO 9468 --- [Gimnasio] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name usuarioDetailsServiceImpl
+2026-10-28T09:46:50.706-04:00  WARN 9468 --- [Gimnasio] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-10-28T09:46:51.801-04:00  INFO 9468 --- [Gimnasio] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-10-28T09:46:51.808-04:00  INFO 9468 --- [Gimnasio] [main] c.G.Gimnasio.GimnasioApplication         : Started GimnasioApplication in 11.254 seconds (process running for 11.795)
+2026-10-28T09:46:51.966-04:00  INFO 9468 --- [Gimnasio] [main] c.Golds_Gym.Gimnasio.config.Dataseeder   : El usuario 'admin' ya existe, no se crea de nuevo
+2026-10-28T09:46:51.968-04:00  INFO 9468 --- [Gimnasio] [main] c.Golds_Gym.Gimnasio.config.Dataseeder   : El usuario 'recepcionista' ya existe, no se crea de nuevo
+2026-10-28T09:46:52.043-04:00  INFO 9468 --- [Gimnasio] [main] c.Golds_Gym.Gimnasio.config.Dataseeder   : El cliente de prueba ya tiene perfil, no se crea de nuevo
+2026-10-28T09:46:58.562-04:00  INFO 9468 --- [Gimnasio] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-28T09:46:58.563-04:00  INFO 9468 --- [Gimnasio] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-28T09:46:58.568-04:00  INFO 9468 --- [Gimnasio] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-10-28T09:47:00.773-04:00  WARN 9468 --- [Gimnasio] [http-nio-8080-exec-1] ration$PageModule$WarningLoggingModifier : Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+

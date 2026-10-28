@@ -31,6 +31,7 @@ export const routes: Routes = [
       { path: 'configuracion', loadComponent: () => import('./pages/admin/configuracion/admin-configuracion').then(m => m.AdminConfiguracion) },
       { path: 'categorias-bar', loadComponent: () => import('./pages/admin/categorias-bar/categorias-bar').then(m => m.CategoriasBar)},
       { path: 'productos-bar', loadComponent: () => import('./pages/admin/productos-bar/productos-bar').then(m => m.ProductosBar)},
+      { path: 'pedidos-bar', loadComponent: () => import('./pages/admin/pedidos-bar/pedidos-bar').then(m => m.PedidosBar),},
 
     ]
   },

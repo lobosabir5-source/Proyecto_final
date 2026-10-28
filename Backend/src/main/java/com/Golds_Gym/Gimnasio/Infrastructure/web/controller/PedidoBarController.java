@@ -24,7 +24,10 @@ public class PedidoBarController {
     public PedidoBarRespuesta buscar(@PathVariable Integer id) { return servicio.buscar(id); }
 
     @GetMapping
-    public Page<PedidoBarRespuesta> listar(@RequestParam(defaultValue = "0") int pagina) {
+    public Page<PedidoBarRespuesta> listar(
+            @RequestParam(name = "page", defaultValue = "0") int pagina
+    ) {
         return servicio.listar(pagina);
     }
+
 }

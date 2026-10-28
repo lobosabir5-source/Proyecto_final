@@ -24,10 +24,11 @@ export class AdminLayout {
     { ruta: '/admin/planes', etiqueta: 'Planes', icono: 'tag' },
     { ruta: '/admin/promociones', etiqueta: 'Promociones', icono: 'percent' },
     { ruta: '/admin/categorias-bar', etiqueta: 'Categorías del bar', icono: 'tag'},
-    { ruta: '/admin/productos-bar', etiqueta: 'Productos del bar', icono: 'tag',},
+    { ruta: '/admin/productos-bar', etiqueta: 'Productos del bar', icono: 'tag'},
+    { ruta: '/admin/pedidos-bar', etiqueta: 'Pedidos del bar', icono: 'tag'},
     { ruta: '/admin/herramientas', etiqueta: 'Reportes y respaldos', icono: 'dashboard' },
     { ruta: '/admin/configuracion', etiqueta: 'Configuración', icono: 'dashboard' },
-
+    
   ];
 
   readonly menuAbierto = signal(this.esPantallaGrande());
