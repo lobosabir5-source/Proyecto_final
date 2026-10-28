@@ -19,10 +19,12 @@ public class ProductoBarController {
     }
 
     @GetMapping
-    public Page<ProductoBarRespuesta> listar(@RequestParam(defaultValue = "0") int pagina,
-                                             @RequestParam(required = false) String nombre,
-                                             @RequestParam(required = false) Integer categoriaId,
-                                             @RequestParam(required = false) Byte estado) {
+    public Page<ProductoBarRespuesta> listar(
+            @RequestParam(name = "page", defaultValue = "0") int pagina,
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) Integer categoriaId,
+            @RequestParam(required = false) Byte estado
+    ) {
         return servicio.listar(pagina, nombre, categoriaId, estado);
     }
 

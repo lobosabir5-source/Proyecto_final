@@ -1,0 +1,264 @@
+
+<section class="space-y-6 p-4 md:p-6">
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold">Productos del bar</h1>
+      <p class="text-sm text-gray-500">
+        Administración de productos, precios y stock.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      (click)="nuevoProducto()"
+      class="rounded-lg bg-yellow-500 px-4 py-2 font-semibold text-black"
+    >
+      Nuevo producto
+    </button>
+  </header>
+
+  @if (error()) {
+    <div class="rounded-lg bg-red-100 p-3 text-red-700">
+      {{ error() }}
+    </div>
+  }
+
+  @if (mensaje()) {
+    <div class="rounded-lg bg-green-100 p-3 text-green-700">
+      {{ mensaje() }}
+    </div>
+  }
+
+  <form
+    [formGroup]="filtros"
+    (ngSubmit)="buscar()"
+    class="grid gap-3 rounded-xl border p-4 md:grid-cols-4"
+  >
+    <input
+      formControlName="nombre"
+      placeholder="Buscar producto"
+      class="rounded-lg border p-2"
+    />
+
+    <select
+      formControlName="categoriaId"
+      class="rounded-lg border p-2"
+    >
+      <option value="">Todas las categorías</option>
+      @for (categoria of categorias(); track categoria.id) {
+        <option [value]="categoria.id">
+          {{ categoria.nombre }}
+        </option>
+      }
+    </select>
+
+    <select
+      formControlName="estado"
+      class="rounded-lg border p-2"
+    >
+      <option value="1">Activos</option>
+      <option value="0">Inactivos</option>
+      <option value="">Todos</option>
+    </select>
+
+    <div class="flex gap-2">
+      <button
+        type="submit"
+        class="rounded-lg bg-gray-900 px-4 py-2 text-white"
+      >
+        Buscar
+      </button>
+
+      <button
+        type="button"
+        (click)="limpiarFiltros()"
+        class="rounded-lg border px-4 py-2"
+      >
+        Limpiar
+      </button>
+    </div>
+  </form>
+
+  @if (formularioVisible()) {
+    <form
+      [formGroup]="formulario"
+      (ngSubmit)="guardar()"
+      class="space-y-4 rounded-xl border p-5"
+    >
+      <h2 class="text-lg font-semibold">
+        {{ editandoId() === null ? 'Registrar producto' : 'Editar producto' }}
+      </h2>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <label class="space-y-1">
+          <span class="block text-sm">Nombre *</span>
+          <input
+            formControlName="nombre"
+            class="w-full rounded-lg border p-2"
+          />
+        </label>
+
+        <label class="space-y-1">
+          <span class="block text-sm">Categoría *</span>
+          <select
+            formControlName="categoriaId"
+            class="w-full rounded-lg border p-2"
+          >
+            <option [ngValue]="0">Seleccionar categoría</option>
+            @for (categoria of categorias(); track categoria.id) {
+              <option [ngValue]="categoria.id">
+                {{ categoria.nombre }}
+              </option>
+            }
+          </select>
+        </label>
+
+        <label class="space-y-1">
+          <span class="block text-sm">Precio (Bs) *</span>
+          <input
+            type="number"
+            step="0.01"
+            min="0.01"
+            formControlName="precio"
+            class="w-full rounded-lg border p-2"
+          />
+        </label>
+
+        <label class="space-y-1">
+          <span class="block text-sm">Stock *</span>
+          <input
+            type="number"
+            step="1"
+            min="0"
+            formControlName="stock"
+            class="w-full rounded-lg border p-2"
+          />
+        </label>
+
+        <label class="space-y-1 md:col-span-2">
+          <span class="block text-sm">Descripción</span>
+          <textarea
+            formControlName="descripcion"
+            rows="2"
+            class="w-full rounded-lg border p-2"
+          ></textarea>
+        </label>
+
+        <label class="space-y-1 md:col-span-2">
+          <span class="block text-sm">URL de imagen externa</span>
+          <input
+            type="url"
+            formControlName="imagenUrl"
+            placeholder="https://..."
+            class="w-full rounded-lg border p-2"
+          />
+        </label>
+      </div>
+
+      @if (formulario.invalid && formulario.touched) {
+        <p class="text-sm text-red-600">
+          Revisa los campos obligatorios, el precio, el stock y los límites de texto.
+        </p>
+      }
+
+      <div class="flex gap-3">
+        <button
+          type="submit"
+          [disabled]="guardando()"
+          class="rounded-lg bg-yellow-500 px-4 py-2 font-semibold text-black disabled:opacity-50"
+        >
+          {{ guardando() ? 'Guardando...' : 'Guardar producto' }}
+        </button>
+
+        <button
+          type="button"
+          (click)="cancelar()"
+          class="rounded-lg border px-4 py-2"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  }
+
+  <div class="overflow-x-auto rounded-xl border">
+    <app-table>
+      <thead>
+      <tr class="bg-gray-100 text-left text-sm">
+        <th class="p-3">Producto</th>
+        <th class="p-3">Categoría</th>
+        <th class="p-3">Precio</th>
+        <th class="p-3">Stock</th>
+        <th class="p-3">Estado</th>
+        <th class="p-3">Acciones</th>
+      </tr>
+      </thead>
+
+      <tbody>
+        @for (producto of productos(); track producto.id) {
+          <tr class="border-t">
+            <td class="p-3">
+              <div class="flex items-center gap-3">
+                @if (producto.imagenUrl) {
+                  <img
+                    [src]="producto.imagenUrl"
+                    [alt]="producto.nombre"
+                    class="h-12 w-12 rounded-lg object-cover"
+                  />
+                }
+                <span>{{ producto.nombre }}</span>
+              </div>
+            </td>
+
+            <td class="p-3">{{ producto.categoriaNombre }}</td>
+            <td class="p-3">Bs {{ producto.precio.toFixed(2) }}</td>
+            <td class="p-3">{{ producto.stock }}</td>
+            <td class="p-3">
+              {{ producto.estado === 1 ? 'Activo' : 'Inactivo' }}
+            </td>
+
+            <td class="p-3">
+              <div class="flex gap-2">
+                @if (producto.estado === 1) {
+                  <button
+                    type="button"
+                    (click)="editar(producto)"
+                    class="text-blue-600"
+                  >
+                    Editar
+                  </button>
+
+                  <button
+                    type="button"
+                    (click)="eliminar(producto)"
+                    class="text-red-600"
+                  >
+                    Desactivar
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="p-6 text-center text-gray-500">
+              No se encontraron productos.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </app-table>
+  </div>
+
+  @if (cargando()) {
+    <p class="text-sm text-gray-500">Cargando productos...</p>
+  }
+
+  <app-paginador
+    [pagina]="pagina()"
+    [totalPaginas]="totalPaginas()"
+    [totalElementos]="totalElementos()"
+    [tamano]="10"
+    (cambiar)="cambiarPagina($event)"
+  />
+</section>

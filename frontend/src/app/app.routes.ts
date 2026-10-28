@@ -30,6 +30,7 @@ export const routes: Routes = [
       { path: 'herramientas', loadComponent: () => import('./pages/admin/herramientas/admin-herramientas').then(m => m.AdminHerramientas)},
       { path: 'configuracion', loadComponent: () => import('./pages/admin/configuracion/admin-configuracion').then(m => m.AdminConfiguracion) },
       { path: 'categorias-bar', loadComponent: () => import('./pages/admin/categorias-bar/categorias-bar').then(m => m.CategoriasBar)},
+      { path: 'productos-bar', loadComponent: () => import('./pages/admin/productos-bar/productos-bar').then(m => m.ProductosBar)},
 
     ]
   },
