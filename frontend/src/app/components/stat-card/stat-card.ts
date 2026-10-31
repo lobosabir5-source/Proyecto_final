@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+﻿import { Component, computed, input } from '@angular/core';
 import { Icon, NombreIcono } from '../icon/icon';
 
 export type VarianteTarjeta = 'cyan' | 'green' | 'red' | 'gray';
@@ -16,5 +16,7 @@ export class StatCard {
   readonly detalle = input('');
   readonly variante = input<VarianteTarjeta>('cyan');
 
-  readonly clase = computed(() => `stat-card stat-card--${this.variante()}`);
+  readonly clase = computed(
+    () => `stat-card stat-card--${this.variante()}`
+  );
 }
