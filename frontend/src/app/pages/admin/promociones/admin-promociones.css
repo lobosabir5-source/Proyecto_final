@@ -1,8 +1,25 @@
 @reference "tailwindcss";
 
-:host { @apply block; }
+:host {
+  @apply block;
+}
 
-.promo-name { @apply font-medium text-slate-800; }
-.promo-count { @apply text-xs text-slate-400; }
-.row-inactive { @apply opacity-60; }
-.resumen { @apply -mt-2 mb-4 text-cyan-700; }
+.promo-name {
+  color: #fff;
+  font-weight: 700;
+}
+
+.promo-count {
+  color: #a3a3a3;
+  font-size: 11px;
+}
+
+.row-inactive {
+  opacity: .5;
+}
+
+.resumen {
+  margin-top: -8px;
+  margin-bottom: 16px;
+  color: #facc15;
+}

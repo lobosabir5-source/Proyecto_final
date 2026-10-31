@@ -1,71 +1,436 @@
-/* Clases reutilizables del panel de administración.
-   Los HTML solo usan estos nombres; aquí vive el detalle de Tailwind. */
+
 @layer components {
 
-  /* ---------- Página ---------- */
-  .page { @apply mx-auto max-w-7xl; }
-  .page-header { @apply mb-5 flex flex-wrap items-center justify-between gap-3; }
-  .page-title { @apply text-2xl font-light text-slate-800; }
-  .page-subtitle { @apply text-sm text-slate-500; }
+  /* PÁGINAS */
+  .page {
+    @apply mx-auto max-w-7xl;
+  }
 
-  /* ---------- Paneles ---------- */
-  .panel { @apply overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm; }
-  .panel-header { @apply flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3; }
-  .panel-title { @apply flex items-center gap-2 text-sm font-semibold text-slate-700; }
-  .panel-link { @apply text-xs font-medium text-cyan-600 hover:text-cyan-700 hover:underline; }
-  .panel-body { @apply p-4; }
-  .panel-footer { @apply flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-4 py-3 text-sm text-slate-500; }
+  .page-header {
+    @apply mb-5 flex flex-wrap items-center justify-between gap-3;
+  }
 
-  /* ---------- Botones ---------- */
-  .btn { @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50; }
-  .btn-primary { @apply bg-cyan-500 text-white hover:bg-cyan-600; }
-  .btn-secondary { @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50; }
-  .btn-danger { @apply bg-rose-500 text-white hover:bg-rose-600; }
-  .btn-success { @apply bg-emerald-500 text-white hover:bg-emerald-600; }
-  .btn-sm { @apply px-2.5 py-1.5 text-xs; }
+  .page-title {
+    @apply text-2xl font-light text-slate-800;
+  }
 
-  /* ---------- Formularios ---------- */
-  .field { @apply mb-4; }
-  .field-label { @apply mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500; }
-  .field-input { @apply w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20; }
-  .field-input--invalid { @apply border-rose-400; }
-  .field-error { @apply mt-1 text-xs text-rose-600; }
-  .field-hint { @apply mt-1 text-xs text-slate-400; }
-  .field-row { @apply grid gap-4 sm:grid-cols-2; }
-  .field-check { @apply flex cursor-pointer items-center gap-2 text-sm text-slate-600; }
+  .page-subtitle {
+    @apply text-sm text-slate-500;
+  }
 
-  /* ---------- Tablas ---------- */
-  .table-wrap { @apply overflow-x-auto; }
-  .table { @apply w-full text-left text-sm; }
-  .table th { @apply whitespace-nowrap border-b border-slate-200 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500; }
-  .table td { @apply border-b border-slate-100 px-4 py-3 align-middle text-slate-700; }
-  .table tbody tr:hover { @apply bg-slate-50; }
-  .cell-actions { @apply text-right; }
-  .cell-actions-group { @apply flex justify-end gap-2; }
-  .cell-muted { @apply text-slate-500; }
-  .cell-wrap { @apply max-w-xs text-slate-500; }
+  /* PANELES Y TARJETAS */
+  .panel {
+    @apply overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm;
+  }
 
-  /* ---------- Etiquetas ---------- */
-  .badge { @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium; }
-  .badge-success { @apply bg-emerald-100 text-emerald-700; }
-  .badge-danger { @apply bg-rose-100 text-rose-700; }
-  .badge-info { @apply bg-cyan-100 text-cyan-700; }
-  .badge-warning { @apply bg-amber-100 text-amber-700; }
-  .badge-muted { @apply bg-slate-100 text-slate-500; }
+  .panel-header {
+    @apply flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3;
+  }
 
-  /* ---------- Avisos ---------- */
-  .alert { @apply mb-4 rounded border-l-4 px-4 py-3 text-sm; }
-  .alert-error { @apply border-rose-500 bg-rose-50 text-rose-700; }
-  .alert-success { @apply border-emerald-500 bg-emerald-50 text-emerald-700; }
-  .empty-state { @apply py-8 text-center text-sm text-slate-400; }
+  .panel-title {
+    @apply flex items-center gap-2 text-sm font-semibold text-slate-700;
+  }
 
-  /* ---------- Ventana modal ---------- */
-  .modal-backdrop { @apply fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4; }
-  .modal { @apply max-h-full w-full max-w-lg overflow-y-auto rounded-md bg-white shadow-xl; }
-  .modal--sm { @apply max-w-sm; }
-  .modal-header { @apply flex items-center justify-between border-b border-slate-200 px-5 py-4; }
-  .modal-title { @apply text-base font-semibold text-slate-800; }
-  .modal-close { @apply grid h-8 w-8 cursor-pointer place-items-center rounded text-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600; }
-  .modal-body { @apply px-5 py-4; }
-  .modal-footer { @apply flex justify-end gap-2 border-t border-slate-200 bg-slate-50 px-5 py-3; }
+  .panel-link {
+    @apply text-xs font-medium text-cyan-600 hover:text-cyan-700 hover:underline;
+  }
+
+  .panel-body {
+    @apply p-4;
+  }
+
+  .panel-footer {
+    @apply flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-4 py-3 text-sm text-slate-500;
+  }
+
+  /* BOTONES */
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply bg-cyan-500 text-white hover:bg-cyan-600;
+  }
+
+  .btn-secondary {
+    @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50;
+  }
+
+  .btn-danger {
+    @apply bg-rose-500 text-white hover:bg-rose-600;
+  }
+
+  .btn-success {
+    @apply bg-emerald-500 text-white hover:bg-emerald-600;
+  }
+
+  .btn-sm {
+    @apply px-2.5 py-1.5 text-xs;
+  }
+
+  /* FORMULARIOS */
+  .field {
+    @apply mb-4;
+  }
+
+  .field-label {
+    @apply mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500;
+  }
+
+  .field-input {
+    @apply w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20;
+  }
+
+  .field-input--invalid {
+    @apply border-rose-400;
+  }
+
+  .field-error {
+    @apply mt-1 text-xs text-rose-600;
+  }
+
+  .field-hint {
+    @apply mt-1 text-xs text-slate-400;
+  }
+
+  .field-row {
+    @apply grid gap-4 sm:grid-cols-2;
+  }
+
+  .field-check {
+    @apply flex cursor-pointer items-center gap-2 text-sm text-slate-600;
+  }
+
+  /* TABLAS */
+  .table-wrap {
+    @apply overflow-x-auto;
+  }
+
+  .table {
+    @apply w-full text-left text-sm;
+  }
+
+  .table th {
+    @apply whitespace-nowrap border-b border-slate-200 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500;
+  }
+
+  .table td {
+    @apply border-b border-slate-100 px-4 py-3 align-middle text-slate-700;
+  }
+
+  .table tbody tr:hover {
+    @apply bg-slate-50;
+  }
+
+  .cell-actions {
+    @apply text-right;
+  }
+
+  .cell-actions-group {
+    @apply flex justify-end gap-2;
+  }
+
+  .cell-muted {
+    @apply text-slate-500;
+  }
+
+  .cell-wrap {
+    @apply max-w-xs text-slate-500;
+  }
+
+  /* ETIQUETAS */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .badge-success {
+    @apply bg-emerald-100 text-emerald-700;
+  }
+
+  .badge-danger {
+    @apply bg-rose-100 text-rose-700;
+  }
+
+  .badge-info {
+    @apply bg-cyan-100 text-cyan-700;
+  }
+
+  .badge-warning {
+    @apply bg-amber-100 text-amber-700;
+  }
+
+  .badge-muted {
+    @apply bg-slate-100 text-slate-500;
+  }
+
+  /* AVISOS */
+  .alert {
+    @apply mb-4 rounded border-l-4 px-4 py-3 text-sm;
+  }
+
+  .alert-error {
+    @apply border-rose-500 bg-rose-50 text-rose-700;
+  }
+
+  .alert-success {
+    @apply border-emerald-500 bg-emerald-50 text-emerald-700;
+  }
+
+  .empty-state {
+    @apply py-8 text-center text-sm text-slate-400;
+  }
+
+  /* MODALES */
+  .modal-backdrop {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4;
+  }
+
+  .modal {
+    @apply max-h-full w-full max-w-lg overflow-y-auto rounded-md bg-white shadow-xl;
+  }
+
+  .modal--sm {
+    @apply max-w-sm;
+  }
+
+  .modal-header {
+    @apply flex items-center justify-between border-b border-slate-200 px-5 py-4;
+  }
+
+  .modal-title {
+    @apply text-base font-semibold text-slate-800;
+  }
+
+  .modal-close {
+    @apply grid h-8 w-8 cursor-pointer place-items-center rounded text-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600;
+  }
+
+  .modal-body {
+    @apply px-5 py-4;
+  }
+
+  .modal-footer {
+    @apply flex justify-end gap-2 border-t border-slate-200 bg-slate-50 px-5 py-3;
+  }
+
+
+  .page {
+    max-width: 1400px;
+    color: #f5f5f5;
+  }
+
+  .page-title {
+    color: #fff;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -.03em;
+  }
+
+  .page-subtitle {
+    color: #737373;
+  }
+
+  .panel {
+    border: 1px solid rgba(250,204,21,.22);
+    border-radius: 0;
+    background: #111;
+    color: #e5e5e5;
+    box-shadow: none;
+  }
+
+  .panel-header {
+    border-bottom: 1px solid rgba(250,204,21,.2);
+  }
+
+  .panel-title {
+    color: #facc15;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  .panel-link {
+    color: #facc15;
+  }
+
+  .panel-link:hover {
+    color: #fde68a;
+  }
+
+  .panel-body {
+    color: #d4d4d4;
+  }
+
+  .panel-footer {
+    border-top: 1px solid rgba(250,204,21,.2);
+    color: #a3a3a3;
+  }
+
+  /* BOTONES */
+  .btn {
+    border-radius: 0;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .btn-primary {
+    border: 1px solid #facc15;
+    background: #facc15;
+    color: #090909;
+  }
+
+  .btn-primary:hover {
+    background: #eab308;
+  }
+
+  .btn-secondary {
+    border: 1px solid #525252;
+    background: #171717;
+    color: #e5e5e5;
+  }
+
+  .btn-secondary:hover {
+    border-color: #facc15;
+    background: #202020;
+    color: #facc15;
+  }
+
+  .btn-danger {
+    border: 1px solid #7f1d1d;
+    background: #451a1a;
+    color: #fecaca;
+  }
+
+  .btn-success {
+    border: 1px solid #854d0e;
+    background: #422006;
+    color: #fde68a;
+  }
+
+  /* FORMULARIOS */
+  .field-label {
+    color: #d4a900;
+  }
+
+  .field-input {
+    border: 1px solid #333;
+    border-radius: 0;
+    background: #0a0a0a;
+    color: #f5f5f5;
+  }
+
+  .field-input:focus {
+    border-color: #facc15;
+    --tw-ring-color: rgba(250,204,21,.2);
+  }
+
+  .field-input::placeholder {
+    color: #525252;
+  }
+
+  .field-hint {
+    color: #737373;
+  }
+
+  .field-check {
+    color: #d4d4d4;
+  }
+
+  /* TABLAS */
+  .table th {
+    border-bottom: 1px solid rgba(250,204,21,.25);
+    background: #151515;
+    color: #facc15;
+    font-size: 9px;
+    letter-spacing: .2em;
+  }
+
+  .table td {
+    border-bottom: 1px solid #262626;
+    color: #d4d4d4;
+  }
+
+  .table tbody tr:hover {
+    background: #191919;
+  }
+
+  .cell-muted {
+    color: #737373;
+  }
+
+  /* ESTADOS */
+  .badge {
+    border: 1px solid rgba(250,204,21,.45);
+    border-radius: 0;
+    background: rgba(250,204,21,.1);
+    color: #facc15;
+    font-size: 9px;
+    text-transform: uppercase;
+  }
+
+  .badge-success,
+  .badge-info,
+  .badge-warning,
+  .badge-danger,
+  .badge-muted {
+    border-color: rgba(250,204,21,.35);
+    background: rgba(250,204,21,.08);
+    color: #facc15;
+  }
+
+  /* ALERTAS */
+  .alert {
+    border-radius: 0;
+  }
+
+  .alert-success {
+    border-color: #a16207;
+    background: #1c1605;
+    color: #fde68a;
+  }
+
+  .alert-error {
+    border-color: #991b1b;
+    background: #1c0b0b;
+    color: #fecaca;
+  }
+
+  .empty-state {
+    color: #737373;
+  }
+
+  /* MODALES */
+  .modal-backdrop {
+    background: rgba(0,0,0,.82);
+  }
+
+  .modal {
+    border: 1px solid rgba(250,204,21,.3);
+    border-radius: 0;
+    background: #111;
+    color: #f5f5f5;
+    box-shadow: 0 24px 70px rgba(0,0,0,.65);
+  }
+
+  .modal-header,
+  .modal-footer {
+    border-color: rgba(250,204,21,.2);
+    background: #111;
+  }
+
+  .modal-title {
+    color: #fff;
+  }
+
+  .modal-close {
+    color: #a3a3a3;
+  }
+
+  .modal-close:hover {
+    background: #262626;
+    color: #facc15;
+  }
 }
