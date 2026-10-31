@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 
-/** Reutiliza el diseño global de tablas sin imponer columnas ni lógica de datos. */
+/** Reutiliza el diseño de tablas . */
 @Component({
   selector: 'app-table',
   standalone: true,

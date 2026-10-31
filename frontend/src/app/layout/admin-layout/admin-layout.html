@@ -1,34 +1,58 @@
 <div class="shell">
 
   <aside class="sidebar" [class.sidebar--open]="menuAbierto()">
- <div class="sidebar__brand" style="display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;background:#0f172a">
-  <span class="sidebar__logo" style="display:flex;align-items:center;justify-content:center;flex:0 0 2.25rem;width:2.25rem;height:2.25rem;line-height:1;border-radius:.25rem;background:#facc15;color:#0f172a;font-weight:900">G</span>
-  <div>
-    <p class="sidebar__name" style="margin:0;line-height:1;font-weight:600;color:#fff">Gold's Gym</p>
-    <p class="sidebar__tag" style="margin:.25rem 0 0;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#facc15">Administración</p>
-  </div>
-</div>
+
+    <div class="sidebar__brand"
+         style="display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;background:#0d0d0d">
+
+      <span class="sidebar__logo"
+            style="display:flex;align-items:center;justify-content:center;flex:0 0 2.25rem;width:2.25rem;height:2.25rem;line-height:1;border-radius:.25rem;background:#facc15;color:#0a0a0a;font-weight:900">
+        G
+      </span>
+
+      <div>
+        <p class="sidebar__name"
+           style="margin:0;line-height:1;font-weight:600;color:#fff">
+          Gold's Gym
+        </p>
+
+        <p class="sidebar__tag"
+           style="margin:.25rem 0 0;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#facc15">
+          Administración
+        </p>
+      </div>
+    </div>
 
     <section class="sidebar__profile">
       <span class="sidebar__avatar">{{ inicial() }}</span>
+
       <div>
-        <p class="sidebar__user">{{ authService.nombreVisible() }}</p>
-        <p class="sidebar__role">{{ authService.user()?.rol }}</p>
+        <p class="sidebar__user">
+          {{ authService.nombreVisible() }}
+        </p>
+
+        <p class="sidebar__role">
+          {{ authService.user()?.rol }}
+        </p>
       </div>
     </section>
 
     <p class="sidebar__label">Navegación</p>
+
     <nav class="sidebar__nav">
       @for (item of menu; track item.ruta) {
         <a class="nav-link"
            [routerLink]="item.ruta"
            routerLinkActive="nav-link--active"
            (click)="cerrarEnMovil()">
+
           <app-icon [nombre]="item.icono" />
+
           <span>{{ item.etiqueta }}</span>
         </a>
       }
     </nav>
+
   </aside>
 
   @if (menuAbierto()) {
@@ -36,25 +60,39 @@
   }
 
   <div class="workspace" [class.workspace--shifted]="menuAbierto()">
+
     <header class="topbar">
-      <button type="button" class="topbar__toggle" aria-label="Mostrar u ocultar menú" (click)="alternarMenu()">
+
+      <button type="button"
+              class="topbar__toggle"
+              aria-label="Mostrar u ocultar menú"
+              (click)="alternarMenu()">
+
         <app-icon nombre="menu" />
       </button>
 
       <div class="topbar__actions">
+
         <span class="topbar__user">
           Sesión de <strong>{{ authService.nombreVisible() }}</strong>
         </span>
-        <button type="button" class="btn btn-secondary btn-sm" (click)="cerrarSesion()">
+
+        <button type="button"
+                class="btn btn-secondary btn-sm"
+                (click)="cerrarSesion()">
+
           <app-icon nombre="logout" />
           Salir
         </button>
+
       </div>
+
     </header>
 
     <main class="workspace__content">
       <router-outlet />
     </main>
+
   </div>
 
 </div>

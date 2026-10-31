@@ -1,8 +1,25 @@
 @reference "tailwindcss";
 
-:host { @apply block; }
+:host {
+  @apply block;
+}
 
-.plans-count { @apply text-xs text-slate-400; }
-.plan-name { @apply font-medium text-slate-800; }
-.plan-price { @apply whitespace-nowrap font-semibold text-slate-800; }
-.row-inactive { @apply opacity-60; }
+.plans-count {
+  color: #a3a3a3;
+  font-size: 11px;
+}
+
+.plan-name {
+  color: #fff;
+  font-weight: 700;
+}
+
+.plan-price {
+  color: #facc15;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.row-inactive {
+  opacity: .5;
+}
