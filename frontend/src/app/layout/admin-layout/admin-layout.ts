@@ -28,7 +28,7 @@ export class AdminLayout {
     { ruta: '/admin/pedidos-bar', etiqueta: 'Pedidos del bar', icono: 'tag'},
     { ruta: '/admin/herramientas', etiqueta: 'Reportes y respaldos', icono: 'dashboard' },
     { ruta: '/admin/configuracion', etiqueta: 'Configuración', icono: 'dashboard' },
-    
+
   ];
 
   readonly menuAbierto = signal(this.esPantallaGrande());

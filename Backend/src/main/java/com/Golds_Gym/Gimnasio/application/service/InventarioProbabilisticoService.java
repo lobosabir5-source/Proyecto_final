@@ -33,10 +33,12 @@ public class InventarioProbabilisticoService {
 
         double media = d * l;
         double desviacion = sigma * Math.sqrt(l);
+        // factor z y punto de reorden
         double z = normalInversa(nivel);
         double seguridad = Math.max(0, z * desviacion);
         double punto = media + seguridad;
 
+        // control de desboradmiento y redondeo
         if (!Double.isFinite(media) ||
                 !Double.isFinite(desviacion) ||
                 !Double.isFinite(seguridad) ||

@@ -27,12 +27,14 @@ public class ColasService {
         double a = lambda / mu;
         double rho = a / c;
         // Suma estable de a^k/k! para k=0..c-1.
+        // bucle de Erlang
         double termino = 1.0;
         double suma = 1.0;
         for (int k = 1; k < c; k++) {
             termino *= a / k;
             suma += termino;
         }
+        // Formula de Erlang C (
         double terminoC = termino * a / c; // a^c / c!
         double p0 = 1.0 / (suma + terminoC / (1.0 - rho));
         double esperar = terminoC * p0 / (1.0 - rho); // Erlang C
