@@ -24,7 +24,7 @@ public class AsistenciaClienteController {
     @GetMapping
     public Page<AsistenciaRespuesta> listar(
             Authentication authentication,
-            @PageableDefault(size = 20) Pageable pageable) {
+            @PageableDefault(size = 10) Pageable pageable) {
         Usuario usuario = (Usuario) authentication.getPrincipal();
         return asistenciaService.listarDeUsuario(usuario.getId(), pageable);
     }

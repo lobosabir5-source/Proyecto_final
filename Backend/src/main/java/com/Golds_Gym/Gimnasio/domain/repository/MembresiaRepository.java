@@ -16,37 +16,59 @@ import java.util.Optional;
 import java.time.LocalDate;
 
 public interface MembresiaRepository extends JpaRepository<Membresia, Long> {
-    List<Membresia> findByCliente_IdAndEstadoIn(Long clienteId, Collection<EstadoMembresia> estados);
+    List<Membresia> findByCliente_IdAndEstadoIn(
+            Long clienteId,
+            Collection<EstadoMembresia> estados);
 
-    Page<Membresia> findAllByOrderByFechaInicioDesc(Pageable pageable);
+    Page<Membresia> findAllByOrderByFechaInicioDesc(
+            Pageable pageable);
 
-    Page<Membresia> findAllByCliente_Usuario_IdOrderByFechaInicioDesc(Long usuarioId, Pageable pageable);
+    Page<Membresia> findAllByCliente_Usuario_IdOrderByFechaInicioDesc(
+            Long usuarioId,
+            Pageable pageable);
 
     long countByEstadoAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(
             EstadoMembresia estado, LocalDate fechaInicio, LocalDate fechaFin);
 
-    long countByEstadoAndFechaFinGreaterThanEqual(EstadoMembresia estado, LocalDate fecha);
+    long countByEstadoAndFechaFinGreaterThanEqual(
+            EstadoMembresia estado,
+            LocalDate fecha);
 
     long countByEstado(EstadoMembresia estado);
 
-    long countByEstadoInAndFechaFinLessThan(Collection<EstadoMembresia> estados, LocalDate fecha);
+    long countByEstadoInAndFechaFinLessThan(
+            Collection<EstadoMembresia> estados,
+            LocalDate fecha);
 
     long countByEstadoInAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(
-            Collection<EstadoMembresia> estados, LocalDate inicio, LocalDate fin);
+            Collection<EstadoMembresia> estados,
+            LocalDate inicio,
+            LocalDate fin);
 
     long countByEstadoInAndFechaInicioLessThanEqualAndFechaFinBetween(
-            Collection<EstadoMembresia> estados, LocalDate inicio, LocalDate desde, LocalDate hasta);
+            Collection<EstadoMembresia> estados,
+            LocalDate inicio,
+            LocalDate desde,
+            LocalDate hasta);
 
     List<Membresia> findByEstadoInAndFechaInicioLessThanEqualAndFechaFinBetweenOrderByFechaFinAsc(
-            Collection<EstadoMembresia> estados, LocalDate inicio, LocalDate desde, LocalDate hasta);
+            Collection<EstadoMembresia> estados,
+            LocalDate inicio,
+            LocalDate desde,
+            LocalDate hasta);
 
     Optional<Membresia> findFirstByCliente_IdAndEstadoAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqualOrderByFechaFinDesc(
-            Long clienteId, EstadoMembresia estado, LocalDate fechaInicio, LocalDate fechaFin);
+            Long clienteId,
+            EstadoMembresia estado,
+            LocalDate fechaInicio,
+            LocalDate fechaFin);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select membresia from Membresia membresia where membresia.id = :id")
     Optional<Membresia> findByIdForUpdate(@Param("id") Long id);
 
-    boolean existsByCliente_Usuario_IdAndCreadaPor_IdAndEstado(Long usuarioId, Long creadaPorId,
+    boolean existsByCliente_Usuario_IdAndCreadaPor_IdAndEstado(
+            Long usuarioId,
+            Long creadaPorId,
             EstadoMembresia estado);
 }

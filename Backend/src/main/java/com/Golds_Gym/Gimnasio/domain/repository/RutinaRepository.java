@@ -6,7 +6,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RutinaRepository extends JpaRepository<Rutina, Long> {
-    Page<Rutina> findAllByCliente_IdAndActivaTrueOrderByFechaCreacionDesc(Long clienteId, Pageable pageable);
+    Page<Rutina> findAllByCliente_IdAndActivaTrueOrderByFechaCreacionDesc(
+            Long clienteId,
+            Pageable pageable);
 
-    Page<Rutina> findAllByCliente_Usuario_IdAndActivaTrueOrderByFechaCreacionDesc(Long usuarioId, Pageable pageable);
+    Page<Rutina> findAllByCliente_Usuario_IdAndActivaTrueOrderByFechaCreacionDesc(
+            Long usuarioId,
+            Pageable pageable);
 }
