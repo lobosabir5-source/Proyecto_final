@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
+import { tap } from 'rxjs';
 import { API_URL } from '../config/api.config';
 
 export interface PerfilCliente {
@@ -129,6 +130,30 @@ export class ClienteService {
     });
   }
 
+  /** Borra todos los datos en memoria (se llama al cerrar sesión). */
+  limpiar(): void {
+    this.perfil.set(null);
+    this.membresias.set([]);
+    this.asistencias.set([]);
+    this.pagos.set([]);
+    this.rutinas.set([]);
+    this.permisos.set([]);
+    this.promociones.set([]);
+    this.cargando.set(true);
+    this.cargado = false;
+  }
+
+  crearRutina(nombre: string, contenido: string) {
+    return this.http
+      .post<RutinaCliente>(`${this.apiUrl}/rutinas`, { nombre, contenido })
+      .pipe(tap(r => this.rutinas.update(lista => [r, ...lista])));
+  }
+
+  recargarRutinas(): void {
+    this.http.get<Pagina<RutinaCliente>>(`${this.apiUrl}/rutinas?page=0&size=100`)
+      .subscribe({ next: p => this.rutinas.set(p.content ?? []) });
+  }
+
   membresiaActual(): MembresiaCliente | null {
     return this.membresias().find(m => m.estado === 'ACTIVA' || m.estado === 'POR_VENCER')
       ?? this.membresias()[0]
@@ -142,7 +167,6 @@ export class ClienteService {
     hoy.setHours(0, 0, 0, 0);
     const fechaFin = new Date(`${fin}T00:00:00`);
     return Math.max(0, Math.ceil((fechaFin.getTime() - hoy.getTime()) / 86_400_000));
-
   }
 
   totalPagado(): number {

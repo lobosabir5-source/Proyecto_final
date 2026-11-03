@@ -1,13 +1,18 @@
 package com.Golds_Gym.Gimnasio.Infrastructure.web.controller;
-
+import com.Golds_Gym.Gimnasio.application.dto.CrearRutinaPropiaRequest;
 import com.Golds_Gym.Gimnasio.application.dto.RutinaRespuesta;
 import com.Golds_Gym.Gimnasio.application.service.RutinaService;
 import com.Golds_Gym.Gimnasio.domain.model.Usuario;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,5 +32,14 @@ public class RutinaClienteController {
             @PageableDefault(size = 20) Pageable pageable) {
         Usuario usuario = (Usuario) authentication.getPrincipal();
         return rutinaService.listarDeUsuario(usuario.getId(), pageable);
+    }
+
+    @PostMapping
+    public ResponseEntity<RutinaRespuesta> crear(
+            @Valid @RequestBody CrearRutinaPropiaRequest request,
+            Authentication authentication) {
+        Usuario usuario = (Usuario) authentication.getPrincipal();
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(rutinaService.crearPropia(request, usuario));
     }
 }

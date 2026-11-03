@@ -23,7 +23,11 @@ public class PermisoAusenciaService {
                         permiso.getMembresia().getId(),
                         permiso.getMotivo(),
                         permiso.getDiasAgregados(),
-                        permiso.getSolicitadoEn()))
+                        permiso.getSolicitadoEn(),
+                        permiso.getFechaInicio(),
+                        permiso.getFechaFin(),
+                        permiso.getEstado() != null ? permiso.getEstado().name() : null,
+                        permiso.getResueltoEn()))
                 .toList();
     }
 }

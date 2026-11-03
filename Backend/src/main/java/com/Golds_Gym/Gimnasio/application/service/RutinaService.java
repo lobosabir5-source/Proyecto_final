@@ -1,6 +1,7 @@
 package com.Golds_Gym.Gimnasio.application.service;
 
 import com.Golds_Gym.Gimnasio.application.dto.ActualizarRutinaRequest;
+import com.Golds_Gym.Gimnasio.application.dto.CrearRutinaPropiaRequest;
 import com.Golds_Gym.Gimnasio.application.dto.GuardarRutinaRequest;
 import com.Golds_Gym.Gimnasio.application.dto.RutinaRespuesta;
 import com.Golds_Gym.Gimnasio.domain.model.Cliente;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
 
 @Service
 public class RutinaService {
@@ -77,4 +79,11 @@ public class RutinaService {
                 rutina.getFechaCreacion(),
                 rutina.isActiva());
     }
+    @Transactional
+    public RutinaRespuesta crearPropia(CrearRutinaPropiaRequest request, Usuario usuario) {
+    Cliente cliente = clienteRepository.findByUsuarioId(usuario.getId())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado"));
+    return convertir(rutinaRepository.save(new Rutina(
+            cliente, usuario, request.getNombre(), request.getContenido())));
+}
 }
