@@ -1,16 +1,34 @@
 import { Component, computed, inject } from '@angular/core';
 import { ClienteService } from '../../../services/cliente.service';
+import { fechaCorta } from '../../../utils/fecha';
+import { PageHeader } from '../components/page-header';
+import { TablaDatos, FilaTabla, CeldaTabla, Columna } from '../components/tabla-datos';
 
 @Component({
   selector: 'app-permisos',
   standalone: true,
-  templateUrl: './permisos.html'
+  imports: [PageHeader, TablaDatos, FilaTabla, CeldaTabla],
+  host: { class: 'block' },
+  template: `
+    <app-page-header eyebrow="Trámites / Permisos" titulo="Mis permisos de ausencia"
+                     subtitulo="Aquí aparecen los permisos registrados para tus membresías." />
+
+    <app-tabla-datos [columnas]="columnas" [vacia]="lista().length === 0"
+                     mensajeVacio="No tienes permisos registrados.">
+      @for (p of lista(); track p.id) {
+        <tr app-fila>
+          <td app-celda class="text-neutral-400">{{ fecha(p.solicitadoEn) }}</td>
+          <td app-celda class="font-semibold">{{ p.motivo }}</td>
+          <td app-celda class="text-right text-yellow-300">+{{ p.diasAgregados }}</td>
+        </tr>
+      }
+    </app-tabla-datos>
+  `
 })
 export class PermisosComponent {
-  srv = inject(ClienteService);
-  lista = computed(() => [...this.srv.permisos()].sort((a, b) => b.solicitadoEn.localeCompare(a.solicitadoEn)));
+  private readonly srv = inject(ClienteService);
 
-  fecha(iso: string) {
-    return new Date(iso).toLocaleDateString('es-BO');
-  }
+  columnas: Columna[] = [{ titulo: 'Fecha' }, { titulo: 'Motivo' }, { titulo: 'Días agregados', derecha: true }];
+  lista = computed(() => [...this.srv.permisos()].sort((a, b) => b.solicitadoEn.localeCompare(a.solicitadoEn)));
+  fecha = fechaCorta;
 }

@@ -1,7 +1,8 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, Injector, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { ClienteService } from './cliente.service';
 
 export type Rol = 'ADMIN' | 'RECEPCIONISTA' | 'CLIENTE';
 
@@ -26,7 +27,8 @@ export class AuthService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly injector: Injector
   ) {}
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
@@ -43,6 +45,7 @@ export class AuthService {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
     this.currentUser.set(null);
+    this.injector.get(ClienteService).limpiar();
     this.router.navigate(['/login']);
   }
 
