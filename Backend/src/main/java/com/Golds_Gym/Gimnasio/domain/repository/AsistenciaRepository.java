@@ -8,11 +8,22 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDate;
 
 public interface AsistenciaRepository extends JpaRepository<Asistencia, Long> {
-    boolean existsByCliente_IdAndFecha(Long clienteId, LocalDate fecha);
+    boolean existsByCliente_IdAndFecha(
+            Long clienteId,
+            LocalDate fecha);
 
-    Page<Asistencia> findAllByFechaOrderByHoraEntradaDesc(LocalDate fecha, Pageable pageable);
+    Page<Asistencia> findAllByFechaOrderByHoraEntradaDesc(
+            LocalDate fecha,
+            Pageable pageable);
 
-    Page<Asistencia> findAllByCliente_Usuario_IdOrderByHoraEntradaDesc(Long usuarioId, Pageable pageable);
+    Page<Asistencia> findAllByCliente_Usuario_IdOrderByHoraEntradaDesc(
+            Long usuarioId,
+            Pageable pageable);
+
+    Page<Asistencia> findByCliente_Usuario_IdAndFechaLessThanEqualOrderByFechaDesc(
+            Long usuarioId,
+            LocalDate fecha,
+            Pageable pageable);
 
     long countByFecha(LocalDate fecha);
 }

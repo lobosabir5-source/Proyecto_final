@@ -34,7 +34,7 @@ public class AsistenciaRecepcionController {
     @GetMapping
     public Page<AsistenciaRespuesta> listar(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
-            @PageableDefault(size = 50) Pageable pageable) {
+            @PageableDefault(size = 10) Pageable pageable) {
         return asistenciaService.listarDelDia(fecha == null ? LocalDate.now() : fecha, pageable);
     }
 

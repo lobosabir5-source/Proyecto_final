@@ -1,27 +1,28 @@
 package com.Golds_Gym.Gimnasio.Infrastructure.web.controller;
-
-import com.Golds_Gym.Gimnasio.application.dto.PermisoAusenciaRespuesta;
+import com.Golds_Gym.Gimnasio.application.dto.*;
 import com.Golds_Gym.Gimnasio.application.service.PermisoAusenciaService;
 import com.Golds_Gym.Gimnasio.domain.model.Usuario;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.*;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/cliente/permisos")
 public class PermisoAusenciaClienteController {
     private final PermisoAusenciaService permisos;
 
-    public PermisoAusenciaClienteController(PermisoAusenciaService permisos) {
-        this.permisos = permisos;
-    }
+    public PermisoAusenciaClienteController(PermisoAusenciaService permisos)
+    { this.permisos = permisos; }
 
     @GetMapping
-    public List<PermisoAusenciaRespuesta> listar(Authentication authentication) {
-        Usuario usuario = (Usuario) authentication.getPrincipal();
-        return permisos.listarDeUsuario(usuario.getId());
+    public Page<PermisoAusenciaRespuesta> listar(Authentication auth, @PageableDefault(size = 10) Pageable pageable) {
+        return permisos.listarDeUsuario(((Usuario) auth.getPrincipal()).getId(), pageable);
+    }
+
+    @PostMapping
+    public PermisoAusenciaRespuesta solicitar(Authentication auth, @Valid @RequestBody SolicitarPermisoRequest req) {
+        return permisos.solicitar(((Usuario) auth.getPrincipal()).getId(), req);
     }
 }
