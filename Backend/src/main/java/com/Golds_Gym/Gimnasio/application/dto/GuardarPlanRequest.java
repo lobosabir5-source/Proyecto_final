@@ -43,26 +43,25 @@ public class GuardarPlanRequest {
     @Max(value = 999, message = "El orden no puede superar 999")
     private int orden;
 
-    public GuardarPlanRequest() { }
+    public GuardarPlanRequest() {
+    }
 
+    public void setNombre(String nombre) {
+        this.nombre = nombre == null ? null : nombre.trim();
+    }
 
-public void setNombre(String nombre) { this.nombre = nombre == null ? null : nombre.trim(); }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion == null ? null : descripcion.trim();
+    }
 
-public void setDescripcion(String descripcion) { this.descripcion = descripcion == null ? null : descripcion.trim(); }
-
-
-
-public void setHorario(String horario) {
+    public void setHorario(String horario) {
         this.horario = horario == null || horario.isBlank() ? null : horario.trim();
     }
 
-
-public void setBeneficios(List<String> beneficios) {
+    public void setBeneficios(List<String> beneficios) {
         this.beneficios = beneficios == null
                 ? new ArrayList<>()
                 : beneficios.stream().filter(b -> b != null && !b.isBlank()).map(String::trim).toList();
     }
-
-
 
 }
