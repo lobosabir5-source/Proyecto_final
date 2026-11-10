@@ -14,6 +14,7 @@ import com.Golds_Gym.Gimnasio.domain.repository.PagoRepository;
 import com.Golds_Gym.Gimnasio.domain.repository.PlanRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +61,8 @@ public class MembresiaService {
 
         LocalDate fechaInicio = LocalDate.now();
         var existentes = membresiaRepository.findByCliente_IdAndEstadoIn(
-                cliente.getId(), EnumSet.of(EstadoMembresia.PENDIENTE, EstadoMembresia.ACTIVA));
+                cliente.getId(),
+                EnumSet.of(EstadoMembresia.PENDIENTE, EstadoMembresia.ACTIVA, EstadoMembresia.POR_VENCER));
         for (Membresia existente : existentes) {
             if (existente.getFechaFin().isBefore(fechaInicio)) {
                 existente.setEstado(EstadoMembresia.VENCIDA);
@@ -80,12 +82,16 @@ public class MembresiaService {
 
     @Transactional
     public Page<MembresiaRespuesta> listar(Pageable pageable) {
-        return membresiaRepository.findAllByOrderByFechaInicioDesc(pageable).map(this::convertirActualizandoEstado);
+        return membresiaRepository
+                .findAllByOrderByFechaInicioDesc(PageRequest.of(pageable.getPageNumber(), 10, pageable.getSort()))
+                .map(this::convertirActualizandoEstado);
     }
 
     @Transactional
     public Page<MembresiaRespuesta> listarDeUsuario(Long usuarioId, Pageable pageable) {
-        return membresiaRepository.findAllByCliente_Usuario_IdOrderByFechaInicioDesc(usuarioId, pageable)
+        return membresiaRepository
+                .findAllByCliente_Usuario_IdOrderByFechaInicioDesc(usuarioId,
+                        PageRequest.of(pageable.getPageNumber(), 10, pageable.getSort()))
                 .map(this::convertirActualizandoEstado);
     }
 
@@ -157,7 +163,8 @@ public class MembresiaService {
         BigDecimal pagado = pagoRepository.totalPorMembresia(membresia.getId());
         BigDecimal saldo = membresia.getPrecioTotal().subtract(pagado).max(BigDecimal.ZERO);
         BigDecimal precioPlan = membresia.getPlan().getPrecio();
-        BigDecimal precioRenovacion = promocionService.aplicar(precioPlan, membresia.getPlan().getId(), LocalDate.now());
+        BigDecimal precioRenovacion = promocionService.aplicar(precioPlan, membresia.getPlan().getId(),
+                LocalDate.now());
         BigDecimal descuento = precioPlan.subtract(precioRenovacion).max(BigDecimal.ZERO);
         return new MembresiaRespuesta(
                 membresia.getId(),

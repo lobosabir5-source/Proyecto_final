@@ -11,6 +11,7 @@ import com.Golds_Gym.Gimnasio.domain.repository.ClienteRepository;
 import com.Golds_Gym.Gimnasio.domain.repository.MembresiaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,10 +44,9 @@ public class AsistenciaService {
         }
 
         LocalDate hoy = LocalDate.now();
-        boolean tieneMembresiaActiva = membresiaRepository
-                .findFirstByCliente_IdAndEstadoAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqualOrderByFechaFinDesc(
-                        cliente.getId(), EstadoMembresia.ACTIVA, hoy, hoy)
-                .isPresent();
+        boolean tieneMembresiaActiva = membresiaRepository.findByCliente_IdAndEstadoIn(
+                cliente.getId(), java.util.EnumSet.of(EstadoMembresia.ACTIVA, EstadoMembresia.POR_VENCER))
+                .stream().anyMatch(m -> !m.getFechaInicio().isAfter(hoy) && !m.getFechaFin().isBefore(hoy));
         if (!tieneMembresiaActiva) {
             throw new IllegalArgumentException("El cliente no tiene una membresía activa vigente");
         }
@@ -58,12 +58,15 @@ public class AsistenciaService {
 
     @Transactional(readOnly = true)
     public Page<AsistenciaRespuesta> listarDelDia(LocalDate fecha, Pageable pageable) {
-        return asistenciaRepository.findAllByFechaOrderByHoraEntradaDesc(fecha, pageable).map(this::convertir);
+        return asistenciaRepository.findAllByFechaOrderByHoraEntradaDesc(fecha,
+                PageRequest.of(pageable.getPageNumber(), 10, pageable.getSort())).map(this::convertir);
     }
 
     @Transactional(readOnly = true)
     public Page<AsistenciaRespuesta> listarDeUsuario(Long usuarioId, Pageable pageable) {
-        return asistenciaRepository.findAllByCliente_Usuario_IdOrderByHoraEntradaDesc(usuarioId, pageable)
+        return asistenciaRepository
+                .findAllByCliente_Usuario_IdOrderByHoraEntradaDesc(usuarioId,
+                        PageRequest.of(pageable.getPageNumber(), 10, pageable.getSort()))
                 .map(this::convertir);
     }
 
