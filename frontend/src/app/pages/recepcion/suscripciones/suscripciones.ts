@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Paginador } from '../../../shared/ui/paginador/paginador';
 import { API_URL } from '../../../config/api.config';
@@ -34,7 +34,7 @@ const OPERACIONES: Record<string, string> = {
   imports: [FormsModule, Paginador, DatePipe, DecimalPipe, PageHeader, Alerta, Panel, Campo, Entrada, Boton, TablaDatos, FilaTabla, CeldaTabla],
   host: { class: 'block' },
   template: `
-    <app-page-header eyebrow="Recepción / Suscripciones" titulo="Membresías">
+    <app-page-header [eyebrow]="eyebrow()" titulo="Membresías">
       <button type="button" appBoton="primario" (click)="mostrarContratar.set(!mostrarContratar())">
         {{ mostrarContratar() ? 'Cerrar' : '+ Añadir' }}
       </button>
@@ -138,6 +138,9 @@ const OPERACIONES: Record<string, string> = {
   `
 })
 export class SuscripcionesComponent implements OnInit {
+  /** Texto superior del encabezado; el panel de administración lo sobrescribe. */
+  readonly eyebrow = input('Recepción / Suscripciones');
+
   private readonly http = inject(HttpClient);
   private readonly membresiasApi = inject(MembresiaRecepcionService);
   private readonly clientesApi = inject(ClienteRecepcionService);

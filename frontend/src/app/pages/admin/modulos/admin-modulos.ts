@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { CrudPage, CrudCfg } from '../../../shared/ui/crud-page/crud-page';
 import { PagosComponent } from '../../recepcion/pagos/pagos';
 import { CajaComponent } from '../../recepcion/caja/caja';
+import { ClientesComponent } from '../../recepcion/clientes/clientes';
+import { SuscripcionesComponent } from '../../recepcion/suscripciones/suscripciones';
 
 const f = (v: any) => (v ? String(v) : '—');
 const hora = (v: any) => (v ? String(v).slice(0, 5) : '—');
@@ -46,28 +48,13 @@ export class AdminSecciones {
   };
 }
 
-// ---------- CLIENTES ----------
-@Component({ selector: 'app-admin-clientes', imports: [CrudPage], template: `<app-crud-page [cfg]="cfg" />` })
-export class AdminClientes {
-  cfg: CrudCfg = {
-    titulo: 'Clientes', subtitulo: 'Registro, búsqueda y edición de clientes', singular: 'cliente',
-    ruta: '/recepcion/clientes', paramBusqueda: 'texto', puedeEliminar: true,
-    campos: [
-      { key: 'usuario', label: 'Usuario', tipo: 'text', requerido: true, soloCrear: true, max: 80 },
-      { key: 'password', label: 'Contraseña (mín. 8)', tipo: 'password', requerido: true, soloCrear: true, minLen: 8, max: 100 },
-      { key: 'nombre', label: 'Nombre completo', tipo: 'text', requerido: true, max: 120 },
-      { key: 'correo', label: 'Correo', tipo: 'email', requerido: true, max: 160 },
-      { key: 'telefono', label: 'Teléfono', tipo: 'text', requerido: true, max: 30 },
-      { key: 'fechaNacimiento', label: 'Fecha de nacimiento', tipo: 'date', requerido: true },
-    ],
-    columnas: [
-      { key: 'nombre', label: 'Nombre' }, { key: 'correo', label: 'Correo' },
-      { key: 'telefono', label: 'Teléfono' }, { key: 'fechaNacimiento', label: 'Nacimiento', fmt: f },
-      { key: 'activo', label: 'Activo', fmt: v => (v === false ? 'No' : 'Sí') },
-    ],
-    aCuerpo: v => { const c: any = { ...v }; if (!c.usuario) delete c.usuario; if (!c.password) delete c.password; return c; },
-  };
-}
+// ---------- CLIENTES (reutiliza la pantalla de recepción; el backend permite ADMIN) ----------
+@Component({
+  selector: 'app-admin-clientes',
+  imports: [ClientesComponent],
+  template: `<div class="overflow-hidden rounded-xl bg-neutral-950 p-6 text-white sm:p-10"><app-clientes eyebrow="Administración / Clientes" /></div>`,
+})
+export class AdminClientes {}
 
 // ---------- PERSONAL ----------
 @Component({ selector: 'app-admin-personal', imports: [CrudPage], template: `<app-crud-page [cfg]="cfg" />` })
@@ -241,23 +228,10 @@ export class AdminAerobicos {
   };
 }
 
-// ---------- MEMBRESÍAS ----------
-@Component({ selector: 'app-admin-membresias', imports: [CrudPage], template: `<app-crud-page [cfg]="cfg" />` })
-export class AdminMembresias {
-  cfg: CrudCfg = {
-    titulo: 'Membresías', subtitulo: 'Vigencias, renovaciones y vencimientos', singular: 'membresía',
-    ruta: '/recepcion/clientes', puedeEliminar: true,
-    campos: [],
-    columnas: [
-      { key: 'cliente', label: 'Cliente', fmt: f },
-      { key: 'plan', label: 'Plan', fmt: f },
-      { key: 'fechaInicio', label: 'Inicio', fmt: f }, { key: 'fechaFin', label: 'Vence', fmt: f },
-      { key: 'estado', label: 'Estado' },
-      { key: 'saldo', label: 'Saldo (Bs)', fmt: v => (v == null ? '—' : String(v)) },
-    ],
-    acciones: [
-      { etiqueta: 'Renovar', metodo: 'post', visible: r => r.estado !== 'CANCELADA', ruta: r => `/recepcion/membresias/${r.id}/renovar`, confirmar: '¿Renovar esta membresía?', exito: 'Membresía renovada.' },
-      { etiqueta: 'Cancelar', visible: r => r.estado !== 'CANCELADA', ruta: r => `/recepcion/membresias/${r.id}/cancelar`, confirmar: '¿Cancelar esta membresía?', exito: 'Membresía cancelada.', clase: 'rounded-md bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700' },
-    ],
-  };
-}
+// ---------- MEMBRESÍAS (reutiliza la pantalla de suscripciones de recepción) ----------
+@Component({
+  selector: 'app-admin-membresias',
+  imports: [SuscripcionesComponent],
+  template: `<div class="overflow-hidden rounded-xl bg-neutral-950 p-6 text-white sm:p-10"><app-suscripciones eyebrow="Administración / Membresías" /></div>`,
+})
+export class AdminMembresias {}

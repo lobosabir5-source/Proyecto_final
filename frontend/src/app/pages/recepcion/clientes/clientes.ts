@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { EMPTY, Subject, catchError, debounceTime, map, merge, switchMap, tap } from 'rxjs';
@@ -39,7 +39,7 @@ interface FormCliente {
   imports: [FormsModule, Paginador, PageHeader, Alerta, Panel, Campo, Entrada, Boton, Dialogo, TablaDatos, FilaTabla, CeldaTabla],
   host: { class: 'block' },
   template: `
-    <app-page-header eyebrow="Recepción / Clientes" titulo="Clientes">
+    <app-page-header [eyebrow]="eyebrow()" titulo="Clientes">
       <button type="button" appBoton="primario" (click)="abrirCrear()">+ Nuevo</button>
     </app-page-header>
 
@@ -191,6 +191,9 @@ interface FormCliente {
   `
 })
 export class ClientesComponent implements OnInit {
+  /** Texto superior del encabezado; el panel de administración lo sobrescribe. */
+  readonly eyebrow = input('Recepción / Clientes');
+
   private readonly service = inject(ClienteRecepcionService);
   private readonly destroyRef = inject(DestroyRef);
 
