@@ -1,0 +1,50 @@
+/* Resumen */
+.mt-stats {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+  margin-bottom: 16px;
+}
+@media (min-width: 640px) { .mt-stats { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .mt-stats { grid-template-columns: repeat(4, 1fr); } }
+
+.mt-alerta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Filtros */
+.mt-filtros { margin-bottom: 16px; }
+.mt-filtros__grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+  align-items: end;
+}
+@media (min-width: 640px) { .mt-filtros__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .mt-filtros__grid { grid-template-columns: 1.4fr 1fr 1fr 1fr 1.4fr; } }
+.mt-filtros__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  grid-column: 1 / -1;
+}
+
+/* Bitácora */
+.mt-equipo { display: block; font-weight: 600; color: #f5f5f5; }
+.mt-sub { display: block; margin-top: 2px; font-size: 12px; color: #737373; }
+.mt-codigo { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #fde047; }
+.mt-fila-vencida td:first-child { box-shadow: inset 3px 0 0 #ef4444; }
+.mt-fila-vencida { background: rgba(239, 68, 68, 0.06); }
+.mt-fecha { white-space: nowrap; }
+.mt-trabajo { min-width: 220px; max-width: 360px; }
+.mt-trabajo p { margin: 0; font-size: 13px; color: #e5e5e5; }
+.mt-trabajo p + p { margin-top: 4px; color: #a3a3a3; }
+.mt-nota { padding: 10px 16px 14px; font-size: 12px; color: #737373; }
+
+/* Modales */
+.mt-info { margin-bottom: 14px; font-size: 14px; color: #d4d4d4; }

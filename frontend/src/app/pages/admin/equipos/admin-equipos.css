@@ -1,0 +1,66 @@
+/* Resumen */
+.eq-stats {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+  margin-bottom: 16px;
+}
+@media (min-width: 640px) { .eq-stats { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .eq-stats { grid-template-columns: repeat(4, 1fr); } }
+
+.eq-alerta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Filtros */
+.eq-filtros { margin-bottom: 16px; }
+.eq-filtros__grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+  align-items: end;
+}
+@media (min-width: 640px) { .eq-filtros__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .eq-filtros__grid { grid-template-columns: 2fr 1fr auto; } }
+
+/* Tabla */
+.eq-nombre { display: block; font-weight: 600; color: #f5f5f5; }
+.eq-sub { display: block; margin-top: 2px; font-size: 12px; color: #737373; }
+.eq-codigo { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: #fde047; white-space: nowrap; }
+.eq-fila-fuera td:first-child { box-shadow: inset 3px 0 0 #ef4444; }
+.eq-fila-fuera { background: rgba(239, 68, 68, 0.06); }
+.eq-fila-mant td:first-child { box-shadow: inset 3px 0 0 #f59e0b; }
+.eq-dias { font-size: 13px; color: #d4d4d4; }
+.eq-dias--off { color: #737373; font-style: italic; }
+
+/* Ficha */
+.eq-ficha {
+  display: grid;
+  gap: 14px 20px;
+  grid-template-columns: 1fr;
+  margin: 0;
+}
+@media (min-width: 560px) { .eq-ficha { grid-template-columns: repeat(2, 1fr); } }
+.eq-ficha dt { font-size: 12px; color: #737373; text-transform: uppercase; letter-spacing: 0.04em; }
+.eq-ficha dd { margin: 2px 0 0; font-size: 14px; color: #e5e5e5; word-break: break-word; }
+.eq-ficha__ancho { grid-column: 1 / -1; }
+
+/* Programar semana */
+.eq-semana-info { margin-bottom: 14px; font-size: 14px; color: #d4d4d4; }
+.eq-lista { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.eq-lista li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #e5e5e5;
+}
+.eq-lista--nueva li { border-color: rgba(52, 211, 153, 0.45); background: rgba(52, 211, 153, 0.08); }
+.eq-nota { margin-top: 10px; font-size: 12px; color: #737373; }

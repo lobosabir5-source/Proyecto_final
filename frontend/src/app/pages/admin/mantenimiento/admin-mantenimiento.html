@@ -1,0 +1,317 @@
+<section class="page">
+
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Mantenimiento</h1>
+      <p class="page-subtitle">Bitácora de mantenimientos de los equipos: programación, trabajos realizados y pendientes</p>
+    </div>
+    <app-button (click)="abrirProgramar()">
+      <app-icon nombre="plus" />
+      Programar mantenimiento
+    </app-button>
+  </header>
+
+  @if (exito()) {
+    <div class="alert alert-success" role="status">{{ exito() }}</div>
+  }
+  @if (error()) {
+    <div class="alert alert-error" role="alert">{{ error() }}</div>
+  }
+
+  <!-- ============ RESUMEN ============ -->
+  <div class="mt-stats">
+    <app-stat-card titulo="Vencidos" [valor]="alertas()?.mantenimientosVencidos ?? '—'" icono="ban"
+                   variante="red" detalle="Pendientes con fecha anterior a hoy" />
+    <app-stat-card titulo="Para hoy" [valor]="alertas()?.mantenimientosHoy ?? '—'" icono="clock"
+                   variante="cyan" detalle="Pendientes programados hoy" />
+    <app-stat-card titulo="Equipos en mantenimiento" [valor]="alertas()?.equiposEnMantenimiento ?? '—'" icono="refresh"
+                   variante="gray" detalle="Temporalmente no disponibles" />
+    <app-stat-card titulo="Fuera de servicio" [valor]="alertas()?.equiposFueraServicio ?? '—'" icono="tag"
+                   variante="red" detalle="Equipos que requieren reparación" />
+  </div>
+
+  @if ((alertas()?.mantenimientosVencidos ?? 0) > 0 && !filtros.vencidos) {
+    <div class="alert alert-error mt-alerta" role="alert">
+      <span>
+        <strong>{{ alertas()?.mantenimientosVencidos }}</strong>
+        {{ alertas()?.mantenimientosVencidos === 1 ? 'mantenimiento está vencido' : 'mantenimientos están vencidos' }}.
+      </span>
+      <button type="button" class="btn btn-secondary btn-sm" (click)="verSoloVencidos()">Ver vencidos</button>
+    </div>
+  }
+
+  <!-- ============ BÚSQUEDA Y FILTROS ============ -->
+  <article class="panel mt-filtros">
+    <div class="panel-body mt-filtros__grid">
+      <div class="field">
+        <label class="field-label" for="mt-equipo">Equipo</label>
+        <select id="mt-equipo" name="mt-equipo" class="field-input" [(ngModel)]="filtros.equipoId" (ngModelChange)="aplicarFiltros()">
+          <option value="">Todos los equipos</option>
+          @for (e of equipos(); track e.id) { <option [value]="e.id">{{ e.codigo }} · {{ e.nombre }}</option> }
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="mt-estado">Estado</label>
+        <select id="mt-estado" name="mt-estado" class="field-input" [(ngModel)]="filtros.estado" (ngModelChange)="aplicarFiltros()">
+          <option value="">Todos</option>
+          @for (s of estados; track s.valor) { <option [value]="s.valor">{{ s.etiqueta }}</option> }
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="mt-desde">Programado desde</label>
+        <input id="mt-desde" name="mt-desde" type="date" class="field-input"
+               [ngModel]="filtroDesde()" (ngModelChange)="filtroDesde.set($event)" />
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="mt-hasta">Programado hasta</label>
+        <input id="mt-hasta" name="mt-hasta" type="date" class="field-input"
+               [ngModel]="filtroHasta()" (ngModelChange)="filtroHasta.set($event)" />
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="mt-texto">Buscar en la bitácora</label>
+        <input id="mt-texto" name="mt-texto" type="search" class="field-input" autocomplete="off"
+               placeholder="Equipo, técnico o trabajo" [ngModel]="filtroTexto()" (ngModelChange)="filtroTexto.set($event)" />
+      </div>
+
+      <div class="mt-filtros__acciones">
+        <label class="field-check">
+          <input type="checkbox" name="mt-vencidos" [(ngModel)]="filtros.vencidos" (ngModelChange)="aplicarFiltros()" />
+          Solo vencidos
+        </label>
+        @if (hayFiltros) {
+          <button type="button" class="btn btn-secondary btn-sm" (click)="limpiarFiltros()">Limpiar filtros</button>
+        }
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ BITÁCORA ============ -->
+  <article class="panel">
+    <header class="panel-header">
+      <h2 class="panel-title">Historial de mantenimientos</h2>
+      <span class="cell-muted">{{ totalElementos() }} registro(s)</span>
+    </header>
+
+    <app-table etiqueta="Bitácora de mantenimiento">
+      <thead>
+        <tr>
+          <th>Equipo</th>
+          <th>Programada</th>
+          <th>Realizada</th>
+          <th>Estado</th>
+          <th>Técnico</th>
+          <th>Trabajo realizado</th>
+          <th class="cell-actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (m of registrosVisibles(); track m.id) {
+          <tr [class.mt-fila-vencida]="m.vencido">
+            <td>
+              <span class="mt-equipo">{{ nombreEquipo(m.equipoId) }}</span>
+              @if (equipoDe(m.equipoId); as eq) { <span class="mt-sub"><span class="mt-codigo">{{ eq.codigo }}</span> · {{ eq.tipo }}</span> }
+            </td>
+            <td class="mt-fecha">{{ fecha(m.fechaProgramada) }}</td>
+            <td class="mt-fecha">{{ m.fechaRealizada ? fecha(m.fechaRealizada) : '—' }}</td>
+            <td>
+              <span [class]="'badge ' + claseEstado(m)">{{ m.vencido ? 'Vencido' : etiquetaEstado(m.estado) }}</span>
+            </td>
+            <td>{{ nombreTecnico(m.tecnicoId) }}</td>
+            <td class="mt-trabajo cell-wrap">
+              @if (m.trabajoRealizado) { <p>{{ m.trabajoRealizado }}</p> }
+              @if (m.observaciones) { <p>{{ m.observaciones }}</p> }
+              @if (!m.trabajoRealizado && !m.observaciones) { <span class="cell-muted">—</span> }
+            </td>
+            <td class="cell-actions">
+              <div class="cell-actions-group">
+                @if (m.estado === 'PENDIENTE') {
+                  <app-button variante="success" tamano="sm" (click)="abrirCompletar(m)"
+                              [attr.aria-label]="'Completar mantenimiento de ' + nombreEquipo(m.equipoId)">
+                    <app-icon nombre="check" /> Completar
+                  </app-button>
+                  <app-button variante="danger" tamano="sm" (click)="abrirCancelar(m)"
+                              title="Cancelar mantenimiento" [attr.aria-label]="'Cancelar mantenimiento de ' + nombreEquipo(m.equipoId)">
+                    <app-icon nombre="ban" />
+                  </app-button>
+                } @else {
+                  <span class="cell-muted">—</span>
+                }
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="empty-state">
+              @if (cargando()) {
+                Cargando mantenimientos...
+              } @else if (registros().length > 0) {
+                Ningún registro de esta página coincide con los filtros de fecha o texto.
+              } @else {
+                No hay mantenimientos que coincidan con los filtros.
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </app-table>
+
+    <app-paginador [pagina]="pagina()" [totalPaginas]="totalPaginas()" [totalElementos]="totalElementos()"
+                   [tamano]="tamanoPagina" (cambiar)="irAPagina($event)" />
+    <p class="mt-nota">
+      El equipo, el estado y «solo vencidos» se filtran en el servidor; las fechas y la búsqueda se aplican a la página que estás viendo.
+      El sistema no permite editar un mantenimiento programado: solo completarlo o cancelarlo.
+    </p>
+  </article>
+
+</section>
+
+<!-- ============ MODAL PROGRAMAR ============ -->
+@if (modalProgramar()) {
+  <div class="modal-backdrop" (click)="cerrarProgramar()">
+    <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <form [formGroup]="formProgramar" (ngSubmit)="guardarProgramacion()" novalidate>
+        <header class="modal-header">
+          <h2 class="modal-title">Programar mantenimiento</h2>
+          <button type="button" class="modal-close" aria-label="Cerrar" (click)="cerrarProgramar()"><app-icon nombre="close" /></button>
+        </header>
+
+        <div class="modal-body">
+          @if (errorProgramar()) { <div class="alert alert-error" role="alert">{{ errorProgramar() }}</div> }
+
+          <div class="field">
+            <label class="field-label" for="pg-equipo">Equipo</label>
+            <select id="pg-equipo" class="field-input" formControlName="equipoId" [class.field-input--invalid]="mensaje('programar', 'equipoId')">
+              <option value="">Selecciona…</option>
+              @for (e of equipos(); track e.id) { <option [value]="e.id">{{ e.codigo }} · {{ e.nombre }}</option> }
+            </select>
+            @if (mensaje('programar', 'equipoId')) { <p class="field-error">{{ mensaje('programar', 'equipoId') }}</p> }
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="pg-fecha">Fecha programada</label>
+              <input id="pg-fecha" type="date" class="field-input" formControlName="fechaProgramada"
+                     [class.field-input--invalid]="mensaje('programar', 'fechaProgramada')" />
+              @if (mensaje('programar', 'fechaProgramada')) { <p class="field-error">{{ mensaje('programar', 'fechaProgramada') }}</p> }
+            </div>
+            <div class="field">
+              <label class="field-label" for="pg-tecnico">Técnico (opcional)</label>
+              <select id="pg-tecnico" class="field-input" formControlName="tecnicoId">
+                <option value="">Responsable del equipo</option>
+                @for (t of tecnicosActivos(); track t.id) { <option [value]="t.id">{{ t.nombres }} {{ t.apellidos }}</option> }
+              </select>
+              <p class="field-hint">Si no eliges, se usa el técnico asignado al equipo.</p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="pg-obs">Observaciones (opcional)</label>
+            <textarea id="pg-obs" class="field-input" rows="3" maxlength="1000" formControlName="observaciones"></textarea>
+            @if (mensaje('programar', 'observaciones')) { <p class="field-error">{{ mensaje('programar', 'observaciones') }}</p> }
+          </div>
+        </div>
+
+        <footer class="modal-footer">
+          <app-button variante="secondary" [deshabilitado]="programando()" (click)="cerrarProgramar()">Cancelar</app-button>
+          <app-button tipo="submit" [cargando]="programando()">Programar</app-button>
+        </footer>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ============ MODAL COMPLETAR ============ -->
+@if (completando(); as c) {
+  <div class="modal-backdrop" (click)="cerrarCompletar()">
+    <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <form [formGroup]="formCompletar" (ngSubmit)="guardarCompletar()" novalidate>
+        <header class="modal-header">
+          <h2 class="modal-title">Completar mantenimiento</h2>
+          <button type="button" class="modal-close" aria-label="Cerrar" (click)="cerrarCompletar()"><app-icon nombre="close" /></button>
+        </header>
+
+        <div class="modal-body">
+          @if (errorCompletar()) { <div class="alert alert-error" role="alert">{{ errorCompletar() }}</div> }
+
+          <p class="mt-info">
+            <strong>{{ nombreEquipo(c.equipoId) }}</strong><br />
+            Programado para el {{ fecha(c.fechaProgramada) }}
+          </p>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="cp-fecha">Fecha de realización</label>
+              <input id="cp-fecha" type="date" class="field-input" formControlName="fechaRealizada" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="cp-estado">Estado del equipo después</label>
+              <select id="cp-estado" class="field-input" formControlName="estadoEquipo">
+                <option value="">No cambiar</option>
+                @for (s of estadosEquipo; track s.valor) { <option [value]="s.valor">{{ s.etiqueta }}</option> }
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="cp-trabajo">Trabajo realizado</label>
+            <textarea id="cp-trabajo" class="field-input" rows="3" maxlength="1000" formControlName="trabajoRealizado"
+                      placeholder="Describe qué se hizo en el equipo"
+                      [class.field-input--invalid]="mensaje('completar', 'trabajoRealizado')"></textarea>
+            @if (mensaje('completar', 'trabajoRealizado')) { <p class="field-error">{{ mensaje('completar', 'trabajoRealizado') }}</p> }
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="cp-obs">Observaciones (opcional)</label>
+            <textarea id="cp-obs" class="field-input" rows="2" maxlength="1000" formControlName="observaciones"></textarea>
+            <p class="field-hint">Reemplaza las observaciones anteriores del registro.</p>
+          </div>
+        </div>
+
+        <footer class="modal-footer">
+          <app-button variante="secondary" [deshabilitado]="guardandoCompletar()" (click)="cerrarCompletar()">Cancelar</app-button>
+          <app-button tipo="submit" variante="success" [cargando]="guardandoCompletar()">Marcar como realizado</app-button>
+        </footer>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ============ MODAL CANCELAR ============ -->
+@if (cancelando(); as c) {
+  <div class="modal-backdrop" (click)="cerrarCancelar()">
+    <div class="modal modal--sm" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <form [formGroup]="formCancelar" (ngSubmit)="guardarCancelar()" novalidate>
+        <header class="modal-header">
+          <h2 class="modal-title">Cancelar mantenimiento</h2>
+          <button type="button" class="modal-close" aria-label="Cerrar" (click)="cerrarCancelar()"><app-icon nombre="close" /></button>
+        </header>
+
+        <div class="modal-body">
+          @if (errorCancelar()) { <div class="alert alert-error" role="alert">{{ errorCancelar() }}</div> }
+
+          <p class="mt-info">
+            <strong>{{ nombreEquipo(c.equipoId) }}</strong><br />
+            Programado para el {{ fecha(c.fechaProgramada) }}
+          </p>
+
+          <div class="field">
+            <label class="field-label" for="cn-motivo">Motivo de la cancelación</label>
+            <textarea id="cn-motivo" class="field-input" rows="3" maxlength="1000" formControlName="motivo"
+                      [class.field-input--invalid]="mensaje('cancelar', 'motivo')"></textarea>
+            <p class="field-hint">Se guarda como observación del registro y reemplaza la anterior.</p>
+            @if (mensaje('cancelar', 'motivo')) { <p class="field-error">{{ mensaje('cancelar', 'motivo') }}</p> }
+          </div>
+        </div>
+
+        <footer class="modal-footer">
+          <app-button variante="secondary" [deshabilitado]="guardandoCancelar()" (click)="cerrarCancelar()">Volver</app-button>
+          <app-button tipo="submit" variante="danger" [cargando]="guardandoCancelar()">Cancelar mantenimiento</app-button>
+        </footer>
+      </form>
+    </div>
+  </div>
+}

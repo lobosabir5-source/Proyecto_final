@@ -1,0 +1,310 @@
+<section class="page">
+
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Aeróbicos</h1>
+      <p class="page-subtitle">Agenda semanal de clases: horarios, instructores y cupos</p>
+    </div>
+    <app-button (click)="abrirNuevo()">
+      <app-icon nombre="plus" />
+      Nueva clase
+    </app-button>
+  </header>
+
+  @if (exito()) {
+    <div class="alert alert-success" role="status">{{ exito() }}</div>
+  }
+  @if (error()) {
+    <div class="alert alert-error" role="alert">{{ error() }}</div>
+  }
+
+  <!-- ============ RESUMEN DE LA SEMANA ============ -->
+  <div class="ae-stats">
+    <app-stat-card titulo="Clases de la semana" [valor]="resumen().total" icono="calendar"
+                   variante="gray" detalle="Entre lunes y domingo" />
+    <app-stat-card titulo="Programadas" [valor]="resumen().programadas" icono="clock"
+                   variante="cyan" detalle="Pendientes de realizarse" />
+    <app-stat-card titulo="Ocupación" [valor]="resumen().ocupacion + '%'" icono="users"
+                   variante="green" detalle="Inscritos sobre el cupo (sin canceladas)" />
+    <app-stat-card titulo="Canceladas" [valor]="resumen().canceladas" icono="ban"
+                   variante="red" detalle="Clases canceladas esta semana" />
+  </div>
+
+  <!-- ============ NAVEGACIÓN Y FILTROS ============ -->
+  <article class="panel ae-filtros">
+    <div class="panel-body">
+      <div class="ae-nav">
+        <div>
+          <span class="ae-nav__semana">{{ fecha(semanaInicio()) }} – {{ fecha(semanaFin()) }}</span>
+          @if (esSemanaActual()) { <span class="badge badge-info">Semana actual</span> }
+        </div>
+        <div class="ae-nav__botones">
+          <app-button variante="secondary" tamano="sm" (click)="semanaAnterior()" aria-label="Semana anterior">‹ Anterior</app-button>
+          <app-button variante="secondary" tamano="sm" [deshabilitado]="esSemanaActual()" (click)="irHoy()">Hoy</app-button>
+          <app-button variante="secondary" tamano="sm" (click)="semanaSiguiente()" aria-label="Semana siguiente">Siguiente ›</app-button>
+          <input type="date" class="field-input" name="ae-ir-fecha" aria-label="Ir a la semana de una fecha"
+                 [ngModel]="semanaInicio()" (ngModelChange)="irAFecha($event)" />
+          <app-button variante="secondary" tamano="sm" (click)="recargar()" title="Recargar" aria-label="Recargar agenda">
+            <app-icon nombre="refresh" />
+          </app-button>
+        </div>
+      </div>
+    </div>
+    <div class="panel-body ae-filtros__grid">
+      <div class="field">
+        <label class="field-label" for="ae-buscar">Buscar clase o instructor</label>
+        <input id="ae-buscar" name="ae-buscar" type="search" class="field-input" autocomplete="off"
+               placeholder="Nombre de la clase o instructor" [ngModel]="filtroTexto()" (ngModelChange)="filtroTexto.set($event)" />
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="ae-instructor">Instructor</label>
+        <select id="ae-instructor" name="ae-instructor" class="field-input"
+                [ngModel]="filtroInstructor()" (ngModelChange)="filtroInstructor.set($event)">
+          <option value="">Todos</option>
+          @for (i of instructoresSemana(); track i.id) { <option [value]="i.id">{{ i.nombre }}</option> }
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="ae-estado">Estado</label>
+        <select id="ae-estado" name="ae-estado" class="field-input"
+                [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)">
+          <option value="">Todos</option>
+          @for (s of estados; track s.valor) { <option [value]="s.valor">{{ s.etiqueta }}</option> }
+        </select>
+      </div>
+
+      <span class="cell-muted">{{ visibles() }} clase(s)</span>
+
+      @if (hayFiltros()) {
+        <button type="button" class="btn btn-secondary btn-sm" (click)="limpiarFiltros()">Limpiar filtros</button>
+      }
+    </div>
+  </article>
+
+  <!-- ============ AGENDA SEMANAL ============ -->
+  <article class="panel">
+    <header class="panel-header">
+      <h2 class="panel-title">Horario semanal</h2>
+      @if (cargando()) { <span class="cell-muted">Cargando clases...</span> }
+    </header>
+
+    <div class="ae-agenda">
+      @for (d of agenda(); track d.iso) {
+        <section class="ae-dia" [class.ae-dia--hoy]="d.esHoy">
+          <header class="ae-dia__cab">
+            <div>
+              <strong class="ae-dia__nombre">{{ d.etiqueta }}</strong>
+              <span class="ae-dia__fecha">{{ fecha(d.iso) }}</span>
+              @if (d.esHoy) { <span class="badge badge-info">Hoy</span> }
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" (click)="abrirNuevo(d.iso)"
+                    [attr.aria-label]="'Agregar clase el ' + d.etiqueta" title="Agregar clase este día">
+              <app-icon nombre="plus" />
+            </button>
+          </header>
+
+          <div class="ae-dia__clases">
+            @for (c of d.clases; track c.id) {
+              <article class="ae-clase" [class.ae-clase--finalizada]="c.estado === 'FINALIZADA'"
+                       [class.ae-clase--cancelada]="c.estado === 'CANCELADA'">
+                <span class="ae-clase__hora">{{ hora(c.horaInicio) }} – {{ hora(c.horaFin) }}</span>
+                <span class="ae-clase__nombre">{{ c.nombre }}</span>
+                <span class="ae-clase__meta">Instructor: {{ c.instructor }}</span>
+
+                <div class="ae-clase__cupo">
+                  <span>{{ c.inscritos }}/{{ c.cupoMaximo }} inscritos</span>
+                  <span>{{ c.cuposDisponibles }} libre(s)</span>
+                </div>
+                <div class="ae-barra" role="progressbar" [attr.aria-valuenow]="porcentaje(c)" aria-valuemin="0" aria-valuemax="100"
+                     [attr.aria-label]="'Ocupación de ' + c.nombre">
+                  <div class="ae-barra__relleno" [class.ae-barra__relleno--llena]="porcentaje(c) >= 100" [style.width.%]="porcentaje(c)"></div>
+                </div>
+
+                <div class="ae-clase__pie">
+                  <span [class]="'badge ' + claseEstado(c.estado)">{{ etiquetaEstado(c.estado) }}</span>
+                  <div class="cell-actions-group">
+                    <app-button variante="secondary" tamano="sm" (click)="verDetalle(c)" title="Ver detalle"
+                                [attr.aria-label]="'Ver detalle de ' + c.nombre"><app-icon nombre="users" /></app-button>
+                    @if (c.estado === 'PROGRAMADA') {
+                      <app-button variante="secondary" tamano="sm" (click)="abrirEditar(c)" title="Editar clase"
+                                  [attr.aria-label]="'Editar ' + c.nombre"><app-icon nombre="edit" /></app-button>
+                      <app-button variante="danger" tamano="sm" (click)="pedirEstado(c, 'CANCELADA')" title="Cancelar clase"
+                                  [attr.aria-label]="'Cancelar ' + c.nombre"><app-icon nombre="ban" /></app-button>
+                    }
+                  </div>
+                </div>
+              </article>
+            } @empty {
+              <p class="ae-vacio">{{ cargando() ? 'Cargando...' : hayFiltros() ? 'Sin clases que coincidan con los filtros.' : 'Sin clases programadas.' }}</p>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  </article>
+
+</section>
+
+<!-- ============ MODAL CREAR / EDITAR ============ -->
+@if (modalClase()) {
+  <div class="modal-backdrop" (click)="cerrarModalClase()">
+    <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <form [formGroup]="formClase" (ngSubmit)="guardarClase()" novalidate>
+
+        <header class="modal-header">
+          <h2 class="modal-title">{{ editando() ? 'Editar clase' : 'Nueva clase' }}</h2>
+          <button type="button" class="modal-close" aria-label="Cerrar" (click)="cerrarModalClase()"><app-icon nombre="close" /></button>
+        </header>
+
+        <div class="modal-body">
+          @if (errorModal()) { <div class="alert alert-error" role="alert">{{ errorModal() }}</div> }
+
+          <div class="field">
+            <label class="field-label" for="cl-nombre">Nombre de la clase</label>
+            <input id="cl-nombre" type="text" class="field-input" formControlName="nombre" maxlength="120"
+                   autocomplete="off" [class.field-input--invalid]="mensajeClase('nombre')" />
+            @if (mensajeClase('nombre')) { <p class="field-error">{{ mensajeClase('nombre') }}</p> }
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="cl-desc">Descripción (opcional)</label>
+            <textarea id="cl-desc" class="field-input" rows="2" formControlName="descripcion"></textarea>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="cl-instructor">Instructor</label>
+            <select id="cl-instructor" class="field-input" formControlName="instructorId" [class.field-input--invalid]="mensajeClase('instructorId')">
+              <option value="">Selecciona…</option>
+              @for (i of instructoresActivos(); track i.id) { <option [value]="i.id">{{ i.nombres }} {{ i.apellidos }}</option> }
+            </select>
+            <p class="field-hint">Solo instructores activos. El sistema rechaza horarios que se crucen con otra clase del instructor.</p>
+            @if (mensajeClase('instructorId')) { <p class="field-error">{{ mensajeClase('instructorId') }}</p> }
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="cl-fecha">Fecha</label>
+              <input id="cl-fecha" type="date" class="field-input" formControlName="fecha" [class.field-input--invalid]="mensajeClase('fecha')" />
+              @if (mensajeClase('fecha')) { <p class="field-error">{{ mensajeClase('fecha') }}</p> }
+            </div>
+            <div class="field">
+              <label class="field-label" for="cl-cupo">Cupo máximo</label>
+              <input id="cl-cupo" type="number" class="field-input" formControlName="cupoMaximo" min="1" inputmode="numeric"
+                     [class.field-input--invalid]="mensajeClase('cupoMaximo')" />
+              @if (mensajeClase('cupoMaximo')) { <p class="field-error">{{ mensajeClase('cupoMaximo') }}</p> }
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="cl-inicio">Hora de inicio</label>
+              <input id="cl-inicio" type="time" class="field-input" formControlName="horaInicio"
+                     [class.field-input--invalid]="mensajeClase('horaInicio') || horasInvalidas" />
+              @if (mensajeClase('horaInicio')) { <p class="field-error">{{ mensajeClase('horaInicio') }}</p> }
+            </div>
+            <div class="field">
+              <label class="field-label" for="cl-fin">Hora de fin</label>
+              <input id="cl-fin" type="time" class="field-input" formControlName="horaFin"
+                     [class.field-input--invalid]="mensajeClase('horaFin') || horasInvalidas" />
+              @if (mensajeClase('horaFin')) { <p class="field-error">{{ mensajeClase('horaFin') }}</p> }
+            </div>
+          </div>
+          @if (horasInvalidas) { <p class="field-error">La hora de fin debe ser posterior a la de inicio.</p> }
+        </div>
+
+        <footer class="modal-footer">
+          <app-button variante="secondary" [deshabilitado]="guardando()" (click)="cerrarModalClase()">Cancelar</app-button>
+          <app-button tipo="submit" [cargando]="guardando()">{{ editando() ? 'Guardar cambios' : 'Crear clase' }}</app-button>
+        </footer>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ============ DETALLE DE LA CLASE ============ -->
+@if (detalle(); as c) {
+  <div class="modal-backdrop" (click)="cerrarDetalle()">
+    <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2 class="modal-title">{{ c.nombre }}</h2>
+        <button type="button" class="modal-close" aria-label="Cerrar" (click)="cerrarDetalle()"><app-icon nombre="close" /></button>
+      </header>
+
+      <div class="modal-body">
+        @if (errorDetalle()) { <div class="alert alert-error" role="alert">{{ errorDetalle() }}</div> }
+
+        <dl class="ae-detalle">
+          <div><dt>Fecha</dt><dd>{{ fecha(c.fecha) }}</dd></div>
+          <div><dt>Horario</dt><dd>{{ hora(c.horaInicio) }} – {{ hora(c.horaFin) }}</dd></div>
+          <div><dt>Instructor</dt><dd>{{ c.instructor }}</dd></div>
+          <div><dt>Estado</dt><dd><span [class]="'badge ' + claseEstado(c.estado)">{{ etiquetaEstado(c.estado) }}</span></dd></div>
+          <div><dt>Cupo</dt><dd>{{ c.inscritos }} inscritos de {{ c.cupoMaximo }} ({{ c.cuposDisponibles }} libres)</dd></div>
+          <div>
+            <dt>Llegada del instructor</dt>
+            <dd>
+              @if (c.llegadaInstructor) {
+                {{ horaDe(c.llegadaInstructor) }}
+                @if ((c.minutosRetrasoInstructor ?? 0) > 0) { · {{ c.minutosRetrasoInstructor }} min de retraso } @else { · puntual }
+              } @else { Sin registrar }
+            </dd>
+          </div>
+          <div class="ae-detalle__ancho"><dt>Descripción</dt><dd>{{ c.descripcion || '—' }}</dd></div>
+        </dl>
+
+        @if (c.estado === 'PROGRAMADA') {
+          <div class="ae-acciones">
+            <app-button variante="secondary" tamano="sm" [deshabilitado]="!!c.llegadaInstructor" [cargando]="registrandoLlegada()"
+                        (click)="registrarLlegadaInstructor(c)">Registrar llegada del instructor</app-button>
+            <app-button variante="success" tamano="sm" (click)="pedirEstado(c, 'FINALIZADA')">Finalizar clase</app-button>
+            <app-button variante="secondary" tamano="sm" (click)="abrirEditar(c)">Editar</app-button>
+            <app-button variante="danger" tamano="sm" (click)="pedirEstado(c, 'CANCELADA')">Cancelar clase</app-button>
+          </div>
+        }
+
+        <h3 class="ae-subtitulo">Inscritos ({{ insTotal() }})</h3>
+        <app-table etiqueta="Inscritos de la clase">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Estado</th>
+              <th>Llegada</th>
+              <th>Asistencia</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (i of inscritos(); track i.id) {
+              <tr>
+                <td>{{ i.cliente }}</td>
+                <td><span class="badge" [class.badge-success]="i.estado === 'INSCRITO'" [class.badge-muted]="i.estado !== 'INSCRITO'">
+                  {{ i.estado === 'INSCRITO' ? 'Inscrito' : 'Cancelado' }}</span></td>
+                <td>{{ i.llegadaCliente ? horaDe(i.llegadaCliente) : '—' }}@if (i.ordenLlegada) { <span class="cell-muted"> (#{{ i.ordenLlegada }})</span> }</td>
+                <td>{{ i.asistio === true ? 'Asistió' : i.asistio === false ? 'No asistió' : '—' }}</td>
+              </tr>
+            } @empty {
+              <tr><td colspan="4" class="empty-state">{{ cargandoInscritos() ? 'Cargando inscritos...' : 'Esta clase aún no tiene inscritos.' }}</td></tr>
+            }
+          </tbody>
+        </app-table>
+        <app-paginador [pagina]="insPagina()" [totalPaginas]="insTotalPaginas()" [totalElementos]="insTotal()"
+                       [tamano]="tamanoPagina" (cambiar)="cargarInscritos($event)" />
+        <p class="ae-nota">Las inscripciones se registran desde Recepción; aquí solo se consultan.</p>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ============ CONFIRMAR ESTADO ============ -->
+@if (pendienteEstado(); as p) {
+  <app-confirm-dialog
+    [titulo]="p.estado === 'CANCELADA' ? 'Cancelar clase' : 'Finalizar clase'"
+    [mensaje]="p.estado === 'CANCELADA'
+      ? '¿Cancelar &quot;' + p.clase.nombre + '&quot;? La clase ya no podrá editarse ni recibir inscripciones.'
+      : '¿Marcar &quot;' + p.clase.nombre + '&quot; como finalizada? Ya no podrá editarse.'"
+    [textoConfirmar]="p.estado === 'CANCELADA' ? 'Cancelar clase' : 'Finalizar'"
+    [peligro]="p.estado === 'CANCELADA'"
+    [procesando]="cambiandoEstado()"
+    (confirmar)="confirmarEstado()"
+    (cancelar)="cancelarEstado()" />
+}

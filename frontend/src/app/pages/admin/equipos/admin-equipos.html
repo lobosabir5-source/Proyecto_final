@@ -1,0 +1,351 @@
+<section class="page">
+
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Equipos</h1>
+      <p class="page-subtitle">Equipos del gimnasio, estado operativo y programación semanal de mantenimiento</p>
+    </div>
+    <app-button (click)="abrirNuevo()">
+      <app-icon nombre="plus" />
+      Nuevo equipo
+    </app-button>
+  </header>
+
+  @if (exito()) {
+    <div class="alert alert-success" role="status">{{ exito() }}</div>
+  }
+  @if (error()) {
+    <div class="alert alert-error" role="alert">{{ error() }}</div>
+  }
+
+  <!-- ============ RESUMEN ============ -->
+  <div class="eq-stats">
+    <app-stat-card titulo="Total de equipos" [valor]="resumen()?.total ?? '—'" icono="tag"
+                   variante="gray" detalle="Registrados en el sistema" />
+    <app-stat-card titulo="Operativos" [valor]="operativos()" icono="check"
+                   variante="green" detalle="Disponibles para los socios" />
+    <app-stat-card titulo="En mantenimiento" [valor]="resumen()?.enMantenimiento ?? '—'" icono="refresh"
+                   variante="cyan" detalle="Temporalmente no disponibles" />
+    <app-stat-card titulo="Fuera de servicio" [valor]="resumen()?.fuera ?? '—'" icono="ban"
+                   variante="red" detalle="Requieren reparación" />
+  </div>
+
+  @if ((resumen()?.vencidos ?? 0) > 0) {
+    <div class="alert alert-error eq-alerta" role="alert">
+      <span>
+        <strong>{{ resumen()?.vencidos }}</strong>
+        {{ resumen()?.vencidos === 1 ? 'mantenimiento vencido' : 'mantenimientos vencidos' }} sin completar.
+      </span>
+      <a class="btn btn-secondary btn-sm" routerLink="/admin/mantenimiento" [queryParams]="{ vencidos: 'true' }">Ver mantenimiento</a>
+    </div>
+  }
+
+  <!-- ============ BÚSQUEDA Y FILTROS ============ -->
+  <article class="panel eq-filtros">
+    <div class="panel-body eq-filtros__grid">
+      <div class="field">
+        <label class="field-label" for="eq-buscar">Buscar equipo</label>
+        <input id="eq-buscar" name="eq-buscar" type="search" class="field-input" autocomplete="off"
+               placeholder="Código, nombre o tipo" [(ngModel)]="filtros.texto" (ngModelChange)="alEscribir()" />
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="eq-estado">Estado</label>
+        <select id="eq-estado" name="eq-estado" class="field-input"
+                [(ngModel)]="filtros.estado" (ngModelChange)="aplicarFiltros()">
+          <option value="">Todos</option>
+          @for (s of estados; track s.valor) { <option [value]="s.valor">{{ s.etiqueta }}</option> }
+        </select>
+      </div>
+
+      @if (hayFiltros) {
+        <button type="button" class="btn btn-secondary btn-sm" (click)="limpiarFiltros()">Limpiar filtros</button>
+      }
+    </div>
+  </article>
+
+  <!-- ============ LISTADO ============ -->
+  <article class="panel">
+    <header class="panel-header">
+      <h2 class="panel-title">Listado de equipos</h2>
+      <span class="cell-muted">{{ totalElementos() }} resultado(s)</span>
+    </header>
+
+    <app-table etiqueta="Equipos del gimnasio">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Equipo</th>
+          <th>Ubicación</th>
+          <th>Estado</th>
+          <th>Mantenimiento semanal</th>
+          <th>Técnico</th>
+          <th class="cell-actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (e of equipos(); track e.id) {
+          <tr [class.eq-fila-fuera]="e.estado === 'FUERA_DE_SERVICIO'" [class.eq-fila-mant]="e.estado === 'EN_MANTENIMIENTO'">
+            <td><span class="eq-codigo">{{ e.codigo }}</span></td>
+            <td>
+              <span class="eq-nombre">{{ e.nombre }}</span>
+              <span class="eq-sub">{{ e.tipo }}</span>
+            </td>
+            <td>{{ e.ubicacion || '—' }}</td>
+            <td><span class="badge" [class]="'badge ' + claseEstado(e.estado)">{{ etiquetaEstado(e.estado) }}</span></td>
+            <td>
+              @if (e.mantenimientoActivo) {
+                <span class="eq-dias">{{ etiquetaDia(e.diaUno) }} y {{ etiquetaDia(e.diaDos) }}</span>
+              } @else {
+                <span class="eq-dias eq-dias--off">Programación desactivada</span>
+              }
+            </td>
+            <td>{{ nombreTecnico(e.tecnicoId) }}</td>
+            <td class="cell-actions">
+              <div class="cell-actions-group">
+                <app-button variante="secondary" tamano="sm" (click)="verFicha(e)"
+                            title="Ver información" [attr.aria-label]="'Ver información de ' + e.nombre">
+                  <app-icon nombre="user" />
+                </app-button>
+                <app-button variante="secondary" tamano="sm" (click)="abrirSemana(e)"
+                            [deshabilitado]="!e.mantenimientoActivo"
+                            [title]="e.mantenimientoActivo ? 'Programar semana de mantenimiento' : 'La programación está desactivada para este equipo'"
+                            [attr.aria-label]="'Programar semana de ' + e.nombre">
+                  <app-icon nombre="calendar" />
+                </app-button>
+                <app-button variante="secondary" tamano="sm" (click)="abrirEditar(e)"
+                            title="Editar equipo" [attr.aria-label]="'Editar ' + e.nombre">
+                  <app-icon nombre="edit" />
+                </app-button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="empty-state">
+              {{ cargando() ? 'Cargando equipos...' : 'No hay equipos que coincidan con la búsqueda.' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </app-table>
+
+    <app-paginador [pagina]="pagina()" [totalPaginas]="totalPaginas()" [totalElementos]="totalElementos()"
+                   [tamano]="tamanoPagina" (cambiar)="irAPagina($event)" />
+  </article>
+
+</section>
+
+<!-- ============ MODAL CREAR / EDITAR ============ -->
+@if (modalEquipo()) {
+  <div class="modal-backdrop" (click)="cerrarModalEquipo()">
+    <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <form [formGroup]="formEquipo" (ngSubmit)="guardarEquipo()" novalidate>
+
+        <header class="modal-header">
+          <h2 class="modal-title">{{ editando() ? 'Editar equipo' : 'Nuevo equipo' }}</h2>
+          <button type="button" class="modal-close" aria-label="Cerrar" (click)="cerrarModalEquipo()">
+            <app-icon nombre="close" />
+          </button>
+        </header>
+
+        <div class="modal-body">
+          @if (errorModal()) {
+            <div class="alert alert-error" role="alert">{{ errorModal() }}</div>
+          }
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="eq-codigo">Código</label>
+              <input id="eq-codigo" type="text" class="field-input" formControlName="codigo" maxlength="40"
+                     autocomplete="off" [class.field-input--invalid]="mensajeEquipo('codigo')" />
+              @if (mensajeEquipo('codigo')) { <p class="field-error">{{ mensajeEquipo('codigo') }}</p> }
+            </div>
+            <div class="field">
+              <label class="field-label" for="eq-tipo">Tipo</label>
+              <input id="eq-tipo" type="text" class="field-input" formControlName="tipo" maxlength="60"
+                     placeholder="Ej. Cardio, Pesas" autocomplete="off" [class.field-input--invalid]="mensajeEquipo('tipo')" />
+              @if (mensajeEquipo('tipo')) { <p class="field-error">{{ mensajeEquipo('tipo') }}</p> }
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="eq-nombre">Nombre</label>
+            <input id="eq-nombre" type="text" class="field-input" formControlName="nombre" maxlength="120"
+                   autocomplete="off" [class.field-input--invalid]="mensajeEquipo('nombre')" />
+            @if (mensajeEquipo('nombre')) { <p class="field-error">{{ mensajeEquipo('nombre') }}</p> }
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="eq-ubicacion">Ubicación (opcional)</label>
+              <input id="eq-ubicacion" type="text" class="field-input" formControlName="ubicacion" maxlength="120"
+                     autocomplete="off" [class.field-input--invalid]="mensajeEquipo('ubicacion')" />
+              @if (mensajeEquipo('ubicacion')) { <p class="field-error">{{ mensajeEquipo('ubicacion') }}</p> }
+            </div>
+            <div class="field">
+              <label class="field-label" for="eq-estado-form">Estado</label>
+              <select id="eq-estado-form" class="field-input" formControlName="estado">
+                @for (s of estados; track s.valor) { <option [value]="s.valor">{{ s.etiqueta }}</option> }
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="eq-descripcion">Descripción (opcional)</label>
+            <textarea id="eq-descripcion" class="field-input" rows="3" formControlName="descripcion" maxlength="500"
+                      [class.field-input--invalid]="mensajeEquipo('descripcion')"></textarea>
+            @if (mensajeEquipo('descripcion')) { <p class="field-error">{{ mensajeEquipo('descripcion') }}</p> }
+          </div>
+
+          <label class="field-check">
+            <input type="checkbox" formControlName="mantenimientoActivo" />
+            Programación semanal de mantenimiento activa
+          </label>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="eq-dia1">Día de mantenimiento 1</label>
+              <select id="eq-dia1" class="field-input" formControlName="diaUno" [class.field-input--invalid]="diasIguales">
+                @for (d of dias; track d.valor) { <option [value]="d.valor">{{ d.etiqueta }}</option> }
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label" for="eq-dia2">Día de mantenimiento 2</label>
+              <select id="eq-dia2" class="field-input" formControlName="diaDos" [class.field-input--invalid]="diasIguales">
+                @for (d of dias; track d.valor) { <option [value]="d.valor">{{ d.etiqueta }}</option> }
+              </select>
+            </div>
+          </div>
+          @if (diasIguales) { <p class="field-error">Los dos días de mantenimiento deben ser diferentes.</p> }
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="eq-tecnico">Técnico responsable (opcional)</label>
+              <select id="eq-tecnico" class="field-input" formControlName="tecnicoId">
+                <option value="">Sin asignar</option>
+                @for (t of tecnicosActivos(); track t.id) {
+                  <option [value]="t.id">{{ t.nombres }} {{ t.apellidos }}</option>
+                }
+              </select>
+              <p class="field-hint">Solo personal activo.</p>
+            </div>
+            <div class="field">
+              <label class="field-label" for="eq-alta">Fecha de alta</label>
+              <input id="eq-alta" type="date" class="field-input" formControlName="fechaAlta" />
+            </div>
+          </div>
+        </div>
+
+        <footer class="modal-footer">
+          <app-button variante="secondary" [deshabilitado]="guardando()" (click)="cerrarModalEquipo()">Cancelar</app-button>
+          <app-button tipo="submit" [cargando]="guardando()">
+            {{ editando() ? 'Guardar cambios' : 'Registrar equipo' }}
+          </app-button>
+        </footer>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ============ FICHA DEL EQUIPO ============ -->
+@if (ficha(); as f) {
+  <div class="modal-backdrop" (click)="cerrarFicha()">
+    <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2 class="modal-title">{{ f.nombre }}</h2>
+        <button type="button" class="modal-close" aria-label="Cerrar" (click)="cerrarFicha()">
+          <app-icon nombre="close" />
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <dl class="eq-ficha">
+          <div><dt>Código</dt><dd><span class="eq-codigo">{{ f.codigo }}</span></dd></div>
+          <div><dt>Tipo</dt><dd>{{ f.tipo }}</dd></div>
+          <div><dt>Estado</dt><dd><span [class]="'badge ' + claseEstado(f.estado)">{{ etiquetaEstado(f.estado) }}</span></dd></div>
+          <div><dt>Ubicación</dt><dd>{{ f.ubicacion || '—' }}</dd></div>
+          <div><dt>Fecha de alta</dt><dd>{{ f.fechaAlta ? fecha(f.fechaAlta) : '—' }}</dd></div>
+          <div><dt>Técnico responsable</dt><dd>{{ nombreTecnico(f.tecnicoId) }}</dd></div>
+          <div class="eq-ficha__ancho">
+            <dt>Mantenimiento semanal</dt>
+            <dd>
+              @if (f.mantenimientoActivo) { {{ etiquetaDia(f.diaUno) }} y {{ etiquetaDia(f.diaDos) }} }
+              @else { Programación desactivada }
+            </dd>
+          </div>
+          <div class="eq-ficha__ancho"><dt>Descripción</dt><dd>{{ f.descripcion || '—' }}</dd></div>
+        </dl>
+      </div>
+
+      <footer class="modal-footer">
+        <a class="btn btn-secondary" routerLink="/admin/mantenimiento" [queryParams]="{ equipoId: f.id }">Ver mantenimientos</a>
+        <app-button variante="secondary" (click)="abrirEditar(f)">Editar</app-button>
+        <app-button [deshabilitado]="!f.mantenimientoActivo" (click)="abrirSemana(f)">Programar semana</app-button>
+      </footer>
+    </div>
+  </div>
+}
+
+<!-- ============ PROGRAMAR SEMANA ============ -->
+@if (semanaEquipo(); as s) {
+  <div class="modal-backdrop" (click)="cerrarSemana()">
+    <div class="modal modal--sm" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2 class="modal-title">Programar semana de mantenimiento</h2>
+        <button type="button" class="modal-close" aria-label="Cerrar" (click)="cerrarSemana()">
+          <app-icon nombre="close" />
+        </button>
+      </header>
+
+      <div class="modal-body">
+        @if (errorSemana()) {
+          <div class="alert alert-error" role="alert">{{ errorSemana() }}</div>
+        }
+
+        <p class="eq-semana-info"><strong>{{ s.codigo }} · {{ s.nombre }}</strong></p>
+
+        @if (resultadoSemana(); as creados) {
+          @if (creados.length > 0) {
+            <div class="alert alert-success" role="status">
+              Se programaron {{ creados.length }} mantenimiento(s) pendientes:
+            </div>
+            <ul class="eq-lista eq-lista--nueva">
+              @for (m of creados; track m.id) {
+                <li><span>{{ fechaDia(m.fechaProgramada) }}</span><span>{{ nombreTecnico(m.tecnicoId) }}</span></li>
+              }
+            </ul>
+          } @else {
+            <div class="alert alert-success" role="status">
+              Esa semana ya tenía programados los dos días. No se creó ningún mantenimiento nuevo.
+            </div>
+          }
+        } @else {
+          <div class="field">
+            <label class="field-label" for="eq-semana-fecha">Cualquier día de la semana a programar</label>
+            <input id="eq-semana-fecha" type="date" class="field-input" [ngModel]="fechaSemana()"
+                   (ngModelChange)="fechaSemana.set($event)" name="eq-semana-fecha" />
+          </div>
+
+          <p class="field-hint">Se crearán mantenimientos pendientes en estas fechas (si aún no existen):</p>
+          <ul class="eq-lista">
+            @for (p of previsualizacion(); track p.iso) {
+              <li><span>{{ p.etiqueta }}</span><span>{{ fecha(p.iso) }}</span></li>
+            }
+          </ul>
+          <p class="eq-nota">Se asigna el técnico responsable del equipo. Las fechas ya programadas se omiten.</p>
+        }
+      </div>
+
+      <footer class="modal-footer">
+        @if (resultadoSemana()) {
+          <a class="btn btn-secondary" routerLink="/admin/mantenimiento" [queryParams]="{ equipoId: s.id }">Ver mantenimientos</a>
+          <app-button (click)="cerrarSemana()">Cerrar</app-button>
+        } @else {
+          <app-button variante="secondary" [deshabilitado]="programando()" (click)="cerrarSemana()">Cancelar</app-button>
+          <app-button [cargando]="programando()" [deshabilitado]="!fechaSemana()" (click)="confirmarSemana()">Programar semana</app-button>
+        }
+      </footer>
+    </div>
+  </div>
+}
