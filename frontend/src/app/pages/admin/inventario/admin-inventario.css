@@ -1,0 +1,102 @@
+/* Resumen */
+.inv-stats {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+  margin-bottom: 16px;
+}
+@media (min-width: 640px) {
+  .inv-stats { grid-template-columns: repeat(3, 1fr); }
+}
+
+.inv-alerta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Filtros */
+.inv-filtros { margin-bottom: 16px; }
+.inv-filtros__grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+  align-items: end;
+}
+@media (min-width: 640px) {
+  .inv-filtros__grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .inv-filtros__grid { grid-template-columns: 2fr 1fr 1fr auto; }
+}
+.inv-filtros__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+}
+
+/* Tabla de insumos */
+.inv-nombre { display: block; font-weight: 600; color: #f5f5f5; }
+.inv-desc { display: block; margin-top: 2px; font-size: 12px; color: #737373; }
+.inv-num { text-align: right; white-space: nowrap; }
+.inv-fila-alerta td:first-child { box-shadow: inset 3px 0 0 #ef4444; }
+.inv-fila-alerta { background: rgba(239, 68, 68, 0.06); }
+
+/* Indicadores de stock y tipo de movimiento */
+.inv-badge-ok {
+  border-color: rgba(52, 211, 153, 0.45);
+  background: rgba(52, 211, 153, 0.1);
+  color: #6ee7b7;
+}
+.inv-badge-bajo {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+.inv-mov-entrada { color: #6ee7b7; }
+.inv-mov-salida { color: #fca5a5; }
+
+/* Historial */
+.inv-resumen-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #d4d4d4;
+}
+.inv-mov-filtros {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+  align-items: end;
+}
+@media (min-width: 640px) {
+  .inv-mov-filtros { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .inv-mov-filtros { grid-template-columns: 1fr 1fr 1fr 2fr auto; }
+}
+.inv-nota {
+  padding: 10px 16px 14px;
+  font-size: 12px;
+  color: #737373;
+}
+
+/* Modal de entrada / salida */
+.inv-mov-info {
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #d4d4d4;
+}
+.inv-mov-resultado {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #a3a3a3;
+}
+.inv-mov-resultado--bajo { color: #fca5a5; }

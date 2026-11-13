@@ -1,0 +1,428 @@
+<section class="page">
+
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Inventario general</h1>
+      <p class="page-subtitle">Insumos, existencias, entradas, salidas y control de stock mínimo</p>
+    </div>
+    <app-button (click)="abrirNuevo()">
+      <app-icon nombre="plus" />
+      Nuevo insumo
+    </app-button>
+  </header>
+
+  @if (exito()) {
+    <div class="alert alert-success" role="status">{{ exito() }}</div>
+  }
+  @if (error()) {
+    <div class="alert alert-error" role="alert">{{ error() }}</div>
+  }
+
+  <!-- ============ RESUMEN ============ -->
+  <div class="inv-stats">
+    <app-stat-card titulo="Insumos activos" [valor]="resumen()?.activos ?? '—'" icono="tag"
+                   variante="cyan" detalle="Habilitados en el inventario" />
+    <app-stat-card titulo="Stock bajo" [valor]="resumen()?.bajo ?? '—'" icono="ban"
+                   variante="red" detalle="Existencia igual o menor al mínimo" />
+    <app-stat-card titulo="Stock suficiente" [valor]="stockSuficiente()" icono="check"
+                   variante="green" detalle="Por encima del mínimo" />
+  </div>
+
+  @if ((resumen()?.bajo ?? 0) > 0 && !filtros.bajoMinimo) {
+    <div class="alert alert-error inv-alerta" role="alert">
+      <span>
+        <strong>{{ resumen()?.bajo }}</strong>
+        {{ resumen()?.bajo === 1 ? 'insumo tiene' : 'insumos tienen' }} el stock en el mínimo o por debajo.
+      </span>
+      <button type="button" class="btn btn-secondary btn-sm" (click)="verSoloBajoMinimo()">Ver insumos</button>
+    </div>
+  }
+
+  <!-- ============ BÚSQUEDA Y FILTROS ============ -->
+  <article class="panel inv-filtros">
+    <div class="panel-body inv-filtros__grid">
+      <div class="field">
+        <label class="field-label" for="inv-buscar">Buscar insumo</label>
+        <input id="inv-buscar" name="inv-buscar" type="search" class="field-input" autocomplete="off"
+               placeholder="Nombre del insumo" [(ngModel)]="filtros.nombre" (ngModelChange)="alEscribir()" />
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="inv-categoria">Categoría</label>
+        <select id="inv-categoria" name="inv-categoria" class="field-input"
+                [(ngModel)]="filtros.categoria" (ngModelChange)="aplicarFiltros()">
+          <option value="">Todas</option>
+          @for (c of categorias; track c.valor) { <option [value]="c.valor">{{ c.etiqueta }}</option> }
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="inv-estado">Estado</label>
+        <select id="inv-estado" name="inv-estado" class="field-input"
+                [(ngModel)]="filtros.activo" (ngModelChange)="aplicarFiltros()">
+          <option value="true">Activos</option>
+          <option value="false">Inactivos</option>
+          <option value="">Todos</option>
+        </select>
+      </div>
+
+      <div class="inv-filtros__acciones">
+        <label class="field-check">
+          <input type="checkbox" name="inv-bajo" [(ngModel)]="filtros.bajoMinimo" (ngModelChange)="aplicarFiltros()" />
+          Solo stock bajo
+        </label>
+        @if (hayFiltros) {
+          <button type="button" class="btn btn-secondary btn-sm" (click)="limpiarFiltros()">Limpiar filtros</button>
+        }
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ LISTADO DE INSUMOS ============ -->
+  <article class="panel">
+    <header class="panel-header">
+      <h2 class="panel-title">Insumos</h2>
+      <span class="cell-muted">{{ totalElementos() }} resultado(s)</span>
+    </header>
+
+    <app-table etiqueta="Insumos del inventario">
+      <thead>
+        <tr>
+          <th>Insumo</th>
+          <th>Categoría</th>
+          <th>Unidad</th>
+          <th class="inv-num">Existencia</th>
+          <th class="inv-num">Mínimo</th>
+          <th>Stock</th>
+          <th class="cell-actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (i of items(); track i.id) {
+          <tr [class.inv-fila-alerta]="i.activo && i.alertaMinimo">
+            <td>
+              <span class="inv-nombre">{{ i.nombre }}</span>
+              @if (i.descripcion) { <span class="inv-desc">{{ i.descripcion }}</span> }
+            </td>
+            <td>{{ etiquetaCategoria(i.categoria) }}</td>
+            <td>{{ etiquetaUnidad(i.unidad) }}</td>
+            <td class="inv-num"><strong>{{ i.existencia | number:'1.0-3' }}</strong></td>
+            <td class="inv-num cell-muted">{{ i.minimo | number:'1.0-3' }}</td>
+            <td>
+              @if (!i.activo) {
+                <span class="badge badge-muted">Inactivo</span>
+              } @else if (i.alertaMinimo) {
+                <span class="badge inv-badge-bajo" title="Existencia igual o menor al mínimo">Stock bajo</span>
+              } @else {
+                <span class="badge inv-badge-ok">OK</span>
+              }
+            </td>
+            <td class="cell-actions">
+              <div class="cell-actions-group">
+                @if (i.activo) {
+                  <app-button tamano="sm" (click)="abrirMovimiento(i, 'ENTRADA')"
+                              [attr.aria-label]="'Registrar entrada de ' + i.nombre">
+                    + Entrada
+                  </app-button>
+                  <app-button variante="secondary" tamano="sm" (click)="abrirMovimiento(i, 'SALIDA')"
+                              [attr.aria-label]="'Registrar salida de ' + i.nombre">
+                    − Salida
+                  </app-button>
+                }
+                <app-button variante="secondary" tamano="sm" (click)="verHistorial(i)"
+                            title="Historial de movimientos" [attr.aria-label]="'Historial de ' + i.nombre">
+                  <app-icon nombre="clock" />
+                </app-button>
+                @if (i.activo) {
+                  <app-button variante="secondary" tamano="sm" (click)="abrirEditar(i)"
+                              title="Editar insumo" [attr.aria-label]="'Editar ' + i.nombre">
+                    <app-icon nombre="edit" />
+                  </app-button>
+                  <app-button variante="danger" tamano="sm" (click)="pedirDesactivar(i)"
+                              title="Desactivar insumo" [attr.aria-label]="'Desactivar ' + i.nombre">
+                    <app-icon nombre="ban" />
+                  </app-button>
+                }
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="empty-state">
+              {{ cargando() ? 'Cargando insumos...' : 'No hay insumos que coincidan con la búsqueda.' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </app-table>
+
+    <app-paginador [pagina]="pagina()" [totalPaginas]="totalPaginas()" [totalElementos]="totalElementos()"
+                   [tamano]="tamanoPagina" (cambiar)="irAPagina($event)" />
+  </article>
+
+  <!-- ============ HISTORIAL DE MOVIMIENTOS ============ -->
+  @if (historialItem(); as it) {
+    <article class="panel" id="inv-historial">
+      <header class="panel-header">
+        <h2 class="panel-title">Historial de movimientos · {{ it.nombre }}</h2>
+        <app-button variante="secondary" tamano="sm" (click)="cerrarHistorial()" aria-label="Cerrar historial">
+          <app-icon nombre="close" />
+        </app-button>
+      </header>
+
+      <div class="panel-body">
+        <div class="inv-resumen-item">
+          <span>Existencia actual: <strong>{{ it.existencia | number:'1.0-3' }} {{ etiquetaUnidad(it.unidad).toLowerCase() }}</strong></span>
+          <span>Mínimo: <strong>{{ it.minimo | number:'1.0-3' }}</strong></span>
+          @if (!it.activo) {
+            <span class="badge badge-muted">Inactivo</span>
+          } @else if (it.alertaMinimo) {
+            <span class="badge inv-badge-bajo">Stock bajo</span>
+          } @else {
+            <span class="badge inv-badge-ok">OK</span>
+          }
+        </div>
+
+        <div class="inv-mov-filtros">
+          <div class="field">
+            <label class="field-label" for="mov-tipo">Tipo</label>
+            <select id="mov-tipo" name="mov-tipo" class="field-input"
+                    [ngModel]="filtroTipo()" (ngModelChange)="filtroTipo.set($event)">
+              <option value="">Todos</option>
+              <option value="ENTRADA">Entradas</option>
+              <option value="SALIDA">Salidas</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="mov-desde">Desde</label>
+            <input id="mov-desde" name="mov-desde" type="date" class="field-input"
+                   [ngModel]="filtroDesde()" (ngModelChange)="filtroDesde.set($event)" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="mov-hasta">Hasta</label>
+            <input id="mov-hasta" name="mov-hasta" type="date" class="field-input"
+                   [ngModel]="filtroHasta()" (ngModelChange)="filtroHasta.set($event)" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="mov-texto">Motivo o responsable</label>
+            <input id="mov-texto" name="mov-texto" type="search" class="field-input" autocomplete="off"
+                   placeholder="Buscar..." [ngModel]="filtroTexto()" (ngModelChange)="filtroTexto.set($event)" />
+          </div>
+          @if (hayFiltrosMov()) {
+            <button type="button" class="btn btn-secondary btn-sm" (click)="limpiarFiltrosMov()">Limpiar</button>
+          }
+        </div>
+      </div>
+
+      @if (errorHistorial()) {
+        <div class="alert alert-error" role="alert">{{ errorHistorial() }}</div>
+      }
+
+      <app-table etiqueta="Movimientos del insumo">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th class="inv-num">Cantidad</th>
+            <th class="inv-num">Saldo anterior</th>
+            <th class="inv-num">Saldo posterior</th>
+            <th>Responsable</th>
+            <th>Motivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (m of movimientosVisibles(); track m.id) {
+            <tr>
+              <td>{{ m.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>
+                <span class="badge" [class.inv-badge-ok]="m.tipo === 'ENTRADA'" [class.inv-badge-bajo]="m.tipo === 'SALIDA'">
+                  {{ m.tipo === 'ENTRADA' ? 'Entrada' : 'Salida' }}
+                </span>
+              </td>
+              <td class="inv-num">
+                <strong [class.inv-mov-entrada]="m.tipo === 'ENTRADA'" [class.inv-mov-salida]="m.tipo === 'SALIDA'">
+                  {{ m.tipo === 'ENTRADA' ? '+' : '−' }}{{ m.cantidad | number:'1.0-3' }}
+                </strong>
+              </td>
+              <td class="inv-num cell-muted">{{ m.saldoAnterior | number:'1.0-3' }}</td>
+              <td class="inv-num">{{ m.saldoPosterior | number:'1.0-3' }}</td>
+              <td>{{ m.responsable || '—' }}</td>
+              <td class="cell-wrap">{{ m.motivo || '—' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="empty-state">
+                @if (cargandoHistorial()) {
+                  Cargando movimientos...
+                } @else if (movimientos().length > 0) {
+                  Ningún movimiento de esta página coincide con los filtros.
+                } @else {
+                  Este insumo aún no tiene movimientos.
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+
+      <app-paginador [pagina]="histPagina()" [totalPaginas]="histTotalPaginas()" [totalElementos]="histTotal()"
+                     [tamano]="tamanoPagina" (cambiar)="cargarHistorial($event)" />
+      <p class="inv-nota">Los filtros se aplican a los movimientos de la página que estás viendo.</p>
+    </article>
+  }
+
+</section>
+
+<!-- ============ MODAL CREAR / EDITAR INSUMO ============ -->
+@if (modalItem()) {
+  <div class="modal-backdrop" (click)="cerrarModalItem()">
+    <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <form [formGroup]="formItem" (ngSubmit)="guardarItem()" novalidate>
+
+        <header class="modal-header">
+          <h2 class="modal-title">{{ editando() ? 'Editar insumo' : 'Nuevo insumo' }}</h2>
+          <button type="button" class="modal-close" aria-label="Cerrar" (click)="cerrarModalItem()">
+            <app-icon nombre="close" />
+          </button>
+        </header>
+
+        <div class="modal-body">
+          @if (errorModal()) {
+            <div class="alert alert-error" role="alert">{{ errorModal() }}</div>
+          }
+
+          <div class="field">
+            <label class="field-label" for="it-nombre">Nombre</label>
+            <input id="it-nombre" type="text" class="field-input" formControlName="nombre" maxlength="120"
+                   autocomplete="off" [class.field-input--invalid]="mensajeItem('nombre')" />
+            @if (mensajeItem('nombre')) { <p class="field-error">{{ mensajeItem('nombre') }}</p> }
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="it-categoria">Categoría</label>
+              <select id="it-categoria" class="field-input" formControlName="categoria"
+                      [class.field-input--invalid]="mensajeItem('categoria')">
+                <option value="">Selecciona…</option>
+                @for (c of categorias; track c.valor) { <option [value]="c.valor">{{ c.etiqueta }}</option> }
+              </select>
+              @if (mensajeItem('categoria')) { <p class="field-error">{{ mensajeItem('categoria') }}</p> }
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="it-unidad">Unidad</label>
+              <select id="it-unidad" class="field-input" formControlName="unidad"
+                      [class.field-input--invalid]="mensajeItem('unidad')">
+                <option value="">Selecciona…</option>
+                @for (u of unidades; track u.valor) { <option [value]="u.valor">{{ u.etiqueta }}</option> }
+              </select>
+              @if (formItem.controls.unidad.disabled) {
+                <p class="field-hint">No se puede cambiar la unidad mientras haya existencias.</p>
+              }
+              @if (mensajeItem('unidad')) { <p class="field-error">{{ mensajeItem('unidad') }}</p> }
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="it-minimo">Existencia mínima</label>
+            <input id="it-minimo" type="number" class="field-input" formControlName="minimo" min="0" step="0.001"
+                   inputmode="decimal" [class.field-input--invalid]="mensajeItem('minimo')" />
+            <p class="field-hint">Por debajo o igual a este valor el insumo se marca con stock bajo.</p>
+            @if (mensajeItem('minimo')) { <p class="field-error">{{ mensajeItem('minimo') }}</p> }
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="it-descripcion">Descripción (opcional)</label>
+            <input id="it-descripcion" type="text" class="field-input" formControlName="descripcion"
+                   maxlength="255" autocomplete="off" [class.field-input--invalid]="mensajeItem('descripcion')" />
+            @if (mensajeItem('descripcion')) { <p class="field-error">{{ mensajeItem('descripcion') }}</p> }
+          </div>
+
+          @if (!editando()) {
+            <p class="field-hint">La existencia inicial es 0. Regístrala con una entrada después de crear el insumo.</p>
+          }
+        </div>
+
+        <footer class="modal-footer">
+          <app-button variante="secondary" [deshabilitado]="guardando()" (click)="cerrarModalItem()">Cancelar</app-button>
+          <app-button tipo="submit" [cargando]="guardando()">
+            {{ editando() ? 'Guardar cambios' : 'Crear insumo' }}
+          </app-button>
+        </footer>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ============ MODAL ENTRADA / SALIDA ============ -->
+@if (movimientoActual(); as mov) {
+  <div class="modal-backdrop" (click)="cerrarMovimiento()">
+    <div class="modal modal--sm" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <form [formGroup]="formMov" (ngSubmit)="registrarMovimiento()" novalidate>
+
+        <header class="modal-header">
+          <h2 class="modal-title">{{ mov.tipo === 'ENTRADA' ? 'Registrar entrada' : 'Registrar salida' }}</h2>
+          <button type="button" class="modal-close" aria-label="Cerrar" (click)="cerrarMovimiento()">
+            <app-icon nombre="close" />
+          </button>
+        </header>
+
+        <div class="modal-body">
+          @if (errorMovimiento()) {
+            <div class="alert alert-error" role="alert">{{ errorMovimiento() }}</div>
+          }
+
+          <p class="inv-mov-info">
+            <strong>{{ mov.item.nombre }}</strong><br />
+            Existencia actual: {{ mov.item.existencia | number:'1.0-3' }} {{ etiquetaUnidad(mov.item.unidad).toLowerCase() }}
+          </p>
+
+          <div class="field">
+            <label class="field-label" for="mv-cantidad">Cantidad</label>
+            <input id="mv-cantidad" type="number" class="field-input" formControlName="cantidad" min="0.001"
+                   step="0.001" inputmode="decimal"
+                   [class.field-input--invalid]="mensajeMovimiento('cantidad') || excedeExistencia()" />
+            @if (mensajeMovimiento('cantidad')) { <p class="field-error">{{ mensajeMovimiento('cantidad') }}</p> }
+            @if (excedeExistencia()) {
+              <p class="field-error">La salida supera la existencia disponible.</p>
+            }
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="mv-motivo">Motivo (opcional)</label>
+            <input id="mv-motivo" type="text" class="field-input" formControlName="motivo" maxlength="255"
+                   autocomplete="off"
+                   [placeholder]="mov.tipo === 'ENTRADA' ? 'Ej. Compra a proveedor' : 'Ej. Consumo del turno'" />
+            @if (mensajeMovimiento('motivo')) { <p class="field-error">{{ mensajeMovimiento('motivo') }}</p> }
+          </div>
+
+          @if (saldoResultante() !== null) {
+            <p class="inv-mov-resultado" [class.inv-mov-resultado--bajo]="(saldoResultante() ?? 0) <= mov.item.minimo">
+              Existencia resultante: <strong>{{ saldoResultante() | number:'1.0-3' }}</strong>
+              @if ((saldoResultante() ?? 0) <= mov.item.minimo) { · quedará en stock bajo }
+            </p>
+          }
+        </div>
+
+        <footer class="modal-footer">
+          <app-button variante="secondary" [deshabilitado]="registrando()" (click)="cerrarMovimiento()">Cancelar</app-button>
+          <app-button tipo="submit" [variante]="mov.tipo === 'ENTRADA' ? 'primary' : 'danger'" [cargando]="registrando()">
+            {{ mov.tipo === 'ENTRADA' ? 'Registrar entrada' : 'Registrar salida' }}
+          </app-button>
+        </footer>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ============ CONFIRMAR DESACTIVAR ============ -->
+@if (pendienteDesactivar(); as pendiente) {
+  <app-confirm-dialog
+    titulo="Desactivar insumo"
+    [mensaje]="'¿Desactivar &quot;' + pendiente.nombre + '&quot;? Dejará de aparecer entre los activos y no podrá recibir movimientos. Su historial se conserva.'"
+    textoConfirmar="Desactivar"
+    [peligro]="true"
+    [procesando]="desactivando()"
+    (confirmar)="confirmarDesactivar()"
+    (cancelar)="cancelarDesactivar()" />
+}
