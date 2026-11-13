@@ -29,6 +29,10 @@ export const routes: Routes = [
       { path: 'promociones', loadComponent: () => import('../pages/admin/promociones/admin-promociones').then(m => m.AdminPromociones) },
       { path: 'herramientas', loadComponent: () => import('../pages/admin/herramientas/admin-herramientas').then(m => m.AdminHerramientas) },
       { path: 'configuracion', loadComponent: () => import('../pages/admin/configuracion/admin-configuracion').then(m => m.AdminConfiguracion) },
+      { path: 'inventario', loadComponent: () => import('../pages/admin/inventario/admin-inventario').then(m => m.AdminInventario) },
+      { path: 'equipos', loadComponent: () => import('../pages/admin/equipos/admin-equipos').then(m => m.AdminEquipos) },
+      { path: 'mantenimiento', loadComponent: () => import('../pages/admin/mantenimiento/admin-mantenimiento').then(m => m.AdminMantenimiento) },
+      { path: 'aerobicos', loadComponent: () => import('../pages/admin/aerobicos/admin-aerobicos').then(m => m.AdminAerobicos) },
     ]
   },
   // ---------- RECEPCIÓN ----------
