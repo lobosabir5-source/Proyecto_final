@@ -46,7 +46,7 @@ export interface PagoCliente {
   membresiaId: number;
   cliente: string;
   monto: number;
-  metodo: 'EFECTIVO' | 'TARJETA' | 'TRANSFERENCIA';
+  metodo: 'EFECTIVO' | 'QR';
   fechaPago: string;
   registradoPor: string;
 }
@@ -76,8 +76,12 @@ export interface PermisoCliente {
   id: number;
   membresiaId: number;
   motivo: string;
-  diasAgregados: number;
+  diasAgregados: number | null;
   solicitadoEn: string;
+  fechaInicio: string | null;
+  fechaFin: string | null;
+  estado: 'PENDIENTE' | 'APROBADO' | 'RECHAZADO' | string;
+  resueltoEn: string | null;
 }
 
 interface Pagina<T> {
@@ -118,11 +122,7 @@ export class ClienteService {
     this.cargarPagina<AsistenciaCliente>('asistencias', datos => this.asistencias.set(datos), terminado);
     this.cargarPagina<PagoCliente>('pagos', datos => this.pagos.set(datos), terminado);
     this.cargarPagina<RutinaCliente>('rutinas', datos => this.rutinas.set(datos), terminado);
-    this.http.get<PermisoCliente[]>(`${this.apiUrl}/permisos`).subscribe({
-      next: datos => this.permisos.set(datos),
-      error: () => { this.permisos.set([]); terminado(); },
-      complete: terminado
-    });
+    this.cargarPagina<PermisoCliente>('permisos', datos => this.permisos.set(datos), terminado);
     this.http.get<PromocionCliente[]>(`${this.apiUrl}/promociones`).subscribe({
       next: datos => this.promociones.set(datos),
       error: () => { this.promociones.set([]); terminado(); },
@@ -174,7 +174,7 @@ export class ClienteService {
   }
 
   metodoPago(metodo: PagoCliente['metodo']): string {
-    return ({ EFECTIVO: 'Efectivo', TARJETA: 'Tarjeta', TRANSFERENCIA: 'Transferencia' })[metodo];
+    return ({ EFECTIVO: 'Efectivo', QR: 'QR' })[metodo] ?? metodo;
   }
 
   private cargarPagina<T>(ruta: string, guardar: (datos: T[]) => void, terminado: () => void): void {

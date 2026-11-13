@@ -48,7 +48,12 @@ export class AuthService {
     this.injector.get(ClienteService).limpiar();
     this.router.navigate(['/login']);
   }
-
+  expirarSesion(): void {
+    localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.userKey);
+    this.currentUser.set(null);
+    this.injector.get(ClienteService).limpiar();
+  }
   token(): string | null {
     return localStorage.getItem(this.tokenKey);
   }

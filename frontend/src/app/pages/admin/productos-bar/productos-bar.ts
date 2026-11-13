@@ -7,8 +7,8 @@ import {
 } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { UiTable } from '../../../components/ui-table/ui-table';
-import { Paginador } from '../../../components/paginador/paginador';
+import { UiTable } from '../../../shared/ui/ui-table/ui-table';
+import { Paginador } from '../../../shared/ui/paginador/paginador';
 
 import { ProductoBarService } from '../../../services/producto-bar.service';
 import { CategoriaBarService } from '../../../services/categoria-bar.service';

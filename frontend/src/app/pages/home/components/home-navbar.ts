@@ -4,6 +4,7 @@ import { Configuracion } from '../../../services/configuracion.service';
 
 const MENU_CLIENTE = [
   { seccion: 'Mi cuenta', items: [
+    { label: 'Mi carnet', route: '/cliente/carnet' },
     { label: 'Mi panel',       route: '/cliente/panel' },
     { label: 'Mi suscripción', route: '/cliente/suscripcion' },
     { label: 'Mi perfil',      route: '/cliente/perfil' },
@@ -92,7 +93,10 @@ export class HomeNavbar {
   abierto = signal(false);
   menu = MENU_CLIENTE;
   links = [
+    { href: '#nosotros', texto: 'Nosotros' },
     { href: '#planes', texto: 'Planes' },
+    { href: '#galeria', texto: 'Galería' },
+    { href: '#horarios', texto: 'Horarios' },
     { href: '#ubicacion', texto: 'Ubicación' },
     { href: '#contacto', texto: 'Contacto' },
   ];

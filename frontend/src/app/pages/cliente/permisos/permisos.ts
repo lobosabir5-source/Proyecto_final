@@ -18,8 +18,10 @@ import { TablaDatos, FilaTabla, CeldaTabla, Columna } from '../components/tabla-
       @for (p of lista(); track p.id) {
         <tr app-fila>
           <td app-celda class="text-neutral-400">{{ fecha(p.solicitadoEn) }}</td>
+          <td app-celda class="text-neutral-400">{{ p.fechaInicio ? fecha(p.fechaInicio) : '—' }} - {{ p.fechaFin ? fecha(p.fechaFin) : '—' }}</td>
           <td app-celda class="font-semibold">{{ p.motivo }}</td>
-          <td app-celda class="text-right text-yellow-300">+{{ p.diasAgregados }}</td>
+          <td app-celda class="text-neutral-300">{{ p.estado }}</td>
+          <td app-celda class="text-right text-yellow-300">+{{ p.diasAgregados ?? 0 }}</td>
         </tr>
       }
     </app-tabla-datos>
@@ -28,7 +30,10 @@ import { TablaDatos, FilaTabla, CeldaTabla, Columna } from '../components/tabla-
 export class PermisosComponent {
   private readonly srv = inject(ClienteService);
 
-  columnas: Columna[] = [{ titulo: 'Fecha' }, { titulo: 'Motivo' }, { titulo: 'Días agregados', derecha: true }];
+  columnas: Columna[] = [
+    { titulo: 'Solicitado' }, { titulo: 'Periodo' }, { titulo: 'Motivo' },
+    { titulo: 'Estado' }, { titulo: 'Días agregados', derecha: true },
+  ];
   lista = computed(() => [...this.srv.permisos()].sort((a, b) => b.solicitadoEn.localeCompare(a.solicitadoEn)));
   fecha = fechaCorta;
 }

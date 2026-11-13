@@ -13,8 +13,8 @@ import { ProductoBar } from '../../../models/producto-bar.models';
 import { PedidoBar } from '../../../models/pedido-bar.models';
 import { MetodoPagoBar } from '../../../models/metodo-pago-bar.models';
 
-import { UiTable } from '../../../components/ui-table/ui-table';
-import { Paginador } from '../../../components/paginador/paginador';
+import { UiTable } from '../../../shared/ui/ui-table/ui-table';
+import { Paginador } from '../../../shared/ui/paginador/paginador';
 
 interface UsuarioSeleccionable {
   id: number;

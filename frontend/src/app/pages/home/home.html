@@ -6,8 +6,11 @@
 
   <app-home-navbar [config]="configuracion" [nombre]="nombre()" [esCliente]="esCliente()" (logout)="cerrarSesion()" />
   <app-home-hero [nombre]="nombre()" [esCliente]="esCliente()" [descripcion]="configuracion?.descripcion" [totalPlanes]="planes.length" />
+  <app-nosotros-section [config]="configuracion" />
   <app-planes-section [planes]="planes" [cargando]="cargandoPlanes" [error]="errorPlanes" [esCliente]="esCliente()" [planActual]="planActual()" (reintentar)="cargarPlanes()" />
   <app-promociones-section [promociones]="promociones" />
+  <app-galeria-section [config]="configuracion" />
+  <app-horarios-section [config]="configuracion" />
   <app-ubicacion-section [direccion]="configuracion?.direccion" />
   <app-contacto-section [config]="configuracion" />
 </main>

@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 interface NavItem { label: string; route: string; }
@@ -8,12 +8,11 @@ interface NavItem { label: string; route: string; }
   selector: 'app-recepcion-layout',
   standalone: true,
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
-  templateUrl: './recepcion-layout.html',
-  styleUrls: ['./recepcion-layout.css']
+  host: { class: 'block' },
+  templateUrl: './recepcion-layout.html'
 })
 export class RecepcionLayoutComponent {
   private readonly auth = inject(AuthService);
-  private readonly router = inject(Router);
 
   usuario = computed(() => this.auth.nombreVisible());
 
@@ -25,12 +24,15 @@ export class RecepcionLayoutComponent {
         { label: 'Clientes',      route: '/recepcion/clientes' },
         { label: 'Asistencias',   route: '/recepcion/asistencias' },
         { label: 'Suscripciones', route: '/recepcion/suscripciones' },
+        { label: 'Rutinas',       route: '/recepcion/rutinas' },
       ]
     },
     {
       seccion: 'Finanzas',
       items: [
-        { label: 'Pagos', route: '/recepcion/pagos' },
+        { label: 'Pagos',    route: '/recepcion/pagos' },
+        { label: 'Caja',     route: '/recepcion/caja' },
+        { label: 'Permisos', route: '/recepcion/permisos' },
       ]
     },
     {
@@ -42,6 +44,6 @@ export class RecepcionLayoutComponent {
   ];
 
   cerrarSesion() {
-    this.auth.logout(); // ya limpia localStorage y navega a /login
+    this.auth.logout();
   }
 }

@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { API_URL } from '../config/api.config';
 import { Pagina } from '../models/admin.models';
 import { HistorialMembresia, Membresia, ResumenRecepcion } from '../models/recepcion.models';
@@ -30,5 +30,11 @@ export class MembresiaRecepcionService {
   }
   resumen(): Observable<ResumenRecepcion> {
     return this.http.get<ResumenRecepcion>(`${API_URL}/recepcion/reportes/resumen`);
+  }
+    /** Todas las membresías (para totales en pagos). */
+  listarTodas(tamano = 1000): Observable<Membresia[]> {
+    return this.http
+      .get<Pagina<Membresia>>(this.url, { params: new HttpParams().set('size', tamano) })
+      .pipe(map(p => p.content));
   }
 }

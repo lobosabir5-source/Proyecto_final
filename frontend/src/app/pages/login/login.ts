@@ -1,8 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { rutaInicio } from '../../guards/auth.guard';
 
@@ -23,6 +22,12 @@ export class Login {
 
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+
+  constructor() {
+    if (inject(ActivatedRoute).snapshot.queryParamMap.get('expirada')) {
+      this.error = 'Tu sesión expiró. Inicia sesión nuevamente.';
+    }
+  }
 
   login() {
     this.error = '';

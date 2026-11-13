@@ -4,10 +4,16 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { EMPTY, Subject, catchError, debounceTime, map, merge, switchMap, tap } from 'rxjs';
 import { SERVER_URL } from '../../../config/api.config';
-import { Paginador } from '../../../components/paginador/paginador';
+import { Paginador } from '../../../shared/ui/paginador/paginador';
 import { ClienteRecepcion, FiltrosCliente } from '../../../models/recepcion.models';
 import { ClienteRecepcionService, TAMANO_PAGINA_CLIENTES } from '../../../services/cliente-recepcion.service';
 import { leerErrorApi } from '../../../utils/api-error';
+import { Alerta } from '../components/alerta';
+import { Dialogo } from '../components/dialogo';
+import { Boton, Campo, Entrada } from '../components/formulario';
+import { PageHeader } from '../components/page-header';
+import { Panel } from '../components/panel';
+import { TablaDatos, FilaTabla, CeldaTabla, Columna } from '../components/tabla-datos';
 
 // Mismas reglas que el backend (CrearClienteRequest / ActualizarClienteRequest)
 const REGEX_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,8 +36,159 @@ interface FormCliente {
 @Component({
   selector: 'app-clientes',
   standalone: true,
-  imports: [FormsModule, Paginador],
-  templateUrl: './clientes.html'
+  imports: [FormsModule, Paginador, PageHeader, Alerta, Panel, Campo, Entrada, Boton, Dialogo, TablaDatos, FilaTabla, CeldaTabla],
+  host: { class: 'block' },
+  template: `
+    <app-page-header eyebrow="Recepción / Clientes" titulo="Clientes">
+      <button type="button" appBoton="primario" (click)="abrirCrear()">+ Nuevo</button>
+    </app-page-header>
+
+    @if (exito()) { <app-alerta tipo="exito">{{ exito() }}</app-alerta> }
+    @if (errorLista()) { <app-alerta>{{ errorLista() }}</app-alerta> }
+
+    <app-panel class="mb-4">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <app-campo etiqueta="Nombre" para="f-nombre">
+          <input id="f-nombre" name="f-nombre" appEntrada [(ngModel)]="filtros.nombre" (ngModelChange)="alEscribirFiltro()" autocomplete="off" placeholder="Ej. Juan" />
+        </app-campo>
+        <app-campo etiqueta="Correo" para="f-correo">
+          <input id="f-correo" name="f-correo" appEntrada [(ngModel)]="filtros.correo" (ngModelChange)="alEscribirFiltro()" autocomplete="off" placeholder="correo@dominio.com" />
+        </app-campo>
+        <app-campo etiqueta="Teléfono" para="f-telefono">
+          <input id="f-telefono" name="f-telefono" appEntrada [(ngModel)]="filtros.telefono" (ngModelChange)="alEscribirFiltro()" autocomplete="off" placeholder="70000000" />
+        </app-campo>
+        <app-campo etiqueta="Documento" para="f-documento">
+          <input id="f-documento" name="f-documento" appEntrada [(ngModel)]="filtros.documento" (ngModelChange)="alEscribirFiltro()" autocomplete="off" placeholder="N.º de documento" />
+        </app-campo>
+        <app-campo etiqueta="Estado" para="f-estado">
+          <select id="f-estado" name="f-estado" appEntrada [(ngModel)]="filtros.estado" (ngModelChange)="alCambiarEstado()">
+            <option value="">Todos</option>
+            <option value="true">Activos</option>
+            <option value="false">Inactivos</option>
+          </select>
+        </app-campo>
+      </div>
+      @if (hayFiltros) {
+        <div class="mt-4 flex justify-end">
+          <button type="button" (click)="limpiarFiltros()"
+                  class="text-[11px] font-bold tracking-[0.2em] uppercase text-yellow-400 hover:text-yellow-300">Limpiar filtros</button>
+        </div>
+      }
+    </app-panel>
+
+    <app-tabla-datos [columnas]="columnas" [vacia]="clientes().length === 0"
+                     [mensajeVacio]="cargando() ? 'Cargando…' : 'No se encontraron clientes.'">
+      @for (c of clientes(); track c.id) {
+        <tr app-fila>
+          <td app-celda>
+            <div class="flex items-center gap-3">
+              @if (fotoSrc(c); as src) {
+                <img [src]="src" [alt]="'Foto de ' + c.nombre" class="w-10 h-10 rounded-full object-cover border border-yellow-500/40" />
+              } @else {
+                <span class="w-10 h-10 rounded-full bg-yellow-400/10 border border-yellow-500/30 text-yellow-300 text-xs font-bold grid place-items-center">{{ iniciales(c.nombre) }}</span>
+              }
+              <span class="font-semibold">{{ c.nombre }}</span>
+            </div>
+          </td>
+          <td app-celda class="text-neutral-300">{{ c.numeroDocumento || '—' }}</td>
+          <td app-celda class="text-yellow-300">{{ c.usuario }}</td>
+          <td app-celda class="text-neutral-400">{{ c.correo }}</td>
+          <td app-celda class="text-neutral-400">{{ c.telefono }}</td>
+          <td app-celda>
+            <span [class]="c.activo
+              ? 'px-2 py-1 text-[10px] tracking-widest uppercase border border-yellow-400/60 text-yellow-300'
+              : 'px-2 py-1 text-[10px] tracking-widest uppercase border border-neutral-600 text-neutral-500'">{{ c.activo ? 'Activo' : 'Inactivo' }}</span>
+          </td>
+          <td app-celda class="text-right whitespace-nowrap">
+            <button type="button" appBoton="neutro" class="mr-2" (click)="cambiarEstado(c)">{{ c.activo ? 'Desactivar' : 'Activar' }}</button>
+            <button type="button" appBoton="acento" (click)="abrirEditar(c)">Editar</button>
+          </td>
+        </tr>
+      }
+    </app-tabla-datos>
+    <app-paginador tema="oscuro" [pagina]="pagina()" [totalPaginas]="totalPaginas()"
+                   [totalElementos]="totalElementos()" [tamano]="tamanoPagina" (cambiar)="irAPagina($event)" />
+
+    @if (mostrarForm()) {
+      <app-dialogo [titulo]="clienteEditando() ? 'Editar cliente' : 'Nuevo cliente'" (cerrar)="cerrarForm()">
+        <form (ngSubmit)="guardar()" class="space-y-5" novalidate>
+
+          <div class="flex items-center gap-5">
+            @if (vistaPrevia(); as src) {
+              <img [src]="src" alt="Vista previa de la fotografía" class="w-24 h-24 rounded-full object-cover border-2 border-yellow-500/50" />
+            } @else {
+              <span class="w-24 h-24 rounded-full bg-neutral-900 border-2 border-dashed border-neutral-700 text-neutral-600 text-[10px] tracking-widest grid place-items-center text-center">SIN FOTO</span>
+            }
+            <div class="flex-1">
+              <app-campo etiqueta="Fotografía" para="foto" [error]="campos['foto']">
+                <input id="foto" name="foto" type="file" accept="image/jpeg,image/png" (change)="alElegirFoto($event)"
+                       class="block w-full text-xs text-neutral-400 file:mr-4 file:border-0 file:bg-yellow-400 file:text-black file:font-bold file:text-[11px] file:tracking-widest file:uppercase file:px-4 file:py-2 file:cursor-pointer hover:file:bg-yellow-300" />
+              </app-campo>
+              <p class="text-neutral-600 text-xs mt-1">JPEG o PNG, máximo 5 MB.</p>
+            </div>
+          </div>
+
+          @if (!clienteEditando()) {
+            <div class="grid sm:grid-cols-2 gap-4">
+              <app-campo etiqueta="Usuario" para="usuario" [error]="campos['usuario']">
+                <input id="usuario" name="usuario" appEntrada [invalido]="!!campos['usuario']" [(ngModel)]="form.usuario" autocomplete="off" placeholder="Usuario para iniciar sesión" maxlength="80" />
+              </app-campo>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <app-campo etiqueta="Contraseña" para="password" [error]="campos['password']">
+                <div class="relative">
+                  <input id="password" name="password" appEntrada class="pr-16" [invalido]="!!campos['password']"
+                         [type]="mostrarPassword ? 'text' : 'password'" [(ngModel)]="form.password"
+                         autocomplete="new-password" placeholder="Mínimo 8 caracteres" maxlength="100" />
+                  <button type="button" (click)="mostrarPassword = !mostrarPassword"
+                          class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold tracking-wider text-neutral-500 hover:text-yellow-400">{{ mostrarPassword ? 'OCULTAR' : 'VER' }}</button>
+                </div>
+              </app-campo>
+              <app-campo etiqueta="Repetir contraseña" para="confirmar" [error]="campos['confirmar']">
+                <input id="confirmar" name="confirmar" appEntrada [invalido]="!!campos['confirmar']"
+                       [type]="mostrarPassword ? 'text' : 'password'" [(ngModel)]="form.confirmar" autocomplete="new-password" />
+              </app-campo>
+            </div>
+          } @else {
+            <p class="text-xs text-neutral-500">Usuario de acceso: <span class="text-yellow-300 font-semibold">{{ form.usuario }}</span></p>
+          }
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <app-campo etiqueta="Nombre completo" para="nombre" [error]="campos['nombre']">
+              <input id="nombre" name="nombre" appEntrada [invalido]="!!campos['nombre']" [(ngModel)]="form.nombre" maxlength="120" />
+            </app-campo>
+            <app-campo etiqueta="N.º de documento" para="numeroDocumento" [error]="campos['numeroDocumento']">
+              <input id="numeroDocumento" name="numeroDocumento" appEntrada [invalido]="!!campos['numeroDocumento']" [(ngModel)]="form.numeroDocumento" maxlength="40" autocomplete="off" placeholder="CI / Pasaporte" />
+            </app-campo>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <app-campo etiqueta="Correo" para="correo" [error]="campos['correo']">
+              <input id="correo" name="correo" type="email" appEntrada [invalido]="!!campos['correo']" [(ngModel)]="form.correo" maxlength="160" />
+            </app-campo>
+            <app-campo etiqueta="Teléfono" para="telefono" [error]="campos['telefono']">
+              <input id="telefono" name="telefono" type="tel" appEntrada [invalido]="!!campos['telefono']" [(ngModel)]="form.telefono" placeholder="+591 70000000" />
+            </app-campo>
+          </div>
+
+          <div class="sm:w-1/2">
+            <app-campo etiqueta="Fecha de nacimiento" para="fechaNacimiento" [error]="campos['fechaNacimiento']">
+              <input id="fechaNacimiento" name="fechaNacimiento" type="date" appEntrada [invalido]="!!campos['fechaNacimiento']" [max]="hoy" [(ngModel)]="form.fechaNacimiento" />
+            </app-campo>
+          </div>
+
+          @if (error) { <app-alerta>{{ error }}</app-alerta> }
+
+          <div class="flex gap-3 pt-2">
+            <button type="button" appBoton="secundario" class="flex-1" (click)="cerrarForm()">Cancelar</button>
+            <button type="submit" appBoton="primario" class="flex-1" [disabled]="guardando">
+              {{ guardando ? 'Guardando…' : (clienteEditando() ? 'Guardar cambios' : 'Crear cliente') }}
+            </button>
+          </div>
+        </form>
+      </app-dialogo>
+    }
+  `
 })
 export class ClientesComponent implements OnInit {
   private readonly service = inject(ClienteRecepcionService);
@@ -40,6 +197,10 @@ export class ClientesComponent implements OnInit {
   readonly tamanoPagina = TAMANO_PAGINA_CLIENTES;
 
   // - Listado (desde el backend) --
+    readonly columnas: Columna[] = [
+    { titulo: 'Cliente' }, { titulo: 'Documento' }, { titulo: 'Usuario' }, { titulo: 'Correo' },
+    { titulo: 'Teléfono' }, { titulo: 'Estado' }, { titulo: 'Acciones', derecha: true },
+  ];
   readonly clientes = signal<ClienteRecepcion[]>([]);
   readonly pagina = signal(0);
   readonly totalPaginas = signal(0);

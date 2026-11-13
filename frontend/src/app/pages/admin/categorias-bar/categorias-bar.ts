@@ -3,8 +3,8 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { UiTable } from '../../../components/ui-table/ui-table';
-import { Paginador } from '../../../components/paginador/paginador';
+import { UiTable } from '../../../shared/ui/ui-table/ui-table';
+import { Paginador } from '../../../shared/ui/paginador/paginador';
 import { CategoriaBarService } from '../../../services/categoria-bar.service';
 import {
   CategoriaBar,

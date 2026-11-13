@@ -1,27 +1,35 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { API_URL } from '../../../config/api.config';
-
-interface PlanApi {
-  id: number;
-  nombre: string;
-  descripcion: string;
-  duracionDias: number;
-  precio: number;
-}
+import { Plan } from '../../../models/admin.models';
+import { PlanRecepcionService } from '../../../services/plan-recepcion.service';
+import { EstadoVacio } from '../components/estado-vacio';
+import { PageHeader } from '../components/page-header';
+import { PlanCard } from '../components/plan-card';
 
 @Component({
   selector: 'app-planes',
   standalone: true,
-  templateUrl: './planes.html'
+  imports: [PageHeader, PlanCard, EstadoVacio],
+  host: { class: 'block' },
+  template: `
+    <app-page-header eyebrow="Catálogo / Planes" titulo="Planes" />
+
+    @if (planes().length === 0) {
+      <app-estado-vacio>No hay planes disponibles.</app-estado-vacio>
+    } @else {
+      <section class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        @for (plan of planes(); track plan.id) {
+          <app-plan-card [plan]="plan" />
+        }
+      </section>
+    }
+  `
 })
 export class PlanesComponent implements OnInit {
-  private http = inject(HttpClient);
+  private readonly api = inject(PlanRecepcionService);
 
-  planes = signal<PlanApi[]>([]);
+  planes = signal<Plan[]>([]);
 
   ngOnInit(): void {
-    this.http.get<PlanApi[]>(`${API_URL}/recepcion/planes`)
-      .subscribe(p => this.planes.set(p));
+    this.api.listar().subscribe(p => this.planes.set(p));
   }
 }

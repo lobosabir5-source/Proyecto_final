@@ -11,11 +11,14 @@ import { PlanesSection } from './components/planes-section';
 import { PromocionesSection } from './components/promociones-section';
 import { UbicacionSection } from './components/ubicacion-section';
 import { ContactoSection } from './components/contacto-section';
+import { NosotrosSection } from './components/nosotros-section';
+import { GaleriaSection } from './components/galeria-section';
+import { HorariosSection } from './components/horarios-section';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [HomeNavbar, HomeHero, PlanesSection, PromocionesSection, UbicacionSection, ContactoSection],
+  imports: [HomeNavbar, HomeHero, NosotrosSection, PlanesSection, PromocionesSection, GaleriaSection, HorariosSection, UbicacionSection, ContactoSection],
   templateUrl: './home.html'
 })
 export class Home implements OnInit {

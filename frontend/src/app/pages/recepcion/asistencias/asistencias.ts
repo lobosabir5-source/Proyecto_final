@@ -1,43 +1,59 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { API_URL } from '../../../config/api.config';
+import { AsistenciaRegistrada, ClienteBusqueda } from '../../../models/asistencia.models';
+import { AsistenciaRecepcionService } from '../../../services/asistencia-recepcion.service';
+import { ClienteRecepcionService } from '../../../services/cliente-recepcion.service';
 import { leerErrorApi } from '../../../utils/api-error';
-
-interface Pagina<T> { content: T[]; }
-interface ClienteApi { id: number; usuario: string; nombre: string; correo: string; }
-interface AsistenciaApi {
-  id: number;
-  clienteId: number;
-  cliente: string;
-  fecha: string;
-  horaEntrada: string;
-  registradaPor: string;
-}
+import { Boton, Entrada } from '../components/formulario';
+import { PageHeader } from '../components/page-header';
+import { Panel } from '../components/panel';
+import { TablaDatos, FilaTabla, CeldaTabla, Columna } from '../components/tabla-datos';
 
 @Component({
   selector: 'app-asistencias',
   standalone: true,
-  imports: [FormsModule],
-  templateUrl: './asistencias.html'
+  imports: [FormsModule, PageHeader, Panel, Entrada, Boton, TablaDatos, FilaTabla, CeldaTabla],
+  host: { class: 'block' },
+  template: `
+    <app-page-header eyebrow="Recepción / Asistencias" titulo="Asistencias de hoy" />
+
+    <app-panel titulo="Registrar entrada" class="mb-8">
+      <div class="flex gap-3">
+        <input appEntrada class="flex-1" [(ngModel)]="busqueda" (keyup.enter)="entrar()"
+               placeholder="Usuario, correo o nombre del cliente" aria-label="Buscar cliente" />
+        <button type="button" appBoton="primario" (click)="entrar()">Registrar</button>
+      </div>
+    </app-panel>
+
+    <app-tabla-datos [columnas]="columnas" [vacia]="asistencias().length === 0" mensajeVacio="Aún no hay asistencias registradas.">
+      @for (a of asistencias(); track a.id) {
+        <tr app-fila>
+          <td app-celda class="font-semibold">{{ a.cliente }}</td>
+          <td app-celda class="text-neutral-400">{{ hora(a.horaEntrada) }}</td>
+          <td app-celda class="text-neutral-400">{{ a.registradaPor }}</td>
+        </tr>
+      }
+    </app-tabla-datos>
+  `
 })
 export class AsistenciasComponent implements OnInit {
-  private http = inject(HttpClient);
-  private url = `${API_URL}/recepcion/asistencias`;
+  private readonly asistenciasApi = inject(AsistenciaRecepcionService);
+  private readonly clientesApi = inject(ClienteRecepcionService);
+
+  columnas: Columna[] = [{ titulo: 'Cliente' }, { titulo: 'Entrada' }, { titulo: 'Registrada por' }];
 
   busqueda = signal('');
-  clientes = signal<ClienteApi[]>([]);
-  asistencias = signal<AsistenciaApi[]>([]);
+  clientes = signal<ClienteBusqueda[]>([]);
+  asistencias = signal<AsistenciaRegistrada[]>([]);
 
   ngOnInit(): void {
-    this.http.get<Pagina<ClienteApi>>(`${API_URL}/recepcion/clientes?size=1000`)
-      .subscribe(p => this.clientes.set(p.content));
+    this.clientesApi.listarParaBusqueda().subscribe(c => this.clientes.set(c));
     this.cargar();
   }
 
   cargar(): void {
-    this.http.get<Pagina<AsistenciaApi>>(`${this.url}?size=200`)
-      .subscribe(p => this.asistencias.set(p.content));
+    this.asistenciasApi.listar().subscribe(a => this.asistencias.set(a));
   }
 
   hora(iso?: string) {
@@ -58,7 +74,7 @@ export class AsistenciasComponent implements OnInit {
     if (coincidencias.length === 0) { alert('Cliente no encontrado'); return; }
     if (coincidencias.length > 1) { alert('Hay varios clientes con ese dato, sé más específico'); return; }
 
-    this.http.post<AsistenciaApi>(this.url, { clienteId: coincidencias[0].id }).subscribe({
+    this.asistenciasApi.registrar(coincidencias[0].id).subscribe({
       next: () => { this.busqueda.set(''); this.cargar(); },
       error: (e: HttpErrorResponse) => alert(leerErrorApi(e).mensaje)
     });

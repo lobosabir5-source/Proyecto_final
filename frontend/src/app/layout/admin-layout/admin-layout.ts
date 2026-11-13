@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { Icon, NombreIcono } from '../../components/icon/icon';
+import { Icon, NombreIcono } from '../../shared/ui/icon/icon';
 import { AuthService } from '../../services/auth.service';
 
 interface ItemMenu {
@@ -21,13 +21,25 @@ export class AdminLayout {
   readonly menu: ItemMenu[] = [
     { ruta: '/admin/dashboard', etiqueta: 'Dashboard', icono: 'dashboard' },
     { ruta: '/admin/usuarios', etiqueta: 'Usuarios', icono: 'users' },
+    { ruta: '/admin/clientes', etiqueta: 'Clientes', icono: 'users' },
+    { ruta: '/admin/membresias', etiqueta: 'Membresías', icono: 'tag' },
+    { ruta: '/admin/personal', etiqueta: 'Personal', icono: 'users' },
+    { ruta: '/admin/asistencia-personal', etiqueta: 'Asistencia del personal', icono: 'users' },
+    { ruta: '/admin/inventario', etiqueta: 'Inventario general', icono: 'tag' },
+    { ruta: '/admin/equipos', etiqueta: 'Equipos', icono: 'tag' },
+    { ruta: '/admin/mantenimiento', etiqueta: 'Mantenimiento', icono: 'tag' },
+    { ruta: '/admin/aerobicos', etiqueta: 'Aeróbicos', icono: 'tag' },
     { ruta: '/admin/planes', etiqueta: 'Planes', icono: 'tag' },
     { ruta: '/admin/promociones', etiqueta: 'Promociones', icono: 'percent' },
     { ruta: '/admin/categorias-bar', etiqueta: 'Categorías del bar', icono: 'tag'},
     { ruta: '/admin/productos-bar', etiqueta: 'Productos del bar', icono: 'tag'},
     { ruta: '/admin/pedidos-bar', etiqueta: 'Pedidos del bar', icono: 'tag'},
+    { ruta: '/admin/investigacion', etiqueta: 'Investigación Operativa', icono: 'dashboard' },
     { ruta: '/admin/herramientas', etiqueta: 'Reportes y respaldos', icono: 'dashboard' },
     { ruta: '/admin/configuracion', etiqueta: 'Configuración', icono: 'dashboard' },
+    { ruta: '/admin/pagos', etiqueta: 'Pagos', icono: 'tag' },
+    { ruta: '/admin/caja', etiqueta: 'Caja', icono: 'tag' },
+    { ruta: '/admin/secciones', etiqueta: 'Secciones del sitio', icono: 'dashboard' },
 
   ];
 
