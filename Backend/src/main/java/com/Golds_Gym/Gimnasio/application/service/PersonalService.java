@@ -23,9 +23,9 @@ public class PersonalService {
             Personal.EstadoLaboral estado, int pagina) {
         if (pagina < 0)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pagina invalida");
-        return repo.buscar(texto == null || texto.isBlank() ? null : texto.trim(),
-                cargo, estado, PageRequest.of(pagina, 10, Sort.by("id").descending()))
-                .map(PersonalRespuesta::desde);
+        return repo.buscar(texto == null ? "" : texto.trim(),
+        cargo, estado, PageRequest.of(pagina, 10, Sort.by("id").descending()))
+        .map(PersonalRespuesta::desde);
     }
 
     @Transactional(readOnly = true)
