@@ -7,14 +7,30 @@ import { SuscripcionesComponent } from '../../recepcion/suscripciones/suscripcio
 
 const f = (v: any) => (v ? String(v) : '—');
 const hora = (v: any) => (v ? String(v).slice(0, 5) : '—');
-const op = (...v: string[]) => v.map(x => ({ valor: x, etiqueta: x.charAt(0) + x.slice(1).toLowerCase().replace(/_/g, ' ') }));
-const DIAS = op('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY').map((o, i) => ({
-  valor: o.valor, etiqueta: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][i],
+
+// Traducción de códigos (lo que guarda la BD) a español (lo que ve el usuario)
+const ES: Record<string, string> = {
+  MANANA: 'Mañana', TARDE: 'Tarde', NOCHE: 'Noche',
+  PRESENTE: 'Presente', RETRASO: 'Retraso', AUSENTE: 'Ausente', PERMISO: 'Permiso',
+  PENDIENTE: 'Pendiente', REALIZADO: 'Realizado', CANCELADO: 'Cancelado',
+  PROGRAMADA: 'Programada', CANCELADA: 'Cancelada',
+  OPERATIVO: 'Operativo', EN_MANTENIMIENTO: 'En mantenimiento', FUERA_DE_SERVICIO: 'Fuera de servicio',
+  ACTIVO: 'Activo', INACTIVO: 'Inactivo', SUSPENDIDO: 'Suspendido', RETIRADO: 'Retirado',
+  ADMINISTRATIVO: 'Administrativo', INSTRUCTOR: 'Instructor', LIMPIEZA: 'Limpieza',
+  BEBIDA: 'Bebida', LACTEO: 'Lácteo', OTRO: 'Otro',
+  UNIDAD: 'Unidad', LITRO: 'Litro', MILILITRO: 'Mililitro', KILOGRAMO: 'Kilogramo', GRAMO: 'Gramo', PAQUETE: 'Paquete',
+  MONDAY: 'Lunes', TUESDAY: 'Martes', WEDNESDAY: 'Miércoles', THURSDAY: 'Jueves', FRIDAY: 'Viernes', SATURDAY: 'Sábado', SUNDAY: 'Domingo',
+};
+const es = (v: any) => (v == null || v === '' ? '—' : ES[String(v)] ?? String(v));
+const op = (...v: string[]) => v.map(x => ({
+  valor: x,
+  etiqueta: ES[x] ?? x.charAt(0) + x.slice(1).toLowerCase().replace(/_/g, ' '),
 }));
+const DIAS = op('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
 const personalRemoto = {
   ruta: '/admin/personal',
   valor: (p: any) => String(p.id),
-  etiqueta: (p: any) => `${p.nombres} ${p.apellidos} (${p.cargo})`,
+  etiqueta: (p: any) => `${p.nombres} ${p.apellidos} (${es(p.cargo)})`,
 };
 const ids = (v: Record<string, any>, ...k: string[]) => { const r = { ...v }; k.forEach(x => (r[x] = r[x] == null ? null : Number(r[x]))); return r; };
 // ---------- PAGOS Y CAJA (reutiliza las pantallas de recepción; el backend permite ADMIN) ----------
@@ -78,8 +94,8 @@ export class AdminPersonal {
     ],
     columnas: [
       { key: 'nombres', label: 'Nombre', fmt: (_, r) => `${r.nombres} ${r.apellidos}` },
-      { key: 'documento', label: 'Documento' }, { key: 'cargo', label: 'Cargo' },
-      { key: 'telefono', label: 'Teléfono', fmt: f }, { key: 'estadoLaboral', label: 'Estado' },
+      { key: 'documento', label: 'Documento' }, { key: 'cargo', label: 'Cargo', fmt: es },
+      { key: 'telefono', label: 'Teléfono', fmt: f }, { key: 'estadoLaboral', label: 'Estado', fmt: es },
       { key: 'fechaIngreso', label: 'Ingreso', fmt: f },
     ],
     acciones: [
@@ -108,8 +124,8 @@ export class AdminAsistenciaPersonal {
       { key: 'observaciones', label: 'Observaciones', tipo: 'textarea', max: 500 },
     ],
     columnas: [
-      { key: 'nombreCompleto', label: 'Empleado' }, { key: 'cargo', label: 'Cargo' },
-      { key: 'fecha', label: 'Fecha' }, { key: 'turno', label: 'Turno' }, { key: 'estado', label: 'Estado' },
+      { key: 'nombreCompleto', label: 'Empleado' }, { key: 'cargo', label: 'Cargo', fmt: es },
+      { key: 'fecha', label: 'Fecha' }, { key: 'turno', label: 'Turno', fmt: es }, { key: 'estado', label: 'Estado', fmt: es },
       { key: 'horaEntrada', label: 'Entrada', fmt: hora }, { key: 'horaSalida', label: 'Salida', fmt: hora },
     ],
     aCuerpo: v => ids(v, 'personalId'),
@@ -131,7 +147,7 @@ export class AdminInventario {
       { key: 'descripcion', label: 'Descripción', tipo: 'text', max: 255 },
     ],
     columnas: [
-      { key: 'nombre', label: 'Insumo' }, { key: 'categoria', label: 'Categoría' }, { key: 'unidad', label: 'Unidad' },
+      { key: 'nombre', label: 'Insumo' }, { key: 'categoria', label: 'Categoría', fmt: es }, { key: 'unidad', label: 'Unidad', fmt: es },
       { key: 'existencia', label: 'Existencia' }, { key: 'minimo', label: 'Mínimo' },
       { key: 'alertaMinimo', label: 'Stock', fmt: v => (v ? 'Bajo mínimo' : 'OK') },
     ],
@@ -159,7 +175,7 @@ export class AdminEquipos {
     ],
     columnas: [
       { key: 'codigo', label: 'Código' }, { key: 'nombre', label: 'Equipo' }, { key: 'tipo', label: 'Tipo' },
-      { key: 'ubicacion', label: 'Ubicación', fmt: f }, { key: 'estado', label: 'Estado' },
+      { key: 'ubicacion', label: 'Ubicación', fmt: f }, { key: 'estado', label: 'Estado', fmt: es },
       { key: 'tecnicoId', label: 'Técnico', refCampo: 'tecnicoId' },
       { key: 'mantenimientoActivo', label: 'Mant. activo' },
     ],
@@ -185,7 +201,7 @@ export class AdminMantenimiento {
     columnas: [
       { key: 'equipoId', label: 'Equipo', refCampo: 'equipoId' },
       { key: 'fechaProgramada', label: 'Programada', fmt: f }, { key: 'fechaRealizada', label: 'Realizada', fmt: f },
-      { key: 'estado', label: 'Estado', fmt: (v, r) => (r.vencido ? `${v} (vencido)` : String(v)) },
+      { key: 'estado', label: 'Estado', fmt: (v, r) => (r.vencido ? `${es(v)} (vencido)` : es(v)) },
       { key: 'tecnicoId', label: 'Técnico', refCampo: 'tecnicoId' },
     ],
     acciones: [
@@ -206,7 +222,7 @@ export class AdminAerobicos {
       { key: 'nombre', label: 'Nombre de la clase', tipo: 'text', requerido: true, max: 120 },
       { key: 'descripcion', label: 'Descripción', tipo: 'textarea' },
       { key: 'instructorId', label: 'Instructor', tipo: 'select', requerido: true,
-        opcionesRemotas: { ruta: '/admin/personal', valor: (p: any) => String(p.id), etiqueta: (p: any) => `${p.nombres} ${p.apellidos} (${p.cargo})` } },
+        opcionesRemotas: { ruta: '/admin/personal', valor: (p: any) => String(p.id), etiqueta: (p: any) => `${p.nombres} ${p.apellidos} (${es(p.cargo)})` } },
       { key: 'fecha', label: 'Fecha', tipo: 'date', requerido: true },
       { key: 'horaInicio', label: 'Hora de inicio', tipo: 'time', requerido: true },
       { key: 'horaFin', label: 'Hora de fin', tipo: 'time', requerido: true },
@@ -215,7 +231,7 @@ export class AdminAerobicos {
     columnas: [
       { key: 'nombre', label: 'Clase' }, { key: 'instructor', label: 'Instructor' }, { key: 'fecha', label: 'Fecha' },
       { key: 'horaInicio', label: 'Horario', fmt: (_, r) => `${hora(r.horaInicio)} - ${hora(r.horaFin)}` },
-      { key: 'inscritos', label: 'Cupos', fmt: (_, r) => `${r.inscritos}/${r.cupoMaximo}` }, { key: 'estado', label: 'Estado' },
+      { key: 'inscritos', label: 'Cupos', fmt: (_, r) => `${r.inscritos}/${r.cupoMaximo}` }, { key: 'estado', label: 'Estado', fmt: es },
     ],
     acciones: [
       { etiqueta: 'Cancelar clase', visible: r => r.estado === 'PROGRAMADA', ruta: r => `/admin/aerobicos/${r.id}/estado`,

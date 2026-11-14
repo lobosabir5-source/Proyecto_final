@@ -12,13 +12,13 @@ public interface PersonalRepository extends JpaRepository<Personal, Long> {
 
        boolean existsByDocumentoAndIdNot(String documento, Long id);
 
-       @Query("select p from Personal p where " +
-                     "(:texto is null or lower(p.nombres) like lower(concat('%', :texto, '%')) " +
-                     "or lower(p.apellidos) like lower(concat('%', :texto, '%')) " +
-                     "or lower(p.documento) like lower(concat('%', :texto, '%'))) " +
-                     "and (:cargo is null or p.cargo = :cargo) " +
-                     "and (:estado is null or p.estadoLaboral = :estado)")
-       Page<Personal> buscar(@Param("texto") String texto,
-                     @Param("cargo") Personal.Cargo cargo,
-                     @Param("estado") Personal.EstadoLaboral estado, Pageable pageable);
+@Query("select p from Personal p where " +
+       "(lower(p.nombres) like lower(concat('%', :texto, '%')) " +
+       "or lower(p.apellidos) like lower(concat('%', :texto, '%')) " +
+       "or lower(p.documento) like lower(concat('%', :texto, '%'))) " +
+       "and (:cargo is null or p.cargo = :cargo) " +
+       "and (:estado is null or p.estadoLaboral = :estado)")
+Page<Personal> buscar(@Param("texto") String texto,
+        @Param("cargo") Personal.Cargo cargo,
+        @Param("estado") Personal.EstadoLaboral estado, Pageable pageable);
 }
