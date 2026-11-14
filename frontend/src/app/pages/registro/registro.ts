@@ -95,8 +95,10 @@ export class Registro implements OnInit {
   }
 
   correoValido(): boolean {
-    return /^[a-z0-9._%+-]+@gmail\.com$/i.test(this.registro.correo.trim());
-  }
+  return /^[a-z0-9._%+-]+@gmail\.com$/i.test(
+    this.registro.correo.trim()
+  );
+}
 
   telefonoValido(): boolean {
     return /^[67]\d{7}$/.test(this.registro.telefono);

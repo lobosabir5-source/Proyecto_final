@@ -1,0 +1,237 @@
+<section class="page">
+
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Asistencia del personal</h1>
+      <p class="page-subtitle">Registro de asistencia por turnos, con horas de entrada y salida</p>
+    </div>
+    <app-button (click)="abrirNuevo()">
+      <app-icon nombre="plus" />
+      Registrar asistencia
+    </app-button>
+  </header>
+
+  @if (exito()) {
+    <div class="alert alert-success" role="status">{{ exito() }}</div>
+  }
+  @if (error()) {
+    <div class="alert alert-error" role="alert">{{ error() }}</div>
+  }
+
+  <!-- ============ FILTROS ============ -->
+  <article class="panel as-filtros">
+    <div class="panel-body">
+      <div class="as-filtros__grid">
+        <div class="field">
+          <label class="field-label" for="as-f-emp">Empleado</label>
+          <select id="as-f-emp" name="as-f-emp" class="field-input"
+                  [(ngModel)]="filtros.personalId" (ngModelChange)="aplicarFiltros()">
+            <option value="">Todos</option>
+            @for (e of empleados(); track e.id) { <option [value]="e.id">{{ nombreEmpleado(e) }}</option> }
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="as-f-desde">Desde</label>
+          <input id="as-f-desde" name="as-f-desde" type="date" class="field-input"
+                 [class.field-input--invalid]="rangoInvalido" [(ngModel)]="filtros.desde" (ngModelChange)="aplicarFiltros()" />
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="as-f-hasta">Hasta</label>
+          <input id="as-f-hasta" name="as-f-hasta" type="date" class="field-input"
+                 [class.field-input--invalid]="rangoInvalido" [(ngModel)]="filtros.hasta" (ngModelChange)="aplicarFiltros()" />
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="as-f-turno">Turno</label>
+          <select id="as-f-turno" name="as-f-turno" class="field-input"
+                  [(ngModel)]="filtros.turno" (ngModelChange)="aplicarFiltros()">
+            <option value="">Todos</option>
+            @for (t of turnos; track t.valor) { <option [value]="t.valor">{{ t.etiqueta }}</option> }
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="as-f-estado">Estado</label>
+          <select id="as-f-estado" name="as-f-estado" class="field-input"
+                  [(ngModel)]="filtros.estado" (ngModelChange)="aplicarFiltros()">
+            <option value="">Todos</option>
+            @for (e of estados; track e.valor) { <option [value]="e.valor">{{ e.etiqueta }}</option> }
+          </select>
+        </div>
+      </div>
+
+      <div class="as-filtros__acciones">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="filtrarHoy()">Solo hoy</button>
+        @if (hayFiltros) {
+          <button type="button" class="btn btn-secondary btn-sm" (click)="limpiarFiltros()">Limpiar filtros</button>
+        }
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ LISTADO ============ -->
+  <article class="panel">
+    <header class="panel-header">
+      <h2 class="panel-title">Asistencias</h2>
+      <span class="cell-muted">{{ totalElementos() }} resultado(s)</span>
+    </header>
+
+    <app-table etiqueta="Asistencias del personal">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Empleado</th>
+          <th>Turno</th>
+          <th>Estado</th>
+          <th>Entrada</th>
+          <th>Salida</th>
+          <th>Observaciones</th>
+          <th class="cell-actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (a of asistencias(); track a.id) {
+          <tr>
+            <td class="as-hora">{{ fecha(a.fecha) }}</td>
+            <td>
+              <span class="as-nombre">{{ a.nombreCompleto }}</span>
+              <span class="as-sub">{{ etiquetaCargo(a.cargo) }}</span>
+            </td>
+            <td>{{ etiquetaTurno(a.turno) }}</td>
+            <td><span [class]="claseEstado(a.estado)">{{ etiquetaEstado(a.estado) }}</span></td>
+            <td class="as-hora">{{ hora(a.horaEntrada) }}</td>
+            <td class="as-hora">{{ hora(a.horaSalida) }}</td>
+            <td><span class="as-obs" [attr.title]="a.observaciones">{{ a.observaciones || '—' }}</span></td>
+            <td class="cell-actions">
+              <div class="cell-actions-group">
+                <app-button variante="secondary" tamano="sm" (click)="abrirEditar(a)"
+                            title="Editar asistencia" [attr.aria-label]="'Editar asistencia de ' + a.nombreCompleto">
+                  <app-icon nombre="edit" />
+                </app-button>
+                <app-button variante="danger" tamano="sm" (click)="pedirEliminar(a)"
+                            title="Eliminar asistencia" [attr.aria-label]="'Eliminar asistencia de ' + a.nombreCompleto">
+                  <app-icon nombre="trash" />
+                </app-button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="8" class="empty-state">
+              {{ cargando() ? 'Cargando asistencias...' : 'No hay asistencias que coincidan con los filtros.' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </app-table>
+
+    <app-paginador [pagina]="pagina()" [totalPaginas]="totalPaginas()" [totalElementos]="totalElementos()"
+                   [tamano]="tamanoPagina" (cambiar)="irAPagina($event)" />
+  </article>
+
+</section>
+
+<!-- ============ MODAL REGISTRAR / EDITAR ============ -->
+@if (modalForm()) {
+  <div class="modal-backdrop" (click)="cerrarModalForm()">
+    <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+
+        <header class="modal-header">
+          <h2 class="modal-title">{{ editando() ? 'Editar asistencia' : 'Registrar asistencia' }}</h2>
+          <button type="button" class="modal-close" aria-label="Cerrar" (click)="cerrarModalForm()">
+            <app-icon nombre="close" />
+          </button>
+        </header>
+
+        <div class="modal-body">
+          @if (errorModal()) {
+            <div class="alert alert-error" role="alert">{{ errorModal() }}</div>
+          }
+
+          <div class="field">
+            <label class="field-label" for="as-empleado">Empleado</label>
+            <select id="as-empleado" class="field-input" formControlName="personalId"
+                    [class.field-input--invalid]="mensaje('personalId')">
+              <option value="">Selecciona…</option>
+              @for (e of empleadosForm(); track e.id) { <option [value]="e.id">{{ nombreEmpleado(e) }}</option> }
+            </select>
+            <p class="field-hint">Solo se listan empleados activos.</p>
+            @if (mensaje('personalId')) { <p class="field-error">{{ mensaje('personalId') }}</p> }
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="as-fecha">Fecha</label>
+              <input id="as-fecha" type="date" class="field-input" formControlName="fecha"
+                     [class.field-input--invalid]="mensaje('fecha')" />
+              @if (mensaje('fecha')) { <p class="field-error">{{ mensaje('fecha') }}</p> }
+            </div>
+            <div class="field">
+              <label class="field-label" for="as-turno">Turno</label>
+              <select id="as-turno" class="field-input" formControlName="turno"
+                      [class.field-input--invalid]="mensaje('turno')">
+                <option value="">Selecciona…</option>
+                @for (t of turnos; track t.valor) { <option [value]="t.valor">{{ t.etiqueta }}</option> }
+              </select>
+              @if (mensaje('turno')) { <p class="field-error">{{ mensaje('turno') }}</p> }
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="as-estado">Estado</label>
+            <select id="as-estado" class="field-input" formControlName="estado"
+                    [class.field-input--invalid]="mensaje('estado')">
+              <option value="">Selecciona…</option>
+              @for (e of estados; track e.valor) { <option [value]="e.valor">{{ e.etiqueta }}</option> }
+            </select>
+            @if (mensaje('estado')) { <p class="field-error">{{ mensaje('estado') }}</p> }
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="as-entrada">Hora de entrada</label>
+              <input id="as-entrada" type="time" class="field-input" formControlName="horaEntrada"
+                     [class.field-input--invalid]="mensajeHoras()" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="as-salida">Hora de salida</label>
+              <input id="as-salida" type="time" class="field-input" formControlName="horaSalida"
+                     [class.field-input--invalid]="mensajeHoras()" />
+            </div>
+          </div>
+          @if (sinHoras) {
+            <p class="field-hint">Ausencia o permiso no llevan horas de entrada ni de salida.</p>
+          }
+          @if (mensajeHoras()) { <p class="field-error">{{ mensajeHoras() }}</p> }
+
+          <div class="field">
+            <label class="field-label" for="as-obs">Observaciones</label>
+            <textarea id="as-obs" class="field-input" rows="3" formControlName="observaciones" maxlength="500"
+                      [class.field-input--invalid]="mensaje('observaciones')"></textarea>
+            @if (mensaje('observaciones')) { <p class="field-error">{{ mensaje('observaciones') }}</p> }
+          </div>
+        </div>
+
+        <footer class="modal-footer">
+          <app-button variante="secondary" [deshabilitado]="guardando()" (click)="cerrarModalForm()">Cancelar</app-button>
+          <app-button tipo="submit" [cargando]="guardando()">{{ editando() ? 'Guardar cambios' : 'Registrar' }}</app-button>
+        </footer>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ============ CONFIRMAR ELIMINAR ============ -->
+@if (pendienteEliminar(); as pend) {
+  <app-confirm-dialog
+    titulo="Eliminar asistencia"
+    [mensaje]="'¿Eliminar el registro de ' + pend.nombreCompleto + ' del ' + fecha(pend.fecha) + ' (turno ' + etiquetaTurno(pend.turno).toLowerCase() + ')? Esta acción no se puede deshacer.'"
+    textoConfirmar="Eliminar"
+    [peligro]="true"
+    [procesando]="eliminando()"
+    (confirmar)="confirmarEliminar()"
+    (cancelar)="cancelarEliminar()" />
+}

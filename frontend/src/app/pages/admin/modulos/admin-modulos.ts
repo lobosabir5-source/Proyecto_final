@@ -116,7 +116,6 @@ export class AdminAsistenciaPersonal {
     deFila: r => ({ ...r, personalId: String(r.personalId), horaEntrada: r.horaEntrada?.slice(0, 5) ?? '', horaSalida: r.horaSalida?.slice(0, 5) ?? '' }),
   };
 }
-
 // ---------- INVENTARIO GENERAL ----------
 @Component({ selector: 'app-admin-inventario', imports: [CrudPage], template: `<app-crud-page [cfg]="cfg" />` })
 export class AdminInventario {

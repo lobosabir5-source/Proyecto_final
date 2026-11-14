@@ -1,0 +1,274 @@
+<section class="page">
+
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Personal</h1>
+      <p class="page-subtitle">Empleados y cargos del gimnasio</p>
+    </div>
+    <app-button (click)="abrirNuevo()">
+      <app-icon nombre="plus" />
+      Nuevo empleado
+    </app-button>
+  </header>
+
+  @if (exito()) {
+    <div class="alert alert-success" role="status">{{ exito() }}</div>
+  }
+  @if (error()) {
+    <div class="alert alert-error" role="alert">{{ error() }}</div>
+  }
+
+  <!-- ============ RESUMEN ============ -->
+  <div class="pe-stats">
+    <app-stat-card titulo="Personal registrado" [valor]="resumen()?.total ?? '—'" icono="users"
+                   variante="cyan" detalle="Todos los estados laborales" />
+    <app-stat-card titulo="Personal activo" [valor]="resumen()?.activos ?? '—'" icono="check"
+                   variante="green" detalle="Trabajando actualmente" />
+    <app-stat-card titulo="No activo" [valor]="noActivos()" icono="ban"
+                   variante="gray" detalle="Inactivo, suspendido o retirado" />
+  </div>
+
+  <!-- ============ BÚSQUEDA Y FILTROS ============ -->
+  <article class="panel pe-filtros">
+    <div class="panel-body pe-filtros__grid">
+      <div class="field">
+        <label class="field-label" for="pe-buscar">Buscar empleado</label>
+        <input id="pe-buscar" name="pe-buscar" type="search" class="field-input" autocomplete="off"
+               placeholder="Nombre, apellido o CI" [(ngModel)]="filtros.texto" (ngModelChange)="alEscribir()" />
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="pe-f-cargo">Cargo</label>
+        <select id="pe-f-cargo" name="pe-f-cargo" class="field-input"
+                [(ngModel)]="filtros.cargo" (ngModelChange)="aplicarFiltros()">
+          <option value="">Todos</option>
+          @for (c of cargos; track c.valor) { <option [value]="c.valor">{{ c.etiqueta }}</option> }
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="pe-f-estado">Estado</label>
+        <select id="pe-f-estado" name="pe-f-estado" class="field-input"
+                [(ngModel)]="filtros.estado" (ngModelChange)="aplicarFiltros()">
+          <option value="">Todos</option>
+          @for (e of estados; track e.valor) { <option [value]="e.valor">{{ e.etiqueta }}</option> }
+        </select>
+      </div>
+
+      <div class="pe-filtros__acciones">
+        @if (hayFiltros) {
+          <button type="button" class="btn btn-secondary btn-sm" (click)="limpiarFiltros()">Limpiar filtros</button>
+        }
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ LISTADO ============ -->
+  <article class="panel">
+    <header class="panel-header">
+      <h2 class="panel-title">Empleados</h2>
+      <span class="cell-muted">{{ totalElementos() }} resultado(s)</span>
+    </header>
+
+    <app-table etiqueta="Personal del gimnasio">
+      <thead>
+        <tr>
+          <th>Empleado</th>
+          <th>CI / Documento</th>
+          <th>Cargo</th>
+          <th>Teléfono</th>
+          <th>Ingreso</th>
+          <th>Estado</th>
+          <th class="cell-actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of personal(); track p.id) {
+          <tr [class.pe-fila-inactiva]="p.estadoLaboral !== 'ACTIVO'">
+            <td>
+              <span class="pe-nombre">{{ p.nombres }} {{ p.apellidos }}</span>
+              @if (p.correo) { <span class="pe-sub">{{ p.correo }}</span> }
+            </td>
+            <td>{{ p.documento }}</td>
+            <td>{{ etiquetaCargo(p.cargo) }}</td>
+            <td>{{ p.telefono || '—' }}</td>
+            <td>{{ fecha(p.fechaIngreso) }}</td>
+            <td><span [class]="claseEstado(p.estadoLaboral)">{{ etiquetaEstado(p.estadoLaboral) }}</span></td>
+            <td class="cell-actions">
+              <div class="cell-actions-group">
+                <app-button variante="secondary" tamano="sm" (click)="verDetalle(p)"
+                            title="Ver detalle" [attr.aria-label]="'Ver detalle de ' + p.nombres + ' ' + p.apellidos">
+                  <app-icon nombre="user" />
+                </app-button>
+                <app-button variante="secondary" tamano="sm" (click)="abrirEditar(p)"
+                            title="Editar empleado" [attr.aria-label]="'Editar ' + p.nombres + ' ' + p.apellidos">
+                  <app-icon nombre="edit" />
+                </app-button>
+                @if (p.estadoLaboral === 'ACTIVO') {
+                  <app-button variante="danger" tamano="sm" (click)="pedirCambioEstado(p)"
+                              title="Desactivar empleado" [attr.aria-label]="'Desactivar a ' + p.nombres + ' ' + p.apellidos">
+                    <app-icon nombre="ban" />
+                  </app-button>
+                } @else {
+                  <app-button variante="success" tamano="sm" (click)="pedirCambioEstado(p)"
+                              title="Activar empleado" [attr.aria-label]="'Activar a ' + p.nombres + ' ' + p.apellidos">
+                    <app-icon nombre="check" />
+                  </app-button>
+                }
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="empty-state">
+              {{ cargando() ? 'Cargando personal...' : 'No hay empleados que coincidan con la búsqueda.' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </app-table>
+
+    <app-paginador [pagina]="pagina()" [totalPaginas]="totalPaginas()" [totalElementos]="totalElementos()"
+                   [tamano]="tamanoPagina" (cambiar)="irAPagina($event)" />
+  </article>
+
+</section>
+
+<!-- ============ MODAL REGISTRAR / EDITAR ============ -->
+@if (modalForm()) {
+  <div class="modal-backdrop" (click)="cerrarModalForm()">
+    <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+
+        <header class="modal-header">
+          <h2 class="modal-title">{{ editando() ? 'Editar empleado' : 'Nuevo empleado' }}</h2>
+          <button type="button" class="modal-close" aria-label="Cerrar" (click)="cerrarModalForm()">
+            <app-icon nombre="close" />
+          </button>
+        </header>
+
+        <div class="modal-body">
+          @if (errorModal()) {
+            <div class="alert alert-error" role="alert">{{ errorModal() }}</div>
+          }
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="pe-nombres">Nombres</label>
+              <input id="pe-nombres" type="text" class="field-input" formControlName="nombres" maxlength="100"
+                     autocomplete="off" [class.field-input--invalid]="mensaje('nombres')" />
+              @if (mensaje('nombres')) { <p class="field-error">{{ mensaje('nombres') }}</p> }
+            </div>
+            <div class="field">
+              <label class="field-label" for="pe-apellidos">Apellidos</label>
+              <input id="pe-apellidos" type="text" class="field-input" formControlName="apellidos" maxlength="100"
+                     autocomplete="off" [class.field-input--invalid]="mensaje('apellidos')" />
+              @if (mensaje('apellidos')) { <p class="field-error">{{ mensaje('apellidos') }}</p> }
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="pe-documento">CI / Documento</label>
+              <input id="pe-documento" type="text" class="field-input" formControlName="documento" maxlength="30"
+                     autocomplete="off" [class.field-input--invalid]="mensaje('documento')" />
+              @if (mensaje('documento')) { <p class="field-error">{{ mensaje('documento') }}</p> }
+            </div>
+            <div class="field">
+              <label class="field-label" for="pe-telefono">Teléfono</label>
+              <input id="pe-telefono" type="tel" class="field-input" formControlName="telefono" maxlength="30"
+                     autocomplete="off" [class.field-input--invalid]="mensaje('telefono')" />
+              @if (mensaje('telefono')) { <p class="field-error">{{ mensaje('telefono') }}</p> }
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="pe-correo">Correo</label>
+            <input id="pe-correo" type="email" class="field-input" formControlName="correo" maxlength="150"
+                   autocomplete="off" [class.field-input--invalid]="mensaje('correo')" />
+            @if (mensaje('correo')) { <p class="field-error">{{ mensaje('correo') }}</p> }
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label" for="pe-cargo">Cargo</label>
+              <select id="pe-cargo" class="field-input" formControlName="cargo"
+                      [class.field-input--invalid]="mensaje('cargo')">
+                <option value="">Selecciona…</option>
+                @for (c of cargos; track c.valor) { <option [value]="c.valor">{{ c.etiqueta }}</option> }
+              </select>
+              @if (mensaje('cargo')) { <p class="field-error">{{ mensaje('cargo') }}</p> }
+            </div>
+            <div class="field">
+              <label class="field-label" for="pe-ingreso">Fecha de ingreso</label>
+              <input id="pe-ingreso" type="date" class="field-input" formControlName="fechaIngreso"
+                     [class.field-input--invalid]="mensaje('fechaIngreso')" />
+              @if (mensaje('fechaIngreso')) { <p class="field-error">{{ mensaje('fechaIngreso') }}</p> }
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="pe-obs">Observaciones</label>
+            <textarea id="pe-obs" class="field-input" rows="3" formControlName="observaciones" maxlength="500"
+                      [class.field-input--invalid]="mensaje('observaciones')"></textarea>
+            @if (mensaje('observaciones')) { <p class="field-error">{{ mensaje('observaciones') }}</p> }
+          </div>
+        </div>
+
+        <footer class="modal-footer">
+          <app-button variante="secondary" [deshabilitado]="guardando()" (click)="cerrarModalForm()">Cancelar</app-button>
+          <app-button tipo="submit" [cargando]="guardando()">{{ editando() ? 'Guardar cambios' : 'Registrar' }}</app-button>
+        </footer>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ============ MODAL DETALLE ============ -->
+@if (detalle(); as d) {
+  <div class="modal-backdrop" (click)="cerrarDetalle()">
+    <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2 class="modal-title">{{ d.nombres }} {{ d.apellidos }}</h2>
+        <button type="button" class="modal-close" aria-label="Cerrar" (click)="cerrarDetalle()">
+          <app-icon nombre="close" />
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <dl class="pe-detalle">
+          <div><dt>CI / Documento</dt><dd>{{ d.documento }}</dd></div>
+          <div><dt>Cargo</dt><dd>{{ etiquetaCargo(d.cargo) }}</dd></div>
+          <div><dt>Estado</dt><dd><span [class]="claseEstado(d.estadoLaboral)">{{ etiquetaEstado(d.estadoLaboral) }}</span></dd></div>
+          <div><dt>Teléfono</dt><dd>{{ d.telefono || '—' }}</dd></div>
+          <div><dt>Correo</dt><dd>{{ d.correo || '—' }}</dd></div>
+          <div><dt>Fecha de ingreso</dt><dd>{{ fecha(d.fechaIngreso) }}</dd></div>
+          @if (d.fechaSalida) {
+            <div><dt>Fecha de salida</dt><dd>{{ fecha(d.fechaSalida) }}</dd></div>
+          }
+          <div class="pe-detalle__ancho"><dt>Observaciones</dt><dd>{{ d.observaciones || '—' }}</dd></div>
+        </dl>
+      </div>
+
+      <footer class="modal-footer">
+        <app-button variante="secondary" (click)="cerrarDetalle()">Cerrar</app-button>
+        <app-button (click)="abrirEditar(d)">
+          <app-icon nombre="edit" />
+          Editar
+        </app-button>
+      </footer>
+    </div>
+  </div>
+}
+
+<!-- ============ CONFIRMAR ACTIVAR / DESACTIVAR ============ -->
+@if (pendienteEstado(); as pend) {
+  <app-confirm-dialog
+    [titulo]="pend.nuevo === 'ACTIVO' ? 'Activar empleado' : 'Desactivar empleado'"
+    [mensaje]="mensajeCambioEstado(pend)"
+    [textoConfirmar]="pend.nuevo === 'ACTIVO' ? 'Activar' : 'Desactivar'"
+    [peligro]="pend.nuevo === 'INACTIVO'"
+    [procesando]="cambiandoEstado()"
+    (confirmar)="confirmarCambioEstado()"
+    (cancelar)="cancelarCambioEstado()" />
+}

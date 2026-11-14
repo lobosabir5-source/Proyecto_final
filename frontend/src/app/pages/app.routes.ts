@@ -33,6 +33,8 @@ export const routes: Routes = [
       { path: 'equipos', loadComponent: () => import('../pages/admin/equipos/admin-equipos').then(m => m.AdminEquipos) },
       { path: 'mantenimiento', loadComponent: () => import('../pages/admin/mantenimiento/admin-mantenimiento').then(m => m.AdminMantenimiento) },
       { path: 'aerobicos', loadComponent: () => import('../pages/admin/aerobicos/admin-aerobicos').then(m => m.AdminAerobicos) },
+      { path: 'personal', loadComponent: () => import('../pages/admin/personal/admin-personal').then(m => m.AdminPersonal) },
+      { path: 'asistencia-personal', loadComponent: () => import('../pages/admin/asistencia-personal/admin-asistencia-personal').then(m => m.AdminAsistenciaPersonal) },
     ]
   },
   // ---------- RECEPCIÓN ----------
